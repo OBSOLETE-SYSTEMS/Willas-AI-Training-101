@@ -244,6 +244,7 @@
   .acc-item.open .acc-body { max-height: 2600px; }
   .acc-body-inner { padding:0 0 24px; }
   .acc-sub { font-size:15px; line-height:1.6; color: var(--ink-soft); max-width:64ch; margin-bottom:18px; }
+  .acc-body-inner > .acc-sub { max-width:none; }
   .acc-sub b { color: var(--navy); font-weight:600; }
 
   /* prompt block */
@@ -325,6 +326,29 @@
     background:transparent; border:1.5px solid rgba(255,254,247,0.35); border-radius:12px; color: var(--cream);
     font-family: var(--display); font-weight:500; font-size:13px; transition: all .2s; }
   .btn-on-navy:hover { background: var(--green); border-color: var(--green); color: var(--navy); }
+
+  /* part 1 inputs + uploads */
+  .crowd-label { font-family: var(--display); font-weight:600; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color: var(--green); margin:22px 0 10px; display:flex; align-items:center; gap:7px; }
+  .upload-thumbs { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+  .upload-thumb { display:inline-flex; align-items:center; gap:9px; padding:6px 11px 6px 6px; border-radius:10px; background: rgba(255,254,247,0.06); border:1px solid rgba(255,254,247,0.15); font-size:12px; color: var(--cream); font-family:'DM Mono',monospace; max-width:230px; }
+  .upload-thumb img { width:34px; height:34px; object-fit:cover; border-radius:6px; flex-shrink:0; }
+  .upload-thumb .un { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .upload-thumb button { background:none; border:none; cursor:pointer; color: var(--cream); opacity:0.55; font-size:14px; line-height:1; }
+  .upload-thumb button:hover { opacity:1; }
+
+  /* main-event header — the hero of each build */
+  .block--hero .block-head h4 { font-family:'Fraunces',serif; font-weight:500; font-size: clamp(23px,3vw,32px); letter-spacing:-0.015em; text-transform:none; }
+  .block--hero .block-head .bspark { font-size:20px; }
+
+  /* share / host block */
+  .share-list { border-top:1px solid var(--line); }
+  .share-row { display:flex; gap:14px; padding:17px 0; border-bottom:1px solid var(--line); }
+  .share-row .sr-a { color: var(--green-deep); font-family:'DM Mono',monospace; font-weight:700; flex-shrink:0; }
+  .share-row p { font-size:15px; line-height:1.55; color: var(--ink-soft); }
+  .share-row p b { color: var(--navy); font-weight:600; }
+  .share-note { margin-top:26px; border-left:3px solid var(--green-deep); padding:14px 0 14px 22px; }
+  .share-note .label { display:block; margin-bottom:8px; font-weight:700; color: var(--green-deep); }
+  .share-note p { font-family:'Fraunces',serif; font-style:italic; font-size:16px; line-height:1.5; color: var(--navy); }
 
   /* live preview */
   .preview-wrap { margin-top:14px; }
@@ -512,8 +536,11 @@
         <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>✍️ …or bring your own</h4><span class="hr"></span></div>
           <div class="gen" data-mode="make" id="gen-make"></div></div>
 
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>🚀 The main event — build it live</h4><span class="hr"></span></div>
+        <div class="block block--hero"><div class="block-head"><span class="bspark">✦</span><h4>🚀 The main event — build it live</h4><span class="hr"></span></div>
           <div class="hero-module" id="poc-module"></div></div>
+
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>📤 Now share it</h4><span class="hr"></span></div>
+          <div id="share-block"></div></div>
 
         <button class="ch-close" data-close="1">✕ Close this build</button>
       </div>
@@ -534,7 +561,7 @@
         <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>✍️ …or bring your own</h4><span class="hr"></span></div>
           <div class="gen" data-mode="automate" id="gen-automate"></div></div>
 
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>⚙️ The main event — Markdown automation</h4><span class="hr"></span></div>
+        <div class="block block--hero"><div class="block-head"><span class="bspark">✦</span><h4>⚙️ The main event — Markdown automation</h4><span class="hr"></span></div>
           <div class="hero-module" id="md-module"></div></div>
 
         <button class="ch-close" data-close="2">✕ Close this build</button>
@@ -741,20 +768,22 @@ Design it so I can paste an updated cert list next quarter and re-run it.` }
 ];
 
 const POC = {
-  intro:"This is the one. We'll prototype a brand-new Willa's website, live, right now. First we take requests from the room — then we run it and watch an idea become something you can click.",
+  intro:"This is the one. We'll prototype a brand-new Willa's website, live, right now — gather what the room wants, then run it and watch an idea become real.",
   files:[
     { f:"index.html", d:"The whole prototype — one self-contained file." },
     { f:"(that's it)", d:"One file. No build step, no install. Drag it into a browser." },
     { f:"→ push to GitHub", d:"When we love it, same one-push-to-Vercel loop we used for this site." }
   ],
-  basePrompt:`You are a world-class web designer + front-end engineer. Build me a single self-contained index.html (inline CSS + JS, no build step, no external files except Google Fonts) for a brand-new Willa's website.
+  basePrompt:`You are a world-class web designer + front-end engineer. In one fast pass, build me a single self-contained index.html (inline CSS + JS, no build step, no external files except Google Fonts) for a brand-new Willa's website — something I can open in a browser in minutes.
 
-WILLA'S: the first & only WHOLE plant milk — made from the entire oat groat, not oat syrup. 1g sugar, 4g+ protein, 2g+ prebiotic fiber, 4 clean ingredients. Heritage brand named for the founder's grandmother Willa — "real food, passed down, reinvented forward." North star: "Nourish the spark in everyone." Voice: warm, clean, witty, confident.
+WILLA'S: the first & only WHOLE plant milk — made from the entire oat groat, not oat syrup. 1g sugar, 4g+ protein, 2g+ prebiotic fiber, 4 clean ingredients. Heritage brand named for the founder's grandmother Willa — "real food, passed down, reinvented forward." North star: "Nourish the spark in everyone." Voice: warm, clean, witty, confident. Products: Original, Barista, Chocolate (x Raaka single-origin cacao), and Kids + Kids Chocolate (32oz cartons, 8oz on-the-go 16-packs, 6-packs).
 
-PALETTE: cream #fffef7, deep navy #202a44, oat green #75c596, sky blue #93c4e0, tiger orange #e07a45, warm caramel #9e652e, sand #e8e1c2. Fonts: Fraunces (serif headlines) + a chunky rounded sans for labels. Use scattered star/sparkle confetti as a flourish.
+CURRENT SITE (willaskitchen.com — for context only; build something FRESHER, don't copy it): hero "A Wholly Better Kind of Oat Milk / Organic ingredients. The whole entire oat."; a product lineup; four pillars (Uses the Whole Oat · Lowest Sugar · Highest Quality Ingredients · Sustainably Produced); press logos (Well+Good, Refinery29, Forbes); a "Taste the Whole Oat Difference" shop grid; recipes; a store locator; and educational posts (glyphosate-free, lower glycemic index, kids).
 
-BUILD a beautiful, modern, scroll-friendly single-page site with: a hero, the "whole oat" story, the 4 facts, the product lineup, and a warm footer. Premium and playful, not a template.`,
-  closer:"Make a bold, complete first version — I'll react in real time and we'll push it together. Speed over polish."
+PALETTE: cream #fffef7, deep navy #202a44 (use it boldly as a surface, not just text), oat green #75c596, sky blue #93c4e0, tiger orange #e07a45, warm caramel #9e652e, sand #e8e1c2. Fonts: Fraunces (serif headlines) + a chunky rounded sans for labels. Use scattered star/sparkle confetti as a flourish.
+
+BUILD a beautiful, modern, scroll-friendly single-page site: a hero, the "whole oat" story, the 4 facts, the product lineup, and a warm footer. Premium and playful, not a template.`,
+  closer:"Build it in one quick pass — a bold, complete first version I'll react to in real time and we'll push together. Speed over polish."
 };
 
 const HACKS = [
@@ -864,6 +893,15 @@ Give me a tight "handoff" I can paste into a new conversation:
 Keep it short — just enough to pick up cleanly without dragging the confusion along.` }
 ];
 
+const SHARE = [
+  { t:"Email it", d:"An HTML file as an attachment opens right in any browser. Zero setup — perfect for a one-off send." },
+  { t:"Claude artifact link", d:"Fastest path if you built it in Claude. Hit “Publish” and you get a public URL anyone can open — no account needed." },
+  { t:"Google Sites", d:"Drop the HTML into Google Workspace and share it with anyone at Willa's. A real URL for the team, not the open internet." },
+  { t:"GitHub Pages", d:"Free and permanent. Put the HTML in a repo, turn on Pages, and you get a lasting link like yourname.github.io/project." },
+  { t:"Vercel", d:"Drag-and-drop hosting — and it handles environment variables if you ever need to hide an API key (exactly like this very site)." }
+];
+const SHARE_NOTE = "If your thing calls an AI service at runtime, never paste the API key into a public HTML file — anyone can view source. For a quick share you won't need one. Start static.";
+
 /* ───────── EMOJI SETS (semantic, one per item) ───────── */
 const FLOW_E = ['🙋','🪄','♻️','💬','🍿'];
 const TQ_E   = ['📊','⏰','💡'];
@@ -912,54 +950,71 @@ function renderGen(el, mode){
     </div>`;
 }
 
-let CROWD = [];
-function renderCrowd(el){
-  el.innerHTML = CROWD.map((c,i)=>`<span class="crowd-tag">${esc(c)} <button data-crowd-rm="${i}">✕</button></span>`).join('')
-    || `<span class="gen-hint" style="color:rgba(255,254,247,0.55);font-size:13px;">No requests yet — the base prompt works great on its own.</span>`;
+let CROWD = [], INSPO = [], UPLOADS = [];
+function renderTags(el, arr, attr){
+  if(el) el.innerHTML = arr.map((c,i)=>`<span class="crowd-tag">${esc(c)} <button data-${attr}="${i}">✕</button></span>`).join('');
+}
+function renderUploads(el){
+  if(el) el.innerHTML = UPLOADS.map((u,i)=>`<span class="upload-thumb"><img src="${u.url}" alt=""><span class="un">${esc(u.name)}</span> <button data-up-rm="${i}">✕</button></span>`).join('');
 }
 function buildPOCPrompt(){
   let p = POC.basePrompt;
-  if(CROWD.length) p += `\n\nTHE ROOM ALSO WANTS (fold these in):\n` + CROWD.map(c=>`- ${c}`).join('\n');
+  if(CROWD.length) p += `\n\nTHE ROOM WANTS THESE FEATURES (fold them in):\n` + CROWD.map(c=>`- ${c}`).join('\n');
+  if(INSPO.length) p += `\n\nDRAW INSPIRATION FROM THESE BRANDS / SITES:\n` + INSPO.map(c=>`- ${c}`).join('\n');
+  if(UPLOADS.length) p += `\n\nINSPIRATION SCREENSHOTS: I'm attaching ${UPLOADS.length} screenshot${UPLOADS.length>1?'s':''} in the chat (${UPLOADS.map(u=>u.name).join(', ')}). Match the look + feel I point to in them.`;
   return p + `\n\n${POC.closer}`;
 }
 function mountPOCPrompt(){ const m=document.getElementById('pocPromptMount'); if(m) m.innerHTML = promptBlock("Willa's website — live build prompt", buildPOCPrompt()); }
 
+function renderShare(el){
+  if(!el) return;
+  el.innerHTML = `<div class="share-list">` + SHARE.map(s=>`<div class="share-row"><span class="sr-a">→</span><p><b>${esc(s.t)}.</b> ${esc(s.d)}</p></div>`).join('') + `</div>
+    <div class="share-note"><span class="label">✦ One thing to know</span><p>${esc(SHARE_NOTE)}</p></div>`;
+}
+
 function renderPOC(el){
   el.innerHTML = `
-    <div class="hm-banner"><span>✦ The hero of this build</span><span>⏱ Under 5 minutes</span></div>
+    <div class="hm-banner"><span>✦ The hero of this build</span></div>
     <div class="hm-body">
       <p class="acc-sub" style="font-size:16px;">${esc(POC.intro)}</p>
 
-      <h4 class="serif">1 · Take requests from the room</h4>
-      <p class="acc-sub">What should this site <b>do</b>? Type each request in — they fold into the prompt automatically.</p>
+      <h4 class="serif">1 · Gather from the room</h4>
+      <p class="acc-sub">What should this site <b>do</b>, and what should we draw from? It all folds into the prompt automatically.</p>
+
+      <div class="crowd-label">✦ Features it should have</div>
       <div class="crowd-tags" id="crowdTags"></div>
-      <div class="crowd-row"><input id="crowdInput" placeholder="e.g. a 'find us in stores' map, a quiz, a barista section…" /><button class="btn-on-navy" id="crowdAdd">+ Add</button></div>
+      <div class="crowd-row"><input id="crowdInput" placeholder="e.g. a store locator, a quiz, a barista section…" /><button class="btn-on-navy" id="crowdAdd">+ Add</button></div>
+
+      <div class="crowd-label">✦ Brands or sites we love</div>
+      <div class="crowd-tags" id="inspoTags"></div>
+      <div class="crowd-row"><input id="inspoInput" placeholder="e.g. oatly.com, a site whose vibe you love…" /><button class="btn-on-navy" id="inspoAdd">+ Add</button></div>
+
+      <div class="crowd-label">✦ Screenshots for inspiration</div>
+      <label class="btn-on-navy" for="inspoFiles" style="display:inline-flex;">📎 Upload screenshots</label>
+      <input type="file" id="inspoFiles" accept="image/*" multiple style="display:none;" />
+      <div class="upload-thumbs" id="uploadThumbs"></div>
 
       <h4 class="serif">2 · Grab the prompt</h4>
-      <p class="acc-sub">Copy it, paste into Claude, and go.</p>
+      <p class="acc-sub">Copy it, paste into Claude, attach any screenshots, and go.</p>
       <div id="pocPromptMount"></div>
-
-      <h4 class="serif">3 · See it come alive</h4>
-      <p class="acc-sub">Paste the HTML Claude builds back in here — your new Willa's site renders right on the screen.</p>
-      <div class="preview-wrap">
-        <textarea id="previewInput" style="width:100%;min-height:76px;resize:vertical;padding:14px;border-radius:12px;border:1.5px solid rgba(255,254,247,0.2);background:rgba(255,254,247,0.06);color:var(--cream);font-family:'DM Mono',monospace;font-size:12.5px;outline:none;" placeholder="Paste the full HTML here…"></textarea>
-        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;"><button class="btn-on-navy" id="previewRun">✦ See it live</button><button class="btn-on-navy" id="previewOpen">↗ Open full screen</button></div>
-        <iframe class="preview-frame" id="previewFrame" sandbox="allow-scripts allow-modals" title="Live preview"></iframe>
-      </div>
 
       <h4 class="serif">The files it'll make</h4>
       <div class="files">${POC.files.map((f,i)=>`<div class="file-row"><span style="font-size:16px;line-height:1">${FILES_E[i]||'📄'}</span><span class="fi">${esc(f.f)}</span><span class="fd">${esc(f.d)}</span></div>`).join('')}</div>
     </div>`;
   mountPOCPrompt();
-  const tagsEl=el.querySelector('#crowdTags'), input=el.querySelector('#crowdInput'), addBtn=el.querySelector('#crowdAdd');
-  const add=()=>{ const v=input.value.trim(); if(!v)return; CROWD.push(v); input.value=''; renderCrowd(tagsEl); mountPOCPrompt(); };
-  addBtn.addEventListener('click', add);
-  input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); add(); }});
-  renderCrowd(tagsEl);
-  // live preview
-  const pin=el.querySelector('#previewInput'), frame=el.querySelector('#previewFrame');
-  el.querySelector('#previewRun').addEventListener('click', ()=>{ const html=pin.value.trim(); if(!html)return; frame.srcdoc=html; frame.classList.add('show'); });
-  el.querySelector('#previewOpen').addEventListener('click', ()=>{ const html=pin.value.trim(); if(!html)return; const w=window.open(); if(w){ w.document.open(); w.document.write(html); w.document.close(); } });
+
+  const add=(input, arr, tagsEl, attr)=>{ const v=input.value.trim(); if(!v)return; arr.push(v); input.value=''; renderTags(tagsEl, arr, attr); mountPOCPrompt(); };
+  const cIn=el.querySelector('#crowdInput'), cTags=el.querySelector('#crowdTags');
+  el.querySelector('#crowdAdd').addEventListener('click', ()=>add(cIn,CROWD,cTags,'crowd-rm'));
+  cIn.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); add(cIn,CROWD,cTags,'crowd-rm'); }});
+  const iIn=el.querySelector('#inspoInput'), iTags=el.querySelector('#inspoTags');
+  el.querySelector('#inspoAdd').addEventListener('click', ()=>add(iIn,INSPO,iTags,'inspo-rm'));
+  iIn.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); add(iIn,INSPO,iTags,'inspo-rm'); }});
+  const upEl=el.querySelector('#uploadThumbs');
+  el.querySelector('#inspoFiles').addEventListener('change', ev=>{
+    [...ev.target.files].forEach(f=>{ UPLOADS.push({name:f.name, url:URL.createObjectURL(f)}); });
+    ev.target.value=''; renderUploads(upEl); mountPOCPrompt();
+  });
 }
 
 function renderMD(el){
@@ -1043,6 +1098,7 @@ renderAccordion(document.getElementById('c2-usecases'), C2_USECASES, 'Copy · pa
 renderGen(document.getElementById('gen-make'),'make');
 renderGen(document.getElementById('gen-automate'),'automate');
 renderPOC(document.getElementById('poc-module'));
+renderShare(document.getElementById('share-block'));
 renderMD(document.getElementById('md-module'));
 renderFlow(document.getElementById('flowBeats'));
 renderTQ(document.getElementById('tqBody'));
@@ -1059,7 +1115,13 @@ document.addEventListener('click', async e=>{
   btn.textContent='Copied ✓'; btn.classList.add('copied'); setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('copied'); },1600);
 });
 
-document.addEventListener('click', e=>{ const rm=e.target.closest('[data-crowd-rm]'); if(!rm)return; CROWD.splice(+rm.getAttribute('data-crowd-rm'),1); renderCrowd(document.getElementById('crowdTags')); mountPOCPrompt(); });
+document.addEventListener('click', e=>{
+  const rm=e.target.closest('[data-crowd-rm],[data-inspo-rm],[data-up-rm]'); if(!rm) return;
+  if(rm.hasAttribute('data-crowd-rm')){ CROWD.splice(+rm.getAttribute('data-crowd-rm'),1); renderTags(document.getElementById('crowdTags'),CROWD,'crowd-rm'); }
+  else if(rm.hasAttribute('data-inspo-rm')){ INSPO.splice(+rm.getAttribute('data-inspo-rm'),1); renderTags(document.getElementById('inspoTags'),INSPO,'inspo-rm'); }
+  else if(rm.hasAttribute('data-up-rm')){ UPLOADS.splice(+rm.getAttribute('data-up-rm'),1); renderUploads(document.getElementById('uploadThumbs')); }
+  mountPOCPrompt();
+});
 
 function setCard(n,open){ const card=document.getElementById('card'+n), chap=document.getElementById('chapter'+n); chap.classList.toggle('open',open); card.setAttribute('aria-expanded',open); if(open) setTimeout(()=>chap.scrollIntoView({behavior:'smooth',block:'start'}),120); }
 document.querySelectorAll('.bigcard').forEach(card=>{ const n=card.getAttribute('data-card'); const toggle=()=>setCard(n,!document.getElementById('chapter'+n).classList.contains('open')); card.addEventListener('click',toggle); card.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }}); });
