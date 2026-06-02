@@ -455,6 +455,8 @@
     #cheatOverlay { position:static !important; display:block !important; opacity:1 !important; background:none !important; backdrop-filter:none !important; padding:0 !important; overflow:visible !important; }
     #cheatOverlay .overlay-card { box-shadow:none !important; border:none !important; max-width:none !important; transform:none !important; border-radius:0 !important; }
     .cheat-head-actions, .copy-btn { display:none !important; }
+    #cheatOverlay .acc-body { max-height:none !important; overflow:visible !important; }
+    #cheatOverlay .acc-item { break-inside:avoid; }
     .cheat-group .prompt-block { background:#fff !important; border:1px solid #bbb !important; break-inside:avoid; }
     .cheat-group .prompt-text { color:#111 !important; }
     .cheat-group .prompt-text .ph { color:#111 !important; background:#eee !important; }
@@ -685,7 +687,7 @@
 <div class="overlay" id="cheatOverlay">
   <div class="overlay-card" id="cheatsheet">
     <div class="ov-head">
-      <div><h2 class="serif">Your <em>cheat sheet</em></h2><p>Every starter prompt from today, in one place. Copy any of them — or print the whole thing to keep.</p></div>
+      <div><h2 class="serif">Your <em>cheat sheet</em></h2><p>Every starter prompt from today, in one place.</p></div>
       <div class="cheat-head-actions">
         <button class="btn-ghost" id="cheatPrint">🖨 Print / Save PDF</button>
         <button class="ov-close" data-ov-close>✕</button>
@@ -1158,7 +1160,11 @@ function renderCheatsheet(el){
     { name:'Hacks', items: HACKS.map((h,i)=>({label:lbl(HACKS_E[i],h.title), prompt:h.prompt})) },
     { name:'Best Practices', items: BEST_PRACTICES.map((b,i)=>({label:lbl(BP_E[i],b.title), prompt:b.prompt})) }
   ];
-  el.innerHTML = groups.map(g=>`<div class="cheat-group"><h3 class="serif">${esc(g.name)}</h3>${g.items.map(it=>promptBlock(it.label, it.prompt)).join('')}</div>`).join('');
+  el.innerHTML = groups.map(g=>`<div class="cheat-group"><h3 class="serif">${esc(g.name)}</h3>${g.items.map(it=>`
+    <div class="acc-item">
+      <button class="acc-head" aria-expanded="false"><span class="ac-spark">✦</span><span class="acc-title serif">${esc(it.label)}</span><span class="acc-for"></span></button>
+      <div class="acc-body"><div class="acc-body-inner">${promptBlock('Copy · paste · fill the blanks', it.prompt)}</div></div>
+    </div>`).join('')}</div>`).join('');
 }
 
 function renderPOC(el){
