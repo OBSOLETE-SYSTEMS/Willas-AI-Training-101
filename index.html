@@ -468,9 +468,61 @@
     .ticker-track { animation:none !important; }
   }
   @media (max-width:760px){ .section{ padding:64px 20px; } .hero-inner{ padding:20px 0 44px; } }
+
+  /* ── PASSWORD GATE ─────────────────────────────── */
+  #gate { position:fixed; inset:0; z-index:1000; background: var(--cream); display:grid; place-items:center; padding:24px; transition:opacity .35s ease;
+    background-image: radial-gradient(820px 400px at 82% 0%, rgba(147,196,224,0.20), transparent 60%), radial-gradient(720px 380px at 8% 100%, rgba(117,197,150,0.16), transparent 60%); }
+  .gate-card { width:100%; max-width:380px; text-align:center; }
+  .gate-brand { font-family: var(--display); font-weight:600; font-size:18px; color: var(--navy); display:inline-flex; align-items:center; gap:9px; }
+  .gate-brand .star { color: var(--green-deep); }
+  .gate-sub { margin-top:14px; font-family:'Fraunces',serif; font-size:23px; color: var(--navy); font-weight:300; letter-spacing:-0.015em; }
+  #gateForm { margin-top:26px; display:flex; flex-direction:column; gap:12px; }
+  #gatePw { padding:15px 16px; border-radius:12px; border:1.5px solid var(--line-strong); background:#fff; color:var(--navy); font-family:'DM Sans',sans-serif; font-size:16px; outline:none; text-align:center; transition:border-color .2s; }
+  #gatePw:focus { border-color: var(--green-deep); }
+  #gateForm button { padding:14px; border:none; border-radius:12px; background: var(--navy); color: var(--cream); font-family: var(--display); font-weight:600; font-size:14px; letter-spacing:0.04em; cursor:pointer; transition: background .2s; }
+  #gateForm button:hover { background: var(--green-deep); }
+  .gate-err { min-height:18px; margin-top:12px; font-size:13px; color: var(--clay); font-family:'DM Mono',monospace; }
+  .gate-card.shake { animation: gateshake .4s; }
+  @keyframes gateshake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-7px)} 40%,80%{transform:translateX(7px)} }
 </style>
 </head>
 <body>
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-brand"><span class="star">✦</span> Willa's × OBSOLETE</div>
+    <p class="gate-sub">Enter the password to come in.</p>
+    <form id="gateForm" autocomplete="off">
+      <input id="gatePw" type="password" placeholder="Password" aria-label="Password" autofocus />
+      <button type="submit">Enter ✦</button>
+    </form>
+    <p class="gate-err" id="gateErr"></p>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='willas101_auth', gate=document.getElementById('gate');
+  try{ if(sessionStorage.getItem(KEY)==='1'){ gate.remove(); return; } }catch(e){}
+  document.documentElement.style.overflow='hidden';
+  var form=document.getElementById('gateForm'), pw=document.getElementById('gatePw'), err=document.getElementById('gateErr');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(pw.value.trim().toLowerCase()==='certifiedorganic'){
+      try{ sessionStorage.setItem(KEY,'1'); }catch(_){}
+      document.documentElement.style.overflow='';
+      gate.style.opacity='0';
+      setTimeout(function(){ gate.remove(); }, 350);
+    } else {
+      err.textContent='Not quite — try again.';
+      var card=gate.querySelector('.gate-card');
+      card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+      pw.value=''; pw.focus();
+    }
+  });
+  pw.focus();
+})();
+</script>
+
 <div class="grain"></div>
 
 <!-- TOP NAV -->
