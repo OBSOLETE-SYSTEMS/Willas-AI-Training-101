@@ -410,9 +410,10 @@
   /* ── FOOTER ────────────────────────────────────── */
   footer { background: var(--navy); color: var(--cream); padding:64px 24px; position:relative; overflow:hidden; }
   .footer-inner { max-width:1180px; margin:0 auto; position:relative; z-index:1; }
-  .footer-brand { display:flex; align-items:center; justify-content:center; gap:12px; font-family: var(--display); font-weight:600; font-size:19px; color: var(--cream); }
+  .footer-brand { display:flex; flex-direction:column; align-items:center; gap:9px; font-family: var(--display); font-weight:600; font-size:19px; color: var(--cream); }
+  .footer-brand .fb-row { display:flex; align-items:center; gap:11px; }
   .footer-brand .star { color: var(--green); }
-  .footer-brand small { font-family:'DM Mono',monospace; font-weight:400; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color: rgba(255,254,247,0.6); }
+  .footer-brand small { font-family:'DM Mono',monospace; font-weight:400; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color: rgba(255,254,247,0.6); }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
@@ -547,7 +548,7 @@
 <footer>
   <div class="sparkles" id="footSparkles"></div>
   <div class="footer-inner">
-    <div class="footer-brand"><span class="star">✦</span> Willa's × OBSOLETE <small>AI 101</small></div>
+    <div class="footer-brand"><div class="fb-row"><span class="star">✦</span> Willa's × OBSOLETE</div><small>AI 101</small></div>
   </div>
 </footer>
 
