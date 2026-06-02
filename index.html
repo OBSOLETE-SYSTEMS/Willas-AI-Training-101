@@ -440,6 +440,28 @@
   .footer-brand .fb-row { display:flex; align-items:center; gap:11px; }
   .footer-brand .star { color: var(--green); }
   .footer-brand small { font-family:'DM Mono',monospace; font-weight:400; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color: rgba(255,254,247,0.6); }
+  .footer-meta-line { text-align:center; font-family:'Fraunces',serif; font-style:italic; font-size: clamp(16px,2vw,21px); color: rgba(255,254,247,0.85); max-width:44ch; margin:0 auto 26px; line-height:1.45; }
+  .footer-cta { text-align:center; margin-bottom:40px; }
+
+  /* cheat sheet */
+  #cheatsheet { max-width:880px; }
+  .cheat-head-actions { display:flex; gap:10px; align-items:center; }
+  .cheat-group { margin-bottom:38px; }
+  .cheat-group h3 { font-family:'Fraunces',serif; font-weight:500; font-size:22px; letter-spacing:-0.01em; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+  .cheat-group .prompt-block { margin-bottom:14px; }
+
+  @media print {
+    body > *:not(#cheatOverlay) { display:none !important; }
+    #cheatOverlay { position:static !important; display:block !important; opacity:1 !important; background:none !important; backdrop-filter:none !important; padding:0 !important; overflow:visible !important; }
+    #cheatOverlay .overlay-card { box-shadow:none !important; border:none !important; max-width:none !important; transform:none !important; border-radius:0 !important; }
+    .cheat-head-actions, .copy-btn { display:none !important; }
+    .cheat-group .prompt-block { background:#fff !important; border:1px solid #bbb !important; break-inside:avoid; }
+    .cheat-group .prompt-text { color:#111 !important; }
+    .cheat-group .prompt-text .ph { color:#111 !important; background:#eee !important; }
+    .cheat-group .pb-label { color:#444 !important; border-color:#ccc !important; }
+    .ov-head h2, .ov-head p, .cheat-group h3 { color:#111 !important; }
+    .ov-head h2 em { color:#333 !important; }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
@@ -455,6 +477,7 @@
 <nav class="nav">
   <div class="nav-brand"><span class="star">✦</span> Willa's × OBSOLETE <small>AI 101</small></div>
   <div class="nav-actions">
+    <button class="nav-btn" id="navCheat"><span class="star">✦</span><span>Cheat <span class="lbl-long">Sheet</span></span></button>
     <button class="nav-btn primary" id="navHacks"><span class="star">✦</span><span>Hacks <span class="lbl-long">&amp; Best Practices</span></span></button>
   </div>
 </nav>
@@ -587,6 +610,8 @@
 <footer>
   <div class="sparkles" id="footSparkles"></div>
   <div class="footer-inner">
+    <p class="footer-meta-line">This whole page was built with Claude and deployed in an afternoon — the same way we're about to build together.</p>
+    <div class="footer-cta"><button class="btn-on-navy" id="footCheat">✦ Take the cheat sheet with you</button></div>
     <div class="footer-brand"><div class="fb-row"><span class="star">✦</span> Willa's × OBSOLETE</div><small>AI 101</small></div>
   </div>
 </footer>
@@ -605,6 +630,20 @@
     <div class="tabpane bp" id="pane-bp"></div>
   </div>
 </aside>
+
+<!-- CHEAT SHEET OVERLAY -->
+<div class="overlay" id="cheatOverlay">
+  <div class="overlay-card" id="cheatsheet">
+    <div class="ov-head">
+      <div><h2 class="serif">Your <em>cheat sheet</em></h2><p>Every starter prompt from today, in one place. Copy any of them — or print the whole thing to keep.</p></div>
+      <div class="cheat-head-actions">
+        <button class="btn-ghost" id="cheatPrint">🖨 Print / Save PDF</button>
+        <button class="ov-close" data-ov-close>✕</button>
+      </div>
+    </div>
+    <div class="ov-body" id="cheatBody"></div>
+  </div>
+</div>
 
 <!-- FLOW OVERLAY -->
 <div class="overlay" id="flowOverlay">
@@ -851,6 +890,19 @@ BUILD a beautiful, modern, scroll-friendly single-page site: a hero, the "whole 
   closer:"Build it in one quick pass — a bold, complete first version I'll react to in real time and we'll push together. Speed over polish."
 };
 
+const RECIPE_PROMPT = `You are helping me turn a chore I do over and over for Willa's into a reusable Markdown "recipe" file — fast, in one pass.
+
+The chore: [describe the repetitive task — e.g. filling a retailer new-item form, building a weekly sales recap, formatting UPCs. What triggers it, what you do step by step, what the finished result looks like].
+
+Do this:
+1. Ask me 2–3 quick questions only if you truly need to.
+2. Write a clean, reusable Markdown file (.md) that captures the steps so you can follow it next time I say "run this."
+3. Use clear [brackets] for the inputs that change each run.
+4. Suggest a short, obvious filename (like new-item-form.md).
+5. Tell me exactly how to run it next time.
+
+Keep the recipe plain-English and foolproof — I'm not an engineer.`;
+
 const HACKS = [
   { title:"AI Inbox", forwho:"Triage", sub:"Stop reading every email cold. Let an agent sort, summarize, and draft replies so you only touch what needs you.",
     prompt:`You are my inbox assistant. I'll paste a batch of emails.
@@ -1046,6 +1098,19 @@ function renderShare(el, list, note){
     <div class="share-note"><span class="label">✦ One thing to know</span><p>${esc(note)}</p></div>`;
 }
 
+function renderCheatsheet(el){
+  if(!el) return;
+  const lbl=(emoji,title)=>((emoji||'')+' '+title).trim();
+  const groups = [
+    { name:'Make me a thing — starters', items: C1_USECASES.map((u,i)=>({label:lbl(C1_UE[i],u.title), prompt:u.prompt})) },
+    { name:'Do this every time — starters', items: C2_USECASES.map((u,i)=>({label:lbl(C2_UE[i],u.title), prompt:u.prompt})) },
+    { name:'The big builds', items:[ {label:"🚀 Willa's website — live build", prompt: POC.basePrompt+'\n\n'+POC.closer}, {label:'⚙️ Build a Markdown recipe', prompt: RECIPE_PROMPT} ] },
+    { name:'Hacks', items: HACKS.map((h,i)=>({label:lbl(HACKS_E[i],h.title), prompt:h.prompt})) },
+    { name:'Best Practices', items: BEST_PRACTICES.map((b,i)=>({label:lbl(BP_E[i],b.title), prompt:b.prompt})) }
+  ];
+  el.innerHTML = groups.map(g=>`<div class="cheat-group"><h3 class="serif">${esc(g.name)}</h3>${g.items.map(it=>promptBlock(it.label, it.prompt)).join('')}</div>`).join('');
+}
+
 function renderPOC(el){
   el.innerHTML = `
     <div class="hm-banner"><span>✦ The hero of this build</span></div>
@@ -1113,18 +1178,7 @@ function renderMD(el){
 
       <h4 class="serif">Steal this to start</h4>
       <p class="acc-sub">Paste this into Claude to build your first recipe from a chore you already hate.</p>
-      ${promptBlock('Build my first Markdown recipe', `You are helping me turn a chore I do over and over for Willa's into a reusable Markdown "recipe" file — fast, in one pass.
-
-The chore: [describe the repetitive task — e.g. filling a retailer new-item form, building a weekly sales recap, formatting UPCs. What triggers it, what you do step by step, what the finished result looks like].
-
-Do this:
-1. Ask me 2–3 quick questions only if you truly need to.
-2. Write a clean, reusable Markdown file (.md) that captures the steps so you can follow it next time I say "run this."
-3. Use clear [brackets] for the inputs that change each run.
-4. Suggest a short, obvious filename (like new-item-form.md).
-5. Tell me exactly how to run it next time.
-
-Keep the recipe plain-English and foolproof — I'm not an engineer.`)}
+      ${promptBlock('Build my first Markdown recipe', RECIPE_PROMPT)}
     </div>`;
 }
 
@@ -1171,6 +1225,7 @@ renderGen(document.getElementById('gen-automate'),'automate');
 renderPOC(document.getElementById('poc-module'));
 renderShare(document.getElementById('share-block'), SHARE, SHARE_NOTE);
 renderShare(document.getElementById('share-block-2'), SHARE2, SHARE2_NOTE);
+renderCheatsheet(document.getElementById('cheatBody'));
 renderMD(document.getElementById('md-module'));
 renderFlow(document.getElementById('flowBeats'));
 renderTQ(document.getElementById('tqBody'));
@@ -1202,6 +1257,9 @@ document.querySelectorAll('.ch-close').forEach(b=>b.addEventListener('click',()=
 function openOverlay(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
 function closeOverlay(el){ el.classList.remove('open'); document.body.style.overflow=''; }
 document.getElementById('flowBtn').addEventListener('click',()=>openOverlay('flowOverlay'));
+document.getElementById('navCheat').addEventListener('click',()=>openOverlay('cheatOverlay'));
+const footCheat=document.getElementById('footCheat'); if(footCheat) footCheat.addEventListener('click',()=>openOverlay('cheatOverlay'));
+const cheatPrint=document.getElementById('cheatPrint'); if(cheatPrint) cheatPrint.addEventListener('click',()=>window.print());
 document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{ if(e.target===ov||e.target.closest('[data-ov-close]')) closeOverlay(ov); }));
 
 const drawer=document.getElementById('drawer');
