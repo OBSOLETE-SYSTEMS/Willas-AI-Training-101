@@ -106,26 +106,10 @@
   .nav-btn.primary .star { color: var(--green); }
   @media (max-width:620px){ .nav-brand small{ display:none; } .nav-btn .lbl-long{ display:none; } }
 
-  /* ── PROGRESS BAR (horizontal, under nav) ──────── */
-  .progress {
-    position: fixed; top: 56px; left:0; right:0; z-index:110;
-    background: rgba(255,254,247,0.92); backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--line);
-    display:flex; justify-content:center; align-items:center; gap: clamp(14px, 5vw, 54px);
-    padding: 11px 20px;
-  }
-  .progress a { display:inline-flex; align-items:center; gap:9px; text-decoration:none; white-space:nowrap;
-    font-family: var(--display); font-weight:500; font-size:12.5px; letter-spacing:0.03em; color: var(--ink-quiet); transition: color .2s; }
-  .progress a .pdot { width:10px; height:10px; border-radius:50%; border:2px solid var(--line-strong); background:transparent; transition: all .25s; flex-shrink:0; }
-  .progress a.active { color: var(--navy); }
-  .progress a.active .pdot { background: var(--green-deep); border-color: var(--green-deep); transform: scale(1.2); }
-  .progress a.done .pdot { background: var(--green); border-color: var(--green); }
-  @media (max-width: 560px){ .progress { gap:14px; padding:9px 12px; } .progress a{ font-size:11px; gap:6px; } }
-
   /* ── TICKER ────────────────────────────────────── */
   .ticker {
-    background: var(--navy); color: var(--cream); overflow:hidden; padding:14px 0; white-space:nowrap;
-    position: relative;
+    background: var(--green); color: var(--navy); overflow:hidden; padding:14px 0; white-space:nowrap;
+    position: relative; border-top:1.5px solid var(--navy); border-bottom:1.5px solid var(--navy);
   }
   .ticker-track { display:inline-flex; animation: marquee 28s linear infinite; }
   .ticker:hover .ticker-track { animation-play-state: paused; }
@@ -133,11 +117,11 @@
     font-family:'Fraunces',serif; font-weight:400; font-style:italic; font-size: clamp(17px,2.1vw,24px);
     letter-spacing:-0.01em; padding:0 30px; display:inline-flex; align-items:center; gap:30px;
   }
-  .ticker-item::after { content:"✦"; font-style:normal; font-size:13px; color: var(--green); }
+  .ticker-item::after { content:"✦"; font-style:normal; font-size:13px; color: var(--orange); }
   @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
   /* ── HERO ──────────────────────────────────────── */
-  .hero { position:relative; padding: 132px 24px 0; overflow:hidden;
+  .hero { position:relative; padding: 96px 24px 0; overflow:hidden;
     background:
       radial-gradient(900px 380px at 88% 0%, rgba(147,196,224,0.22), transparent 60%),
       radial-gradient(800px 360px at 4% 10%, rgba(117,197,150,0.18), transparent 58%);
@@ -180,7 +164,7 @@
 
   /* ── SECTION SHELL ─────────────────────────────── */
   .section { max-width: 1180px; margin:0 auto; padding: 100px 24px; position:relative; }
-  .threeq, #card1, #card2 { scroll-margin-top: 112px; }
+  .threeq, #card1, #card2 { scroll-margin-top: 80px; }
   .sec-head { margin-bottom: 50px; }
   .sec-head h2 {
     font-family:'Fraunces',serif; font-weight:300; font-size: clamp(38px,6vw,76px);
@@ -424,14 +408,11 @@
   .tabpane { display:none; } .tabpane.active { display:block; }
 
   /* ── FOOTER ────────────────────────────────────── */
-  footer { background: var(--navy); color: var(--cream); padding:100px 24px 56px; position:relative; overflow:hidden; }
+  footer { background: var(--navy); color: var(--cream); padding:64px 24px; position:relative; overflow:hidden; }
   .footer-inner { max-width:1180px; margin:0 auto; position:relative; z-index:1; }
-  .footer-big { font-family:'Fraunces',serif; font-weight:300; font-size: clamp(38px,6.5vw,86px); line-height:0.95; letter-spacing:-0.035em; max-width:15ch; }
-  .footer-big em { font-style:italic; color: var(--green); }
-  .footer-meta { display:flex; justify-content:space-between; align-items:flex-end; gap:30px; flex-wrap:wrap;
-    margin-top:60px; padding-top:28px; border-top:1px solid rgba(255,254,247,0.18); }
-  .footer-meta .fm { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color: rgba(255,254,247,0.6); line-height:1.9; }
-  .footer-meta .fm b { color: var(--green); font-weight:500; }
+  .footer-brand { display:flex; align-items:center; justify-content:center; gap:12px; font-family: var(--display); font-weight:600; font-size:19px; color: var(--cream); }
+  .footer-brand .star { color: var(--green); }
+  .footer-brand small { font-family:'DM Mono',monospace; font-weight:400; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color: rgba(255,254,247,0.6); }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
@@ -451,14 +432,6 @@
   </div>
 </nav>
 
-<!-- PROGRESS BAR -->
-<div class="progress" id="progress">
-  <a href="#top" data-spine="top"><span class="pdot"></span>Start</a>
-  <a href="#three-q" data-spine="three-q"><span class="pdot"></span>Warm-up</a>
-  <a href="#card1" data-spine="card1"><span class="pdot"></span>Make</a>
-  <a href="#card2" data-spine="card2"><span class="pdot"></span>Automate</a>
-</div>
-
 <!-- HERO -->
 <header class="hero" id="top">
   <div class="sparkles" id="heroSparkles"></div>
@@ -469,7 +442,7 @@
     <div class="flow-launch-wrap">
       <button class="flow-launch" id="flowBtn">
         <span class="play" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><path d="M4 3l9 5-9 5V3z" fill="#202a44"/></svg></span>
-        <span>Flow for Today<small>Tap for the run-of-show</small></span>
+        <span>Flow for Today</span>
       </button>
       <span class="flow-hint">Five beats. Two builds. Zero PowerPoints.</span>
     </div>
@@ -490,7 +463,6 @@
   <div class="sparkles" id="tqSparkles"></div>
   <section class="section">
     <div class="sec-head">
-      <span class="kicker">Warm-up · Ed runs this one</span>
       <h2 class="serif">First, three <em>questions.</em></h2>
     </div>
     <p class="lead">A quick read on the room. <b>Drop your answers in your chat window</b> — no wrong answers, no grades. We just want to know who we're building with.</p>
@@ -501,7 +473,6 @@
 <!-- TWO BUILDS -->
 <section class="section" id="builds">
   <div class="sec-head">
-    <span class="kicker">Pick a card · open it · build along</span>
     <h2 class="serif">Today's two <em>builds.</em></h2>
   </div>
 
@@ -576,11 +547,7 @@
 <footer>
   <div class="sparkles" id="footSparkles"></div>
   <div class="footer-inner">
-    <p class="footer-big serif">Think, don't code.<br>Prototype, don't pitch.<br><em>Make, don't wait.</em></p>
-    <div class="footer-meta">
-      <div class="fm">WILLA'S × OBSOLETE<br>AI 101 — A LIVE WORKING SESSION<br><b>NOURISH THE SPARK IN EVERYONE ✦</b></div>
-      <div class="fm" style="text-align:right;">REAL FOOD, PASSED DOWN.<br>REINVENTED FORWARD.<br>JUN 2026</div>
-    </div>
+    <div class="footer-brand"><span class="star">✦</span> Willa's × OBSOLETE <small>AI 101</small></div>
   </div>
 </footer>
 
@@ -613,11 +580,11 @@
 const TICKER = ["Think, don't code", "Prototype, don't pitch", "Make, don't wait"];
 
 const FLOW = [
-  { n:"1", title:"Three Questions", body:"A quick warm-up to read the room. You answer in your own chat — Ed walks us through it." },
+  { n:"1", title:"Three Questions", body:"A quick warm-up to read the room. You answer in your own chat." },
   { n:"2", title:"“Make me a thing”", body:"The idea-to-artifact leap. We prototype a brand-new Willa's website together, live, in under five minutes." },
   { n:"3", title:"“Do this for me, every time”", body:"The chore-to-tool leap. We turn a repeated manual task into a reusable Markdown automation you keep." },
   { n:"4", title:"Q&A + Conversation", body:"Open floor. Bring what you're stuck on, what you wish existed, what you're skeptical about." },
-  { n:"✶", title:"Commercial Breaks", under:true, tagline:"Running underneath the whole session", body:"While Claude works, we drop in Hacks & Best Practices — the little moves that make all of this faster. Always one tap away, up in the nav." }
+  { n:"✶", title:"Commercial Breaks", under:true, body:"While Claude works, we drop in Hacks & Best Practices — the little moves that make all of this faster. Always one tap away, up in the nav." }
 ];
 
 const TQ = [
@@ -1110,14 +1077,6 @@ document.getElementById('drawerClose').addEventListener('click',()=>drawer.class
 document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('active')); tab.classList.add('active'); document.getElementById('pane-'+tab.getAttribute('data-tab')).classList.add('active'); }));
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySelectorAll('.overlay.open').forEach(closeOverlay); drawer.classList.remove('open'); } });
-
-/* progress spine */
-const spineLinks=[...document.querySelectorAll('.progress a')];
-const spineTargets=spineLinks.map(a=>document.getElementById(a.getAttribute('data-spine')));
-const spineObs=new IntersectionObserver(entries=>{
-  entries.forEach(en=>{ if(en.isIntersecting){ const id=en.target.id; spineLinks.forEach(a=>{ const t=a.getAttribute('data-spine'); a.classList.toggle('active', t===id); }); } });
-},{ rootMargin:'-45% 0px -45% 0px', threshold:0 });
-spineTargets.forEach(t=>{ if(t) spineObs.observe(t); });
 
 /* LIVE STREAMING GENERATOR */
 document.addEventListener('click', async e=>{
