@@ -185,8 +185,9 @@
     position:relative; z-index:1; }
   .bc-index { font-family: var(--display); font-weight:700; font-size:78px; color: var(--navy); opacity:0.14; line-height:0.7; }
   .bc-body { padding:18px 30px 30px; margin-top:auto; position:relative; z-index:1; }
-  .bc-body h3 { font-family:'Fraunces',serif; font-weight:400; font-size: clamp(32px,4.4vw,52px);
-    line-height:0.98; letter-spacing:-0.02em; margin-bottom:14px; }
+  .bc-body h3 { font-family:'Fraunces',serif; font-weight:400; font-size: clamp(21px,2.5vw,30px);
+    line-height:1.0; letter-spacing:-0.025em; margin-bottom:14px; white-space:nowrap; }
+  @media (max-width:400px){ .bc-body h3 { white-space:normal; } }
   .bc-usecase { font-size:16px; color: var(--ink-soft); max-width: 34ch; }
   .bc-usecase b { color: var(--navy); font-weight:600; }
   .bc-cta { margin-top:24px; display:inline-flex; align-items:center; gap:10px;
@@ -348,7 +349,9 @@
 
   /* recolored share card (its own step) */
   .share-section { background: var(--sand); border-radius:20px; padding: 30px clamp(20px,3vw,34px) 34px; }
-  .share-section .block-head { margin-bottom:22px; }
+  .share-section .block-head { margin-bottom:18px; }
+  .share-intro { font-size:16px; line-height:1.55; color: var(--ink-soft); max-width:74ch; margin-bottom:6px; }
+  .share-intro b { color: var(--navy); font-weight:600; }
 
   /* collapsible build prompt */
   .poc-collapse { max-height:0; overflow:hidden; transition: max-height .45s ease; }
@@ -641,6 +644,7 @@
           <div class="gen" data-mode="make" id="gen-make"></div></div>
 
         <div class="block share-section"><div class="block-head"><span class="bspark">✦</span><h4>📤 Now share it</h4><span class="hr"></span></div>
+          <p class="share-intro">Made a sell sheet, an email, a comp — any of the things above? The leap isn't done until someone sees it. Here's how to get whatever you make in front of people.</p>
           <div id="share-block"></div></div>
 
         <div class="block block--hero"><div class="block-head"><span class="bspark">✦</span><h4>🚀 The main event — build it live</h4><span class="hr"></span></div>
