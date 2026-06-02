@@ -475,8 +475,7 @@
   .gate-card { width:100%; max-width:380px; text-align:center; }
   .gate-brand { font-family: var(--display); font-weight:600; font-size:18px; color: var(--navy); display:inline-flex; align-items:center; gap:9px; }
   .gate-brand .star { color: var(--green-deep); }
-  .gate-sub { margin-top:14px; font-family:'Fraunces',serif; font-size:23px; color: var(--navy); font-weight:300; letter-spacing:-0.015em; }
-  #gateForm { margin-top:26px; display:flex; flex-direction:column; gap:12px; }
+  #gateForm { margin-top:24px; display:flex; flex-direction:column; gap:12px; }
   #gatePw { padding:15px 16px; border-radius:12px; border:1.5px solid var(--line-strong); background:#fff; color:var(--navy); font-family:'DM Sans',sans-serif; font-size:16px; outline:none; text-align:center; transition:border-color .2s; }
   #gatePw:focus { border-color: var(--green-deep); }
   #gateForm button { padding:14px; border:none; border-radius:12px; background: var(--navy); color: var(--cream); font-family: var(--display); font-weight:600; font-size:14px; letter-spacing:0.04em; cursor:pointer; transition: background .2s; }
@@ -491,7 +490,6 @@
 <div id="gate">
   <div class="gate-card">
     <div class="gate-brand"><span class="star">✦</span> Willa's × OBSOLETE</div>
-    <p class="gate-sub">Enter the password to come in.</p>
     <form id="gateForm" autocomplete="off">
       <input id="gatePw" type="password" placeholder="Password" aria-label="Password" autofocus />
       <button type="submit">Enter ✦</button>
