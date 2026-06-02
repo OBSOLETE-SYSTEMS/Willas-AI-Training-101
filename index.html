@@ -106,25 +106,21 @@
   .nav-btn.primary .star { color: var(--green); }
   @media (max-width:620px){ .nav-brand small{ display:none; } .nav-btn .lbl-long{ display:none; } }
 
-  /* ── PROGRESS SPINE ────────────────────────────── */
-  .spine {
-    position: fixed; left: 22px; top:50%; transform: translateY(-50%); z-index:90;
-    display:flex; flex-direction:column; gap:4px;
+  /* ── PROGRESS BAR (horizontal, under nav) ──────── */
+  .progress {
+    position: fixed; top: 56px; left:0; right:0; z-index:110;
+    background: rgba(255,254,247,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    display:flex; justify-content:center; align-items:center; gap: clamp(14px, 5vw, 54px);
+    padding: 11px 20px;
   }
-  .spine a { display:flex; align-items:center; gap:11px; text-decoration:none; padding:5px 0; }
-  .spine .dot {
-    width:11px; height:11px; border-radius:50%; border:2px solid var(--line-strong);
-    background:transparent; transition: all .25s; flex-shrink:0;
-  }
-  .spine a.active .dot { background: var(--green-deep); border-color: var(--green-deep); transform: scale(1.25); }
-  .spine a.done .dot { background: var(--line-strong); border-color: var(--line-strong); }
-  .spine .slabel {
-    font-family: var(--display); font-weight:500; font-size:12px; color: var(--ink-quiet);
-    opacity:0; transform: translateX(-6px); transition: all .25s; white-space:nowrap; letter-spacing:0.02em;
-  }
-  .spine a:hover .slabel, .spine a.active .slabel { opacity:1; transform: translateX(0); }
-  .spine a.active .slabel { color: var(--navy); }
-  @media (max-width: 1180px){ .spine { display:none; } }
+  .progress a { display:inline-flex; align-items:center; gap:9px; text-decoration:none; white-space:nowrap;
+    font-family: var(--display); font-weight:500; font-size:12.5px; letter-spacing:0.03em; color: var(--ink-quiet); transition: color .2s; }
+  .progress a .pdot { width:10px; height:10px; border-radius:50%; border:2px solid var(--line-strong); background:transparent; transition: all .25s; flex-shrink:0; }
+  .progress a.active { color: var(--navy); }
+  .progress a.active .pdot { background: var(--green-deep); border-color: var(--green-deep); transform: scale(1.2); }
+  .progress a.done .pdot { background: var(--green); border-color: var(--green); }
+  @media (max-width: 560px){ .progress { gap:14px; padding:9px 12px; } .progress a{ font-size:11px; gap:6px; } }
 
   /* ── TICKER ────────────────────────────────────── */
   .ticker {
@@ -141,13 +137,12 @@
   @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
   /* ── HERO ──────────────────────────────────────── */
-  .hero { position:relative; padding: 92px 24px 0; overflow:hidden;
+  .hero { position:relative; padding: 132px 24px 0; overflow:hidden;
     background:
       radial-gradient(900px 380px at 88% 0%, rgba(147,196,224,0.22), transparent 60%),
       radial-gradient(800px 360px at 4% 10%, rgba(117,197,150,0.18), transparent 58%);
   }
   .hero-inner { max-width: 1180px; margin:0 auto; padding: 44px 0 60px; position:relative; z-index:1; }
-  .hero-chips { display:flex; flex-wrap:wrap; gap:9px; margin-bottom:34px; }
   .hero-title {
     font-family:'Fraunces',serif; font-weight:300; font-size: clamp(64px, 13vw, 168px);
     line-height:0.9; letter-spacing:-0.04em; color: var(--navy);
@@ -185,6 +180,7 @@
 
   /* ── SECTION SHELL ─────────────────────────────── */
   .section { max-width: 1180px; margin:0 auto; padding: 100px 24px; position:relative; }
+  .threeq, #card1, #card2 { scroll-margin-top: 112px; }
   .sec-head { margin-bottom: 50px; }
   .sec-head h2 {
     font-family:'Fraunces',serif; font-weight:300; font-size: clamp(38px,6vw,76px);
@@ -451,30 +447,24 @@
 <nav class="nav">
   <div class="nav-brand"><span class="star">✦</span> Willa's × OBSOLETE <small>AI 101</small></div>
   <div class="nav-actions">
-    <button class="nav-btn" id="navFlow"><span class="star">✦</span> <span class="lbl-long">Flow for</span> Today</button>
     <button class="nav-btn primary" id="navHacks"><span class="star">✦</span> Hacks <span class="lbl-long">&amp; Best Practices</span></button>
   </div>
 </nav>
 
-<!-- PROGRESS SPINE -->
-<nav class="spine" id="spine">
-  <a href="#top" data-spine="top"><span class="dot"></span><span class="slabel">Start</span></a>
-  <a href="#three-q" data-spine="three-q"><span class="dot"></span><span class="slabel">Warm-up</span></a>
-  <a href="#card1" data-spine="card1"><span class="dot"></span><span class="slabel">Build · Make</span></a>
-  <a href="#card2" data-spine="card2"><span class="dot"></span><span class="slabel">Build · Automate</span></a>
-</nav>
+<!-- PROGRESS BAR -->
+<div class="progress" id="progress">
+  <a href="#top" data-spine="top"><span class="pdot"></span>Start</a>
+  <a href="#three-q" data-spine="three-q"><span class="pdot"></span>Warm-up</a>
+  <a href="#card1" data-spine="card1"><span class="pdot"></span>Make</a>
+  <a href="#card2" data-spine="card2"><span class="pdot"></span>Automate</a>
+</div>
 
 <!-- HERO -->
 <header class="hero" id="top">
   <div class="sparkles" id="heroSparkles"></div>
   <div class="hero-inner">
-    <div class="hero-chips">
-      <span class="chip solid-green">✦ A Live Working Session</span>
-      <span class="chip">Hosted by Alex + Ed</span>
-      <span class="chip solid-sky">💻 Bring your laptop</span>
-    </div>
     <h1 class="hero-title serif">Let's <span class="squiggle">build.</span></h1>
-    <p class="hero-sub">Today we stop <i>talking</i> about AI and start <b>making things with it</b> — together, out loud, in real time. No slides about the future. Just you, a chat window, and the leap from idea to done.</p>
+    <p class="hero-sub">Today we stop <i>talking</i> about AI and start <b>making things with it</b> — together, out loud, in real time.</p>
 
     <div class="flow-launch-wrap">
       <button class="flow-launch" id="flowBtn">
@@ -1112,7 +1102,6 @@ document.querySelectorAll('.ch-close').forEach(b=>b.addEventListener('click',()=
 function openOverlay(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
 function closeOverlay(el){ el.classList.remove('open'); document.body.style.overflow=''; }
 document.getElementById('flowBtn').addEventListener('click',()=>openOverlay('flowOverlay'));
-document.getElementById('navFlow').addEventListener('click',()=>openOverlay('flowOverlay'));
 document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{ if(e.target===ov||e.target.closest('[data-ov-close]')) closeOverlay(ov); }));
 
 const drawer=document.getElementById('drawer');
@@ -1123,7 +1112,7 @@ document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySelectorAll('.overlay.open').forEach(closeOverlay); drawer.classList.remove('open'); } });
 
 /* progress spine */
-const spineLinks=[...document.querySelectorAll('.spine a')];
+const spineLinks=[...document.querySelectorAll('.progress a')];
 const spineTargets=spineLinks.map(a=>document.getElementById(a.getAttribute('data-spine')));
 const spineObs=new IntersectionObserver(entries=>{
   entries.forEach(en=>{ if(en.isIntersecting){ const id=en.target.id; spineLinks.forEach(a=>{ const t=a.getAttribute('data-spine'); a.classList.toggle('active', t===id); }); } });
