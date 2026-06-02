@@ -471,7 +471,7 @@
     <div class="hero-chips">
       <span class="chip solid-green">✦ A Live Working Session</span>
       <span class="chip">Hosted by Alex + Ed</span>
-      <span class="chip solid-sky">Bring your laptop</span>
+      <span class="chip solid-sky">💻 Bring your laptop</span>
     </div>
     <h1 class="hero-title serif">Let's <span class="squiggle">build.</span></h1>
     <p class="hero-sub">Today we stop <i>talking</i> about AI and start <b>making things with it</b> — together, out loud, in real time. No slides about the future. Just you, a chat window, and the leap from idea to done.</p>
@@ -542,16 +542,16 @@
         <span class="kicker">Build One · Make me a thing</span>
         <h3 class="ch-headline serif">The leap from <em>talking</em> about an idea to <em>seeing</em> and <em>sending</em> it.</h3>
 
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>The mindset</h4><span class="hr"></span></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>🧠 The mindset</h4><span class="hr"></span></div>
           <div class="principles" id="c1-principles"></div></div>
 
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>Steal a starter prompt</h4><span class="hr"></span></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>📋 Steal a starter prompt</h4><span class="hr"></span></div>
           <div class="acc" id="c1-usecases"></div></div>
 
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>…or bring your own</h4><span class="hr"></span></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>✍️ …or bring your own</h4><span class="hr"></span></div>
           <div class="gen" data-mode="make" id="gen-make"></div></div>
 
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>The main event — build it live</h4><span class="hr"></span></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>🚀 The main event — build it live</h4><span class="hr"></span></div>
           <div class="hero-module" id="poc-module"></div></div>
 
         <button class="ch-close" data-close="1">✕ Close this build</button>
@@ -564,16 +564,16 @@
         <span class="kicker">Build Two · Do this for me, every time</span>
         <h3 class="ch-headline serif">Turning a repeated manual <em>chore</em> into a reusable <em>tool.</em></h3>
 
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>The mindset</h4><span class="hr"></span></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>🧠 The mindset</h4><span class="hr"></span></div>
           <div class="principles" id="c2-principles"></div></div>
 
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>Steal a starter prompt</h4><span class="hr"></span></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>📋 Steal a starter prompt</h4><span class="hr"></span></div>
           <div class="acc" id="c2-usecases"></div></div>
 
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>…or bring your own</h4><span class="hr"></span></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>✍️ …or bring your own</h4><span class="hr"></span></div>
           <div class="gen" data-mode="automate" id="gen-automate"></div></div>
 
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>The main event — Markdown automation</h4><span class="hr"></span></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>⚙️ The main event — Markdown automation</h4><span class="hr"></span></div>
           <div class="hero-module" id="md-module"></div></div>
 
         <button class="ch-close" data-close="2">✕ Close this build</button>
@@ -613,7 +613,7 @@
 <div class="overlay" id="flowOverlay">
   <div class="overlay-card">
     <div class="sparkles" id="flowSparkles"></div>
-    <div class="ov-head"><div><h2 class="serif">The <em>flow</em> for today</h2><p>Five beats. We move together — Ed and Alex drive, you build along.</p></div><button class="ov-close" data-ov-close>✕</button></div>
+    <div class="ov-head"><div><h2 class="serif">The <em>flow</em> for today</h2></div><button class="ov-close" data-ov-close>✕</button></div>
     <div class="ov-body" id="flowBeats"></div>
   </div>
 </div>
@@ -907,6 +907,17 @@ Give me a tight "handoff" I can paste into a new conversation:
 Keep it short — just enough to pick up cleanly without dragging the confusion along.` }
 ];
 
+/* ───────── EMOJI SETS (semantic, one per item) ───────── */
+const FLOW_E = ['🙋','🪄','♻️','💬','🍿'];
+const TQ_E   = ['📊','⏰','💡'];
+const C1_PE  = ['🎯','🖼️','🐣','💬','🚀'];   // describe / show / start ugly / talk back / ship
+const C2_PE  = ['😤','✏️','🍽️','♻️','🏷️'];   // resent / sketch / feed / reuse / name+store
+const C1_UE  = ['📄','✉️','🎬','📋','🍴'];   // sell sheet / email / reel / leave-behind / recipe
+const C2_UE  = ['📝','🔢','📦','🤝','✅'];   // form / UPC / pallet / vendor / certs
+const HACKS_E= ['📥','📅','🎙️','🪝','⏰'];   // inbox / scheduling / multimodal / hooks / cron
+const BP_E   = ['🎯','🩺','🏋️','🎓','🔄'];   // precise / symptoms / burden / teach / reset
+const FILES_E= ['📄','✨','🚀'];
+
 /* ───────── HELPERS ───────── */
 function esc(s){ return String(s).replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
 function fmtPrompt(t){ return esc(t).replace(/\[([^\]]+)\]/g, '<span class="ph">[$1]</span>'); }
@@ -919,13 +930,13 @@ function promptBlock(label, text){
     <pre class="prompt-text">${fmtPrompt(text)}</pre>
   </div>`;
 }
-function renderPrinciples(el, list){
-  el.innerHTML = list.map((p,i)=>`<div class="principle"><span class="pn">${i+1}</span><h5 class="serif">${esc(p.h)}</h5><p>${esc(p.p)}</p></div>`).join('');
+function renderPrinciples(el, list, em){
+  el.innerHTML = list.map((p,i)=>`<div class="principle"><span class="pn">${i+1}</span><h5 class="serif">${em&&em[i]?em[i]+' ':''}${esc(p.h)}</h5><p>${esc(p.p)}</p></div>`).join('');
 }
-function renderAccordion(el, list, label){
-  el.innerHTML = list.map(u=>`
+function renderAccordion(el, list, label, em){
+  el.innerHTML = list.map((u,i)=>`
     <div class="acc-item">
-      <button class="acc-head" aria-expanded="false"><span class="ac-spark">✦</span><span class="acc-title serif">${esc(u.title)}</span><span class="acc-for">${esc(u.forwho||'')}</span></button>
+      <button class="acc-head" aria-expanded="false"><span class="ac-spark">✦</span><span class="acc-title serif">${em&&em[i]?em[i]+' ':''}${esc(u.title)}</span><span class="acc-for">${esc(u.forwho||'')}</span></button>
       <div class="acc-body"><div class="acc-body-inner"><p class="acc-sub">${esc(u.sub)}</p>${promptBlock(label, u.prompt)}</div></div>
     </div>`).join('');
 }
@@ -980,7 +991,7 @@ function renderPOC(el){
       </div>
 
       <h4 class="serif">The files it'll make</h4>
-      <div class="files">${POC.files.map(f=>`<div class="file-row"><span class="fdot"></span><span class="fi">${esc(f.f)}</span><span class="fd">${esc(f.d)}</span></div>`).join('')}</div>
+      <div class="files">${POC.files.map((f,i)=>`<div class="file-row"><span style="font-size:16px;line-height:1">${FILES_E[i]||'📄'}</span><span class="fi">${esc(f.f)}</span><span class="fd">${esc(f.d)}</span></div>`).join('')}</div>
     </div>`;
   mountPOCPrompt();
   const tagsEl=el.querySelector('#crowdTags'), input=el.querySelector('#crowdInput'), addBtn=el.querySelector('#crowdAdd');
@@ -1035,10 +1046,10 @@ Keep the recipe plain-English and foolproof — I'm not an engineer.`)}
 }
 
 function renderFlow(el){
-  el.innerHTML = FLOW.map(b=>`<div class="beat ${b.under?'under':''}"><span class="bn">${b.n}</span><div><h3 class="serif">${b.title}</h3><p>${esc(b.body)}</p>${b.tagline?`<span class="tagline">${esc(b.tagline)}</span>`:''}</div></div>`).join('');
+  el.innerHTML = FLOW.map((b,i)=>`<div class="beat ${b.under?'under':''}"><span class="bn">${b.n}</span><div><h3 class="serif">${FLOW_E[i]?FLOW_E[i]+' ':''}${b.title}</h3><p>${esc(b.body)}</p>${b.tagline?`<span class="tagline">${esc(b.tagline)}</span>`:''}</div></div>`).join('');
 }
 function renderTQ(el){
-  el.innerHTML = TQ.map(q=>`<div class="tq"><span class="qn">${q.n}</span><div style="flex:1"><h3 class="serif">${esc(q.q)}</h3><p>${esc(q.note)}</p>${q.slider?`<div class="slider-demo"><input type="range" min="1" max="100" value="42" id="fluencySlider" aria-label="Rate your AI fluency from 1 to 100"><div class="slider-val" id="fluencyVal">42</div></div>`:''}<span class="answer-chip">✦ Drop your answer in the chat</span></div></div>`).join('');
+  el.innerHTML = TQ.map((q,i)=>`<div class="tq"><span class="qn">${q.n}</span><div style="flex:1"><h3 class="serif">${TQ_E[i]?TQ_E[i]+' ':''}${esc(q.q)}</h3><p>${esc(q.note)}</p>${q.slider?`<div class="slider-demo"><input type="range" min="1" max="100" value="42" id="fluencySlider" aria-label="Rate your AI fluency from 1 to 100"><div class="slider-val" id="fluencyVal">42</div></div>`:''}<span class="answer-chip">✦ Drop your answer in the chat</span></div></div>`).join('');
   const s=el.querySelector('#fluencySlider'); if(s){ const v=el.querySelector('#fluencyVal'); s.addEventListener('input',()=>v.textContent=s.value); }
 }
 
@@ -1069,18 +1080,18 @@ document.querySelectorAll('[data-card-spk]').forEach((el,i)=>{
 
 /* ───────── MOUNT ───────── */
 renderTicker(document.getElementById('ticker1'));
-renderPrinciples(document.getElementById('c1-principles'), C1_PRINCIPLES);
-renderPrinciples(document.getElementById('c2-principles'), C2_PRINCIPLES);
-renderAccordion(document.getElementById('c1-usecases'), C1_USECASES, 'Copy · paste · customize');
-renderAccordion(document.getElementById('c2-usecases'), C2_USECASES, 'Copy · paste · customize');
+renderPrinciples(document.getElementById('c1-principles'), C1_PRINCIPLES, C1_PE);
+renderPrinciples(document.getElementById('c2-principles'), C2_PRINCIPLES, C2_PE);
+renderAccordion(document.getElementById('c1-usecases'), C1_USECASES, 'Copy · paste · customize', C1_UE);
+renderAccordion(document.getElementById('c2-usecases'), C2_USECASES, 'Copy · paste · customize', C2_UE);
 renderGen(document.getElementById('gen-make'),'make');
 renderGen(document.getElementById('gen-automate'),'automate');
 renderPOC(document.getElementById('poc-module'));
 renderMD(document.getElementById('md-module'));
 renderFlow(document.getElementById('flowBeats'));
 renderTQ(document.getElementById('tqBody'));
-renderAccordion(document.getElementById('pane-hacks'), HACKS, 'Copy · paste · fill the blanks');
-renderAccordion(document.getElementById('pane-bp'), BEST_PRACTICES, 'Copy · paste · fill the blanks');
+renderAccordion(document.getElementById('pane-hacks'), HACKS, 'Copy · paste · fill the blanks', HACKS_E);
+renderAccordion(document.getElementById('pane-bp'), BEST_PRACTICES, 'Copy · paste · fill the blanks', BP_E);
 
 /* ───────── INTERACTIONS ───────── */
 document.addEventListener('click', e=>{ const h=e.target.closest('.acc-head'); if(h){ const it=h.parentElement; const o=it.classList.toggle('open'); h.setAttribute('aria-expanded',o); } });
