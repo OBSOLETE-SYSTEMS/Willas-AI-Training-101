@@ -590,7 +590,7 @@ const FLOW = [
 const TQ = [
   { n:"1", q:"On a scale of 1–100, how would you rate your AI fluency?", note:"Be honest — “I’ve typed into a chatbot twice” is a totally valid 12.", slider:true },
   { n:"2", q:"Do you know what a Cron is?", note:"Yes / no / “isn’t that a Lord of the Rings thing?” all accepted. We’ll demystify it." },
-  { n:"3", q:"What’s something you do every day or week that your gut says needs AI?", note:"This is the good one. Whatever you just thought of — that’s your homework for Build Two." }
+  { n:"3", q:"What’s something you do every day or week that your gut says needs AI?", note:"Whatever you just thought of — that’s your homework for Build Two." }
 ];
 
 const C1_PRINCIPLES = [
@@ -1006,7 +1006,7 @@ function renderFlow(el){
   el.innerHTML = FLOW.map((b,i)=>`<div class="beat ${b.under?'under':''}"><span class="bn">${b.n}</span><div><h3 class="serif">${FLOW_E[i]?FLOW_E[i]+' ':''}${b.title}</h3><p>${esc(b.body)}</p>${b.tagline?`<span class="tagline">${esc(b.tagline)}</span>`:''}</div></div>`).join('');
 }
 function renderTQ(el){
-  el.innerHTML = TQ.map((q,i)=>`<div class="tq"><span class="qn">${q.n}</span><div style="flex:1"><h3 class="serif">${TQ_E[i]?TQ_E[i]+' ':''}${esc(q.q)}</h3><p>${esc(q.note)}</p>${q.slider?`<div class="slider-demo"><input type="range" min="1" max="100" value="42" id="fluencySlider" aria-label="Rate your AI fluency from 1 to 100"><div class="slider-val" id="fluencyVal">42</div></div>`:''}<span class="answer-chip">✦ Drop your answer in the chat</span></div></div>`).join('');
+  el.innerHTML = TQ.map((q,i)=>`<div class="tq"><span class="qn">${q.n}</span><div style="flex:1"><h3 class="serif">${TQ_E[i]?TQ_E[i]+' ':''}${esc(q.q)}</h3><p>${esc(q.note)}</p>${q.slider?`<div class="slider-demo"><input type="range" min="1" max="100" value="42" id="fluencySlider" aria-label="Rate your AI fluency from 1 to 100"><div class="slider-val" id="fluencyVal">42</div></div>`:''}</div></div>`).join('');
   const s=el.querySelector('#fluencySlider'); if(s){ const v=el.querySelector('#fluencyVal'); s.addEventListener('input',()=>v.textContent=s.value); }
 }
 
@@ -1020,8 +1020,8 @@ sparkle(document.getElementById('heroSparkles'), [
   {x:73,y:30,s:11,c:C.sky},{x:88,y:88,s:16,c:C.lav,r:20},{x:97,y:40,s:10,c:C.orange}
 ]);
 sparkle(document.getElementById('tqSparkles'), [
-  {x:6,y:14,s:22,c:C.green,r:-8},{x:92,y:22,s:18,c:C.sky},{x:88,y:70,s:26,c:C.orange,r:14},
-  {x:12,y:80,s:14,c:C.yellow},{x:78,y:88,s:12,c:C.cream},{x:30,y:10,s:10,c:C.sky},{x:96,y:50,s:14,c:C.lav,r:18}
+  {x:95,y:12,s:22,c:C.green,r:-8},{x:88,y:30,s:12,c:C.sky},{x:96,y:54,s:24,c:C.orange,r:14},
+  {x:92,y:76,s:14,c:C.yellow},{x:97,y:90,s:11,c:C.lav,r:18},{x:90,y:44,s:10,c:C.cream}
 ]);
 sparkle(document.getElementById('footSparkles'), [
   {x:84,y:20,s:24,c:C.green,r:10},{x:92,y:60,s:16,c:C.orange},{x:74,y:80,s:12,c:C.yellow},{x:96,y:38,s:14,c:C.sky,r:-12}
