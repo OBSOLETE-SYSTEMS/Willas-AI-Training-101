@@ -1,5 +1,6 @@
-// Vercel serverless function — generates copy-paste-ready "starter prompts" for the Willa's team,
+// Vercel serverless function — STREAMS copy-paste-ready "starter prompts" for the Willa's team,
 // powered by Claude. Requires ANTHROPIC_API_KEY env var set in Vercel project settings.
+// Streams plain-text token deltas so the front-end can render the prompt as it's written.
 
 const MODEL = 'claude-sonnet-4-6';
 const TODAY = 'June 2026';
@@ -9,8 +10,8 @@ Willa's is the first & only WHOLE plant milk — made from the entire oat groat 
 not processed oat syrup. Most oat milks filter out the protein + fiber; Willa's keeps them.
 Core facts (Original): 1g sugar (from oats, nothing added), 4g+ protein, 2g+ prebiotic fiber, 4 ingredients.
 Heritage: named for the founder's grandmother Willa — "real food, passed down, reinvented forward."
-Brand north star: "Nourish the spark in everyone." Voice: warm, clean, witty, confident — never clinical or preachy.
-Products include Original, Barista, and a Kids line (co-created with parents).
+Brand north star: "Nourish the spark in everyone." Voice: warm, clean, witty, confident — never clinical.
+Products: Original, Barista, Chocolate, and a Kids line (co-created with parents).
 `.trim();
 
 function buildMessages(mode, task) {
@@ -32,7 +33,7 @@ RULES FOR THE PROMPT YOU WRITE:
 ${mode === 'automate'
     ? '- Since this is an automation, design it to be REUSABLE: tell the agent to produce a tool/template that can be run again next time, and note what context to feed it each run.'
     : '- Encourage a fast, rough first version that can be reacted to and shipped, not a perfect one.'}
-- Keep it tight: 120–220 words. Warm, plain language. No preamble, no markdown headers.
+- Keep it tight: 120–200 words. Warm, plain language. No preamble, no markdown headers.
 
 OUTPUT: Return ONLY the starter prompt text itself — nothing before or after it, no quotes, no explanation.`;
 
@@ -48,7 +49,6 @@ export default async function handler(req, res) {
 
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) {
-    // Graceful: the front-end shows a friendly fallback when this fires.
     return res.status(503).json({ error: 'ANTHROPIC_API_KEY not configured yet' });
   }
 
@@ -59,8 +59,9 @@ export default async function handler(req, res) {
 
   const { system, user } = buildMessages(mode, task);
 
+  let upstream;
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
+    upstream = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'x-api-key': key,
@@ -71,24 +72,53 @@ export default async function handler(req, res) {
         model: MODEL,
         max_tokens: 1024,
         temperature: 0.7,
+        stream: true,
         system,
         messages: [{ role: 'user', content: user }]
       })
     });
-
-    if (!r.ok) {
-      const errText = await r.text();
-      return res.status(502).json({ error: 'Claude call failed', detail: errText.slice(0, 400) });
-    }
-
-    const data = await r.json();
-    const text = data?.content?.[0]?.text;
-    if (!text) {
-      return res.status(502).json({ error: 'Claude returned an empty response' });
-    }
-
-    return res.status(200).json({ prompt: text.trim() });
   } catch (e) {
-    return res.status(500).json({ error: 'Server error', detail: String(e).slice(0, 400) });
+    return res.status(500).json({ error: 'Server error', detail: String(e).slice(0, 300) });
   }
+
+  if (!upstream.ok || !upstream.body) {
+    const errText = await upstream.text().catch(() => '');
+    return res.status(502).json({ error: 'Claude call failed', detail: errText.slice(0, 300) });
+  }
+
+  // stream plain-text deltas to the client
+  res.writeHead(200, {
+    'Content-Type': 'text/plain; charset=utf-8',
+    'Cache-Control': 'no-cache, no-transform',
+    'X-Accel-Buffering': 'no'
+  });
+
+  const reader = upstream.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      let nl;
+      while ((nl = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, nl).trim();
+        buf = buf.slice(nl + 1);
+        if (!line.startsWith('data:')) continue;
+        const payload = line.slice(5).trim();
+        if (!payload || payload === '[DONE]') continue;
+        try {
+          const evt = JSON.parse(payload);
+          if (evt.type === 'content_block_delta' && evt.delta && evt.delta.type === 'text_delta') {
+            res.write(evt.delta.text);
+          }
+        } catch (_) { /* ignore keep-alive / partial */ }
+      }
+    }
+  } catch (e) {
+    // stream already started; just end it
+  }
+  res.end();
 }

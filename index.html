@@ -6,28 +6,34 @@
 <title>Willa's × AI 101 — A Live Working Session</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&amp;family=DM+Sans:wght@400;500;600&amp;family=DM+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&amp;family=DM+Sans:wght@400;500;600&amp;family=DM+Mono:wght@400;500&amp;family=Fredoka:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Willa's palette — pulled from the live engine */
+    /* Willa's brand — pulled from packaging */
     --cream:    #fffef7;
-    --cream-2:  #fafaf7;
-    --cream-3:  #f6f6f0;
+    --cream-2:  #f7f4ea;
+    --cream-3:  #f1ece0;
     --sand:     #e8e1c2;
     --navy:     #202a44;
+    --navy-2:   #2a3656;
     --ink-soft: #475569;
-    --ink-quiet:#64748b;
+    --ink-quiet:#6b7280;
 
     --green:      #75c596;
     --green-deep: #4e8c63;
+    --sky:        #93c4e0;   /* Kids blue */
+    --sky-deep:   #4e87b3;
+    --lav:        #b6a6d6;   /* Barista */
+    --orange:     #e07a45;   /* Tiger */
+    --yellow:     #f4c842;
     --caramel:    #9e652e;
     --clay:       #c2674a;
-    --blue:       #73b2c9;
-    --yellow:     #facc15;
 
     --line: rgba(32,42,68,0.12);
     --line-strong: rgba(32,42,68,0.22);
+    --display: 'Fredoka', system-ui, sans-serif;
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
@@ -38,592 +44,494 @@
     overflow-x: hidden;
     line-height: 1.5;
   }
-  .serif { font-family: 'Fraunces', Georgia, serif; font-optical-sizing: auto; }
-  .mono  { font-family: 'DM Mono', ui-monospace, monospace; }
+  .serif   { font-family: 'Fraunces', Georgia, serif; font-optical-sizing: auto; }
+  .mono    { font-family: 'DM Mono', ui-monospace, monospace; }
+  .display { font-family: var(--display); }
 
-  /* warm paper grain */
   .grain {
-    position: fixed; inset: 0; pointer-events: none; z-index: 100;
-    opacity: 0.035; mix-blend-mode: multiply;
+    position: fixed; inset: 0; pointer-events: none; z-index: 200;
+    opacity: 0.03; mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-
   ::selection { background: var(--green); color: var(--navy); }
-
-  /* keyboard focus ring — visible for tab users, invisible for mouse */
   :focus-visible { outline: 2px solid var(--green-deep); outline-offset: 3px; }
 
-  /* respect reduced-motion: kills marquee/spin/pulse, saves battery + stops jank on projectors */
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: .001ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: .01ms !important;
-    }
-    .ticker-track { animation: none !important; }
-    .flow-launch::before { animation: none !important; }
-  }
+  /* sparkle confetti — Willa's signature flourish */
+  .sparkles { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+  .spk { position:absolute; line-height:1; }
 
+  .kicker {
+    font-family: var(--display); font-weight:600; font-size:13px;
+    letter-spacing:0.18em; text-transform:uppercase; color: var(--green-deep);
+  }
   .label {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--ink-quiet);
+    font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.16em;
+    text-transform:uppercase; color: var(--ink-quiet);
   }
-
-  /* spark motif */
-  .spark { display:inline-block; color: var(--green-deep); }
-  .squiggle {
-    position: relative; white-space: nowrap;
-  }
-  .squiggle::after {
-    content:""; position:absolute; left:0; right:0; bottom:-6px; height:7px;
-    background: no-repeat center/100% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8'%3E%3Cpath d='M2 5 Q 17 1 30 5 T 60 5 T 90 5 T 118 5' fill='none' stroke='%2375c596' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
-  }
-  .hl {
-    background: linear-gradient(180deg, transparent 58%, var(--green) 58%, var(--green) 92%, transparent 92%);
-    padding: 0 3px;
-  }
-  .hl-caramel { background: linear-gradient(180deg, transparent 58%, #f0d9b8 58%, #f0d9b8 92%, transparent 92%); padding: 0 3px; }
 
   /* ── CHIPS ─────────────────────────────────────── */
   .chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-family: 'DM Mono', monospace; font-size: 10px;
-    letter-spacing: 0.14em; text-transform: uppercase;
-    padding: 5px 12px; border-radius: 999px;
-    border: 1px solid var(--navy); background: transparent; color: var(--navy);
-    white-space: nowrap; font-weight: 500;
+    display:inline-flex; align-items:center; gap:6px;
+    font-family: var(--display); font-weight:500; font-size:12px;
+    letter-spacing:0.04em; padding:6px 13px; border-radius:999px;
+    border:1.5px solid var(--navy); background:transparent; color:var(--navy); white-space:nowrap;
   }
-  .chip.solid-green  { background: var(--green); border-color: var(--navy); }
-  .chip.solid-navy   { background: var(--navy); border-color: var(--navy); color: var(--cream); }
-  .chip.solid-sand   { background: var(--sand); border-color: var(--navy); }
+  .chip.solid-green { background: var(--green); border-color: var(--navy); }
+  .chip.solid-sky   { background: var(--sky); border-color: var(--navy); }
+  .chip.solid-navy  { background: var(--navy); border-color: var(--navy); color: var(--cream); }
 
-  /* ── META BAR ──────────────────────────────────── */
-  .meta-bar {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 60;
-    background: rgba(255,254,247,0.86); backdrop-filter: blur(12px);
+  /* ── TOP NAV ───────────────────────────────────── */
+  .nav {
+    position: fixed; top:0; left:0; right:0; z-index:120;
+    background: rgba(255,254,247,0.9); backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--line);
-    padding: 13px 28px; display: flex; justify-content: space-between; align-items: center;
-    font-family: 'DM Mono', monospace; font-size: 10px;
-    letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-soft);
+    padding: 12px 24px; display:flex; justify-content:space-between; align-items:center; gap:16px;
   }
-  .meta-bar b { color: var(--navy); font-weight: 500; }
-  .pulse { display:inline-block; width:6px; height:6px; background: var(--green-deep);
-    border-radius:50%; margin-right:7px; animation: pulse 2s infinite; }
-  @keyframes pulse {
-    0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(78,140,99,0.5); }
-    50% { opacity:.5; box-shadow:0 0 0 6px rgba(78,140,99,0); }
+  .nav-brand { display:flex; align-items:center; gap:9px; font-family: var(--display); font-weight:600;
+    font-size:14px; letter-spacing:0.01em; color: var(--navy); }
+  .nav-brand .star { color: var(--green-deep); }
+  .nav-brand small { font-family:'DM Mono',monospace; font-weight:400; font-size:10px; letter-spacing:0.14em;
+    text-transform:uppercase; color: var(--ink-quiet); }
+  .nav-actions { display:flex; gap:9px; align-items:center; }
+  .nav-btn {
+    display:inline-flex; align-items:center; gap:8px; padding:9px 15px; cursor:pointer;
+    border-radius:999px; border:1.5px solid var(--navy); background:transparent; color:var(--navy);
+    font-family: var(--display); font-weight:500; font-size:12.5px; letter-spacing:0.02em;
+    transition: background .2s, color .2s, transform .15s;
   }
-  .meta-right { display:flex; gap:18px; align-items:center; }
-  @media (max-width:640px){ .meta-right .hide-sm { display:none; } }
+  .nav-btn:hover { transform: translateY(-1px); }
+  .nav-btn.primary { background: var(--navy); color: var(--cream); }
+  .nav-btn.primary:hover { background: var(--green-deep); }
+  .nav-btn .star { color: var(--green-deep); }
+  .nav-btn.primary .star { color: var(--green); }
+  @media (max-width:620px){ .nav-brand small{ display:none; } .nav-btn .lbl-long{ display:none; } }
+
+  /* ── PROGRESS SPINE ────────────────────────────── */
+  .spine {
+    position: fixed; left: 22px; top:50%; transform: translateY(-50%); z-index:90;
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .spine a { display:flex; align-items:center; gap:11px; text-decoration:none; padding:5px 0; }
+  .spine .dot {
+    width:11px; height:11px; border-radius:50%; border:2px solid var(--line-strong);
+    background:transparent; transition: all .25s; flex-shrink:0;
+  }
+  .spine a.active .dot { background: var(--green-deep); border-color: var(--green-deep); transform: scale(1.25); }
+  .spine a.done .dot { background: var(--line-strong); border-color: var(--line-strong); }
+  .spine .slabel {
+    font-family: var(--display); font-weight:500; font-size:12px; color: var(--ink-quiet);
+    opacity:0; transform: translateX(-6px); transition: all .25s; white-space:nowrap; letter-spacing:0.02em;
+  }
+  .spine a:hover .slabel, .spine a.active .slabel { opacity:1; transform: translateX(0); }
+  .spine a.active .slabel { color: var(--navy); }
+  @media (max-width: 1180px){ .spine { display:none; } }
 
   /* ── TICKER ────────────────────────────────────── */
   .ticker {
-    background: var(--navy); color: var(--cream); overflow: hidden;
-    border-top: 1px solid var(--navy); border-bottom: 1px solid var(--navy);
-    padding: 13px 0; white-space: nowrap;
+    background: var(--navy); color: var(--cream); overflow:hidden; padding:14px 0; white-space:nowrap;
+    position: relative;
   }
-  .ticker.sand { background: var(--sand); color: var(--navy); border-color: var(--navy); }
-  .ticker.green { background: var(--green); color: var(--navy); border-color: var(--navy); }
-  .ticker-track { display:inline-flex; gap: 0; animation: marquee 26s linear infinite; }
+  .ticker-track { display:inline-flex; animation: marquee 28s linear infinite; }
   .ticker:hover .ticker-track { animation-play-state: paused; }
   .ticker-item {
-    font-family:'Fraunces',serif; font-weight:500; font-style:italic;
-    font-size: clamp(16px, 2vw, 22px); letter-spacing:-0.01em;
-    padding: 0 26px; display:inline-flex; align-items:center; gap:26px;
+    font-family:'Fraunces',serif; font-weight:400; font-style:italic; font-size: clamp(17px,2.1vw,24px);
+    letter-spacing:-0.01em; padding:0 30px; display:inline-flex; align-items:center; gap:30px;
   }
-  .ticker-item::after { content:"✦"; font-style: normal; font-size:13px; opacity:0.6; }
-  @keyframes marquee { from { transform: translateX(0);} to { transform: translateX(-50%);} }
+  .ticker-item::after { content:"✦"; font-style:normal; font-size:13px; color: var(--green); }
+  @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
   /* ── HERO ──────────────────────────────────────── */
-  .hero {
-    padding: 78px 28px 0; position: relative;
+  .hero { position:relative; padding: 92px 24px 0; overflow:hidden;
     background:
-      radial-gradient(1100px 460px at 82% -8%, rgba(117,197,150,0.20), transparent 60%),
-      radial-gradient(900px 420px at 5% 6%, rgba(158,101,46,0.10), transparent 55%);
+      radial-gradient(900px 380px at 88% 0%, rgba(147,196,224,0.22), transparent 60%),
+      radial-gradient(800px 360px at 4% 10%, rgba(117,197,150,0.18), transparent 58%);
   }
-  .hero-inner { max-width: 1240px; margin: 0 auto; padding: 30px 0 56px; }
-  .hero-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 30px; }
+  .hero-inner { max-width: 1180px; margin:0 auto; padding: 44px 0 60px; position:relative; z-index:1; }
+  .hero-chips { display:flex; flex-wrap:wrap; gap:9px; margin-bottom:34px; }
   .hero-title {
-    font-family:'Fraunces',serif; font-weight:300;
-    font-size: clamp(46px, 7vw, 104px); line-height:0.94; letter-spacing:-0.035em;
-    max-width: 16ch;
+    font-family:'Fraunces',serif; font-weight:300; font-size: clamp(64px, 13vw, 168px);
+    line-height:0.9; letter-spacing:-0.04em; color: var(--navy);
   }
-  .hero-title em { font-style: italic; color: var(--green-deep); font-weight:400; }
-  .hero-sub {
-    font-size: clamp(17px, 1.9vw, 23px); color: var(--ink-soft);
-    max-width: 56ch; line-height: 1.5; margin-top: 26px;
+  .hero-title .squiggle { position:relative; white-space:nowrap; }
+  .hero-title .squiggle::after {
+    content:""; position:absolute; left:0; right:0; bottom:0.04em; height:0.12em;
+    background:no-repeat center/100% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12'%3E%3Cpath d='M3 8 Q 28 2 52 7 T 102 7 T 152 7 T 197 7' fill='none' stroke='%2375c596' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
   }
-  .hero-sub b { color: var(--navy); font-weight: 600; }
+  .hero-sub { font-size: clamp(18px,2vw,24px); color: var(--ink-soft); max-width: 50ch; line-height:1.5; margin-top:30px; }
+  .hero-sub b { color: var(--navy); font-weight:600; }
 
-  /* the big FLOW button */
-  .flow-launch-wrap { margin-top: 44px; display:flex; align-items:center; gap: 22px; flex-wrap:wrap; }
+  .flow-launch-wrap { margin-top: 44px; display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
   .flow-launch {
-    position: relative; isolation: isolate;
-    display:inline-flex; align-items:center; gap: 16px;
-    padding: 22px 34px; border: none; cursor: pointer;
-    background: var(--navy); color: var(--cream); border-radius: 16px;
-    font-family:'Fraunces',serif; font-weight:500; font-size: clamp(22px, 2.6vw, 30px);
-    letter-spacing:-0.01em; transition: transform .25s, box-shadow .25s;
-    box-shadow: 0 14px 34px rgba(32,42,68,0.22);
+    position:relative; display:inline-flex; align-items:center; gap:16px;
+    padding:21px 32px; border:none; cursor:pointer; background: var(--navy); color: var(--cream);
+    border-radius:18px; font-family:'Fraunces',serif; font-weight:400; font-size: clamp(22px,2.6vw,30px);
+    letter-spacing:-0.01em; transition: transform .25s, box-shadow .3s;
+    box-shadow: 0 12px 30px rgba(32,42,68,0.22), 0 0 0 0 rgba(117,197,150,0);
   }
-  .flow-launch:hover { transform: translateY(-3px); box-shadow: 0 20px 44px rgba(32,42,68,0.30); }
-  .flow-launch::before {
-    content:""; position:absolute; inset:-3px; border-radius: 19px; z-index:-1;
-    background: conic-gradient(from 0deg, var(--green), var(--blue), var(--caramel), var(--yellow), var(--green));
-    filter: blur(13px); opacity:0.85; animation: spin 6s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg);} }
-  .flow-launch .play {
-    width: 42px; height:42px; border-radius:50%; background: var(--green);
-    display:grid; place-items:center; flex-shrink:0;
-  }
+  .flow-launch:hover { transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(32,42,68,0.28), 0 0 48px -6px var(--green); }
+  .flow-launch .play { width:44px; height:44px; border-radius:50%; background: var(--green);
+    display:grid; place-items:center; flex-shrink:0; }
   .flow-launch .play svg { width:16px; height:16px; margin-left:2px; }
-  .flow-launch small {
-    display:block; font-family:'DM Mono',monospace; font-size:10px; font-weight:400;
-    letter-spacing:0.18em; text-transform:uppercase; color: var(--green); margin-top:3px;
-  }
-  .flow-hint { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.14em;
-    text-transform:uppercase; color: var(--ink-quiet); max-width: 22ch; line-height:1.6; }
+  .flow-launch small { display:block; font-family: var(--display); font-weight:500; font-size:11px;
+    letter-spacing:0.12em; text-transform:uppercase; color: var(--green); margin-top:3px; }
+  .flow-hint { font-family: var(--display); font-weight:500; font-size:13px; color: var(--ink-quiet); max-width:20ch; line-height:1.5; }
 
-  /* fine print badges */
-  .fineprint { display:flex; flex-wrap:wrap; gap:10px; margin-top: 46px; }
-  .fp {
-    display:inline-flex; align-items:center; gap:9px; padding: 9px 15px;
-    border:1px dashed var(--line-strong); border-radius: 999px;
-    font-size: 13px; color: var(--ink-soft); background: rgba(255,255,255,0.5);
-  }
-  .fp .dot { width:7px; height:7px; border-radius:50%; }
+  .fineprint { display:flex; flex-wrap:wrap; gap:10px; margin-top:48px; }
+  .fp { display:inline-flex; align-items:center; gap:9px; padding:9px 15px;
+    border:1.5px dashed var(--line-strong); border-radius:999px; font-size:13.5px; color: var(--ink-soft);
+    background: rgba(255,255,255,0.55); }
+  .fp .dot { width:8px; height:8px; border-radius:50%; }
 
   /* ── SECTION SHELL ─────────────────────────────── */
-  .section { max-width: 1240px; margin: 0 auto; padding: 96px 28px; }
-  .sec-head { border-bottom: 1px solid var(--navy); padding-bottom: 30px; margin-bottom: 52px;
-    display:flex; justify-content:space-between; align-items:flex-end; gap: 24px; flex-wrap:wrap; }
+  .section { max-width: 1180px; margin:0 auto; padding: 100px 24px; position:relative; }
+  .sec-head { margin-bottom: 50px; }
   .sec-head h2 {
-    font-family:'Fraunces',serif; font-weight:400; font-size: clamp(34px, 5.2vw, 64px);
-    line-height:0.98; letter-spacing:-0.03em; max-width: 18ch;
+    font-family:'Fraunces',serif; font-weight:300; font-size: clamp(38px,6vw,76px);
+    line-height:0.96; letter-spacing:-0.035em; max-width: 16ch; margin-top:14px;
   }
   .sec-head h2 em { font-style:italic; color: var(--green-deep); }
-  .sec-head .num { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.18em;
-    text-transform:uppercase; color: var(--ink-quiet); text-align:right; line-height:1.8; }
 
   /* ── TWO BIG CARDS ─────────────────────────────── */
-  .cards { display:grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-  @media (max-width: 860px){ .cards { grid-template-columns: 1fr; } }
+  .cards { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  @media (max-width:860px){ .cards{ grid-template-columns:1fr; } }
   .bigcard {
-    position: relative; isolation:isolate; border-radius: 22px; overflow:hidden;
-    border: 1px solid var(--line-strong); cursor: pointer;
-    background: var(--cream-2); transition: transform .3s, box-shadow .3s;
-    display:flex; flex-direction:column; min-height: 280px;
+    position:relative; overflow:hidden; border-radius:24px; cursor:pointer; min-height:300px;
+    display:flex; flex-direction:column; border:1.5px solid var(--navy);
+    transition: transform .3s, box-shadow .3s;
   }
-  .bigcard:hover { transform: translateY(-4px); box-shadow: 0 22px 50px rgba(32,42,68,0.16); }
-  .bigcard::before {
-    content:""; position:absolute; inset:0; z-index:-1; opacity:0.9;
-  }
-  .bigcard.c1::before { background: radial-gradient(120% 120% at 0% 0%, rgba(117,197,150,0.28), transparent 55%); }
-  .bigcard.c2::before { background: radial-gradient(120% 120% at 100% 0%, rgba(194,103,74,0.22), transparent 55%); }
-  .bigcard .bc-glow {
-    position:absolute; inset:-2px; z-index:-2; border-radius:24px; opacity:0; transition:opacity .3s;
-    background: conic-gradient(from 0deg, var(--green), var(--blue), var(--caramel), var(--green));
-    filter: blur(16px);
-  }
-  .bigcard:hover .bc-glow { opacity:0.5; }
-  .bc-top { padding: 30px 30px 0; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
-  .bc-tag { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase;
-    color: var(--navy); font-weight:500; }
-  .bc-body { padding: 18px 30px 30px; margin-top:auto; }
-  .bc-body h3 {
-    font-family:'Fraunces',serif; font-weight:400; font-size: clamp(30px, 4vw, 46px);
-    line-height:1.0; letter-spacing:-0.02em; margin-bottom: 14px;
-  }
-  .bc-usecase { font-size: 15px; color: var(--ink-soft); }
+  .bigcard.c1 { background: linear-gradient(165deg, #e6f3ec 0%, #d6ebf4 100%); }
+  .bigcard.c2 { background: linear-gradient(165deg, #f6e7d6 0%, #f3d9c8 100%); }
+  .bigcard:hover { transform: translateY(-5px); box-shadow: 0 24px 50px rgba(32,42,68,0.18); }
+  .bc-top { padding:28px 30px 0; display:flex; justify-content:space-between; align-items:flex-start;
+    position:relative; z-index:1; }
+  .bc-tag { font-family: var(--display); font-weight:600; font-size:12px; letter-spacing:0.14em;
+    text-transform:uppercase; color: var(--navy); }
+  .bc-index { font-family: var(--display); font-weight:700; font-size:78px; color: var(--navy); opacity:0.14; line-height:0.7; }
+  .bc-body { padding:18px 30px 30px; margin-top:auto; position:relative; z-index:1; }
+  .bc-body h3 { font-family:'Fraunces',serif; font-weight:400; font-size: clamp(32px,4.4vw,52px);
+    line-height:0.98; letter-spacing:-0.02em; margin-bottom:14px; }
+  .bc-usecase { font-size:16px; color: var(--ink-soft); max-width: 34ch; }
   .bc-usecase b { color: var(--navy); font-weight:600; }
-  .bc-cta {
-    margin-top: 22px; display:inline-flex; align-items:center; gap:10px;
-    font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
-    font-weight:500; color: var(--navy);
-  }
+  .bc-cta { margin-top:24px; display:inline-flex; align-items:center; gap:10px;
+    font-family: var(--display); font-weight:600; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; color: var(--navy); }
   .bc-cta .arrow { transition: transform .25s; }
-  .bigcard:hover .bc-cta .arrow { transform: translateX(5px); }
-  .bc-index { font-family:'Fraunces',serif; font-size: 64px; font-weight:300; color: var(--navy);
-    opacity:0.16; line-height:0.7; }
+  .bigcard:hover .bc-cta .arrow { transform: translateX(6px); }
 
-  /* expanded card chapter */
-  .chapter {
-    grid-column: 1 / -1; overflow: hidden; max-height: 0;
-    transition: max-height .55s ease; border-radius: 22px;
-  }
-  .chapter.open { max-height: 16000px; }
-  .chapter-inner {
-    margin-top: 22px; border: 1px solid var(--line-strong); border-radius: 22px;
-    background: var(--cream); padding: 44px clamp(20px, 4vw, 56px) 52px;
-  }
-  .chapter.c1 .chapter-inner { box-shadow: inset 0 4px 0 var(--green-deep); }
-  .chapter.c2 .chapter-inner { box-shadow: inset 0 4px 0 var(--clay); }
-  .chapter h3.ch-headline {
-    font-family:'Fraunces',serif; font-weight:300; font-size: clamp(28px, 4vw, 48px);
-    line-height:1.04; letter-spacing:-0.025em; max-width: 20ch; margin-bottom: 10px;
-  }
-  .chapter h3.ch-headline em { font-style:italic; color: var(--green-deep); }
-  .chapter.c2 h3.ch-headline em { color: var(--clay); }
-  .ch-block-label {
-    font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
-    color: var(--ink-quiet); display:block; margin: 48px 0 22px;
-    padding-bottom: 12px; border-bottom: 1px solid var(--line);
-  }
-  .ch-close {
-    margin-top: 40px; display:inline-flex; align-items:center; gap:10px; padding: 11px 18px;
-    border:1px solid var(--navy); background:transparent; border-radius: 999px; cursor:pointer;
-    font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
-    color: var(--navy); transition: background .2s, color .2s;
-  }
+  /* expanded chapter */
+  .chapter { grid-column:1/-1; overflow:hidden; max-height:0; transition: max-height .55s ease; }
+  .chapter.open { max-height: 20000px; }
+  .chapter-inner { margin-top:22px; border-radius:24px; background: var(--cream);
+    border:1.5px solid var(--navy); padding: 46px clamp(20px,4vw,56px) 54px; position:relative; }
+  .ch-headline { font-family:'Fraunces',serif; font-weight:300; font-size: clamp(30px,4.4vw,52px);
+    line-height:1.02; letter-spacing:-0.03em; max-width:19ch; margin: 6px 0 0; }
+  .ch-headline em { font-style:italic; color: var(--green-deep); }
+  .chapter.c2 .ch-headline em { color: var(--clay); }
+  .block { margin-top: 52px; }
+  .block-head { display:flex; align-items:center; gap:12px; margin-bottom: 24px; }
+  .block-head .bspark { font-size:16px; color: var(--green-deep); }
+  .chapter.c2 .block-head .bspark { color: var(--clay); }
+  .block-head h4 { font-family: var(--display); font-weight:600; font-size:13px; letter-spacing:0.16em;
+    text-transform:uppercase; color: var(--navy); }
+  .block-head .hr { flex:1; height:1px; background: var(--line); }
+  .ch-close { margin-top:46px; display:inline-flex; align-items:center; gap:10px; padding:11px 18px;
+    border:1.5px solid var(--navy); background:transparent; border-radius:999px; cursor:pointer;
+    font-family: var(--display); font-weight:500; font-size:12.5px; color: var(--navy); transition: background .2s, color .2s; }
   .ch-close:hover { background: var(--navy); color: var(--cream); }
 
-  /* principles list */
-  .principles { display:grid; grid-template-columns: 1fr 1fr; gap: 4px 38px; }
-  @media (max-width: 760px){ .principles { grid-template-columns: 1fr; } }
-  .principle { display:flex; gap: 18px; padding: 20px 0; border-top: 1px solid var(--line); }
-  .principle .pn { font-family:'Fraunces',serif; font-size: 30px; font-weight:300; line-height:1;
-    color: var(--green-deep); flex-shrink:0; width: 38px; }
+  /* principles — compact, scannable */
+  .principles { display:grid; grid-template-columns: repeat(5, 1fr); gap: 0; border-top:1.5px solid var(--navy); }
+  .principle { padding: 22px 18px 22px 0; border-right:1px solid var(--line); }
+  .principle:last-child { border-right:none; }
+  .principle .pn { font-family: var(--display); font-weight:700; font-size:34px; color: var(--green-deep); line-height:1; }
   .chapter.c2 .principle .pn { color: var(--clay); }
-  .principle h4 { font-family:'Fraunces',serif; font-weight:500; font-size: 19px; letter-spacing:-0.01em;
-    margin-bottom: 6px; }
-  .principle p { font-size: 14.5px; line-height:1.6; color: var(--ink-soft); }
+  .principle h5 { font-family:'Fraunces',serif; font-weight:500; font-size:18px; letter-spacing:-0.01em; margin:12px 0 6px; }
+  .principle p { font-size:13.5px; line-height:1.5; color: var(--ink-soft); }
+  @media (max-width: 820px){ .principles{ grid-template-columns:1fr 1fr; } .principle{ border-right:none; border-bottom:1px solid var(--line); padding:18px 0; } }
+  @media (max-width: 480px){ .principles{ grid-template-columns:1fr; } }
 
-  /* ── ACCORDION (use cases / hacks / practices) ── */
-  .acc-item { border-top: 1px solid var(--line); }
-  .acc-item:last-child { border-bottom: 1px solid var(--line); }
-  .acc-head {
-    width:100%; text-align:left; background:transparent; border:none; cursor:pointer;
-    padding: 22px 8px 22px 0; display:grid; grid-template-columns: auto 1fr auto; gap: 18px;
-    align-items:center;
-  }
-  .acc-head .ac-spark { color: var(--green-deep); font-size: 15px; transition: transform .3s; }
+  /* accordion */
+  .acc-item { border-top:1px solid var(--line); }
+  .acc-item:last-child { border-bottom:1px solid var(--line); }
+  .acc-head { width:100%; text-align:left; background:transparent; border:none; cursor:pointer;
+    padding:20px 6px 20px 0; display:grid; grid-template-columns:auto 1fr auto; gap:16px; align-items:center; }
+  .acc-head .ac-spark { color: var(--green-deep); font-size:15px; transition: transform .3s; }
   .chapter.c2 .acc-head .ac-spark, .tabpane.bp .acc-head .ac-spark { color: var(--clay); }
   .acc-item.open .ac-spark { transform: rotate(180deg); }
-  .acc-title { font-family:'Fraunces',serif; font-weight:500; font-size: clamp(18px, 2.2vw, 24px);
-    letter-spacing:-0.01em; line-height:1.2; }
-  .acc-for { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
-    color: var(--ink-quiet); white-space:nowrap; }
-  @media (max-width: 640px){ .acc-for { display:none; } }
+  .acc-title { font-family:'Fraunces',serif; font-weight:500; font-size: clamp(18px,2.1vw,23px); letter-spacing:-0.01em; line-height:1.2; }
+  .acc-for { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color: var(--ink-quiet); white-space:nowrap; }
+  @media (max-width:640px){ .acc-for{ display:none; } }
   .acc-body { max-height:0; overflow:hidden; transition: max-height .45s ease; }
-  .acc-item.open .acc-body { max-height: 2400px; }
-  .acc-body-inner { padding: 0 0 26px; }
-  .acc-sub { font-size: 15px; line-height:1.6; color: var(--ink-soft); max-width: 66ch; margin-bottom: 18px; }
+  .acc-item.open .acc-body { max-height: 2600px; }
+  .acc-body-inner { padding:0 0 24px; }
+  .acc-sub { font-size:15px; line-height:1.6; color: var(--ink-soft); max-width:64ch; margin-bottom:18px; }
   .acc-sub b { color: var(--navy); font-weight:600; }
 
-  /* ── PROMPT BLOCK ──────────────────────────────── */
-  .prompt-block { position: relative; background: var(--navy); border-radius: 14px; padding: 24px 24px 22px; }
-  .prompt-block .pb-label {
-    display:flex; align-items:center; gap:8px; font-family:'DM Mono',monospace; font-size:10px;
-    letter-spacing:0.18em; text-transform:uppercase; color: var(--green); font-weight:500;
-    margin-bottom: 16px; padding-bottom: 13px; border-bottom: 1px solid rgba(117,197,150,0.25);
-    padding-right: 90px;
-  }
-  .prompt-text {
-    font-family:'DM Mono',monospace; font-size: 12.5px; line-height:1.85; color: #eef0e9;
-    white-space: pre-wrap; word-wrap: break-word; margin:0;
-  }
-  .prompt-text .ph { color: var(--green); background: rgba(117,197,150,0.14); padding: 1px 5px;
-    border-radius: 3px; font-weight: 500; }
-  .copy-btn {
-    position:absolute; top: 18px; right: 18px; padding: 7px 12px; background: transparent;
-    border: 1px solid rgba(255,254,247,0.28); color: var(--cream);
-    font-family:'DM Mono',monospace; font-size: 9px; letter-spacing:0.14em; text-transform:uppercase;
-    cursor:pointer; border-radius: 7px; transition: all .2s; font-weight:500;
-  }
+  /* prompt block */
+  .prompt-block { position:relative; background: var(--navy); border-radius:16px; padding:24px 24px 22px; }
+  .prompt-block .pb-label { display:flex; align-items:center; gap:8px; font-family:'DM Mono',monospace;
+    font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color: var(--green); font-weight:500;
+    margin-bottom:16px; padding-bottom:13px; border-bottom:1px solid rgba(117,197,150,0.25); padding-right:90px; }
+  .prompt-text { font-family:'DM Mono',monospace; font-size:12.5px; line-height:1.85; color:#eef0e9;
+    white-space:pre-wrap; word-wrap:break-word; margin:0; min-height:1.2em; }
+  .prompt-text .ph { color: var(--green); background: rgba(117,197,150,0.14); padding:1px 5px; border-radius:3px; font-weight:500; }
+  .prompt-text .caret { display:inline-block; width:7px; height:1em; background: var(--green); vertical-align:-2px; margin-left:1px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50%{opacity:0} }
+  .copy-btn { position:absolute; top:18px; right:18px; padding:7px 12px; background:transparent;
+    border:1px solid rgba(255,254,247,0.28); color: var(--cream); font-family:'DM Mono',monospace;
+    font-size:9px; letter-spacing:0.14em; text-transform:uppercase; cursor:pointer; border-radius:8px; transition: all .2s; }
   .copy-btn:hover { border-color: var(--green); color: var(--green); }
   .copy-btn.copied { background: var(--green); color: var(--navy); border-color: var(--green); }
+  .copy-btn:disabled { opacity:0.4; cursor: default; }
 
-  /* ── LIVE GENERATOR ────────────────────────────── */
-  .gen {
-    margin-top: 22px; border:1px solid var(--line-strong); border-radius: 16px; overflow:hidden;
-    background: linear-gradient(180deg, var(--cream-3), var(--cream));
-  }
-  .gen-top { padding: 22px 24px; display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap;
-    border-bottom: 1px dashed var(--line); }
-  .gen-top .badge {
-    font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.16em; text-transform:uppercase;
-    color: var(--cream); background: var(--green-deep); padding: 5px 10px; border-radius: 999px; font-weight:500;
-    display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
-  }
-  .gen-top .badge .pulse { background: var(--yellow); }
-  .gen-top p { font-size: 14px; color: var(--ink-soft); line-height:1.5; flex:1; min-width: 220px; }
+  /* live generator */
+  .gen { border:1.5px solid var(--line-strong); border-radius:18px; overflow:hidden;
+    background: linear-gradient(180deg, var(--cream-2), var(--cream)); }
+  .gen-top { padding:20px 22px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; border-bottom:1px dashed var(--line); }
+  .gen-top .badge { font-family: var(--display); font-weight:600; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color: var(--cream); background: var(--green-deep); padding:6px 11px; border-radius:999px; display:inline-flex; align-items:center; gap:7px; white-space:nowrap; }
+  .gen-top .badge .ld { width:7px; height:7px; border-radius:50%; background: var(--yellow); }
+  .gen-top p { font-size:14.5px; color: var(--ink-soft); flex:1; min-width:220px; }
   .gen-top p b { color: var(--navy); }
-  .gen-body { padding: 22px 24px; }
-  .gen textarea {
-    width:100%; min-height: 84px; resize: vertical; padding: 15px; border-radius: 11px;
-    border: 1px solid var(--line-strong); background: var(--cream); color: var(--navy);
-    font-family:'DM Sans',sans-serif; font-size: 15px; line-height:1.5; outline:none; transition: border-color .2s;
-  }
+  .gen-body { padding:20px 22px; }
+  .gen textarea { width:100%; min-height:80px; resize:vertical; padding:15px; border-radius:12px;
+    border:1.5px solid var(--line-strong); background: var(--cream); color: var(--navy);
+    font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.5; outline:none; transition: border-color .2s; }
   .gen textarea:focus { border-color: var(--green-deep); }
-  .gen textarea::placeholder { color: var(--ink-quiet); }
-  .gen-actions { display:flex; gap: 12px; align-items:center; margin-top: 14px; flex-wrap:wrap; }
-  .btn-primary {
-    display:inline-flex; align-items:center; gap:10px; padding: 12px 20px; border:none; cursor:pointer;
-    background: var(--navy); color: var(--cream); border-radius: 11px;
-    font-family:'DM Mono',monospace; font-size: 11px; letter-spacing:0.14em; text-transform:uppercase;
-    font-weight:500; transition: background .2s, transform .15s;
-  }
+  .gen-actions { display:flex; gap:12px; align-items:center; margin-top:13px; flex-wrap:wrap; }
+  .gen-result { margin-top:18px; }
+
+  .btn-primary { display:inline-flex; align-items:center; gap:10px; padding:12px 20px; border:none; cursor:pointer;
+    background: var(--navy); color: var(--cream); border-radius:12px; font-family: var(--display); font-weight:600;
+    font-size:13px; letter-spacing:0.04em; transition: background .2s, transform .15s; }
   .btn-primary:hover { background: var(--green-deep); }
   .btn-primary:active { transform: scale(0.98); }
-  .btn-primary:disabled { opacity:0.55; cursor: not-allowed; }
-  .btn-primary svg { width:14px; height:14px; }
-  .btn-primary.loading .bt::after { content:""; animation: dots 1.3s infinite; }
-  @keyframes dots { 0%{content:" .";} 33%{content:" ..";} 66%{content:" ...";} }
-  .gen-hint { font-size: 12px; color: var(--ink-quiet); }
-  .gen-result { margin-top: 18px; }
+  .btn-primary:disabled { opacity:0.55; cursor:not-allowed; }
+  .btn-primary svg { width:15px; height:15px; }
+  .btn-ghost { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; cursor:pointer;
+    background:transparent; border:1.5px solid var(--navy); border-radius:12px; color: var(--navy);
+    font-family: var(--display); font-weight:500; font-size:13px; transition: background .2s, color .2s; }
+  .btn-ghost:hover { background: var(--navy); color: var(--cream); }
+  .gen-hint { font-size:12.5px; color: var(--ink-quiet); }
 
-  /* ── POC / FILES (Card 1 hero) ─────────────────── */
-  .hero-module {
-    margin-top: 26px; border:1px solid var(--navy); border-radius: 20px; overflow:hidden;
-    background: var(--cream);
-  }
-  .hm-banner {
-    background: var(--green); color: var(--navy); padding: 14px 24px;
-    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
-    font-family:'DM Mono',monospace; font-size: 11px; letter-spacing:0.16em; text-transform:uppercase; font-weight:500;
-  }
+  /* hero module (main event) — on NAVY */
+  .hero-module { border-radius:20px; overflow:hidden; background: var(--navy); color: var(--cream); position:relative; }
+  .hm-banner { background: var(--green); color: var(--navy); padding:14px 24px; display:flex; align-items:center; justify-content:space-between;
+    gap:14px; flex-wrap:wrap; font-family: var(--display); font-weight:600; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; }
   .chapter.c2 .hm-banner { background: var(--clay); color: var(--cream); }
-  .hm-banner .timer { display:inline-flex; align-items:center; gap:8px; }
-  .hm-body { padding: 28px clamp(18px,3vw,32px); }
-  .hm-body h4 { font-family:'Fraunces',serif; font-weight:500; font-size: 22px; margin-bottom: 14px; letter-spacing:-0.01em; }
-  .hm-body h4:not(:first-child){ margin-top: 38px; }
-  .files { display:grid; gap: 8px; margin-top: 6px; }
-  .file-row { display:flex; align-items:center; gap: 12px; padding: 12px 14px; border-radius:10px;
-    background: var(--cream-3); border:1px solid var(--line); }
-  .file-row .fi { font-family:'DM Mono',monospace; font-size:13px; color: var(--navy); font-weight:500; }
-  .file-row .fd { font-size: 13px; color: var(--ink-soft); }
-  .file-row .fdot { width:8px; height:8px; border-radius:2px; background: var(--green-deep); flex-shrink:0; }
+  .hm-body { padding:30px clamp(18px,3vw,34px); position:relative; z-index:1; }
+  .hm-body h4 { font-family:'Fraunces',serif; font-weight:500; font-size:22px; margin-bottom:13px; letter-spacing:-0.01em; color: var(--cream); }
+  .hm-body h4:not(:first-child){ margin-top:38px; }
+  .hm-body .acc-sub { color: rgba(255,254,247,0.82); }
+  .hm-body .acc-sub b { color: var(--cream); }
+  .files { display:grid; gap:8px; margin-top:6px; }
+  .file-row { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:10px;
+    background: rgba(255,254,247,0.06); border:1px solid rgba(255,254,247,0.12); }
+  .file-row .fdot { width:8px; height:8px; border-radius:2px; background: var(--green); flex-shrink:0; }
+  .file-row .fi { font-family:'DM Mono',monospace; font-size:13px; color: var(--cream); font-weight:500; }
+  .file-row .fd { font-size:13px; color: rgba(255,254,247,0.7); }
 
-  /* crowd participation */
-  .crowd { margin-top: 14px; }
-  .crowd-tags { display:flex; flex-wrap:wrap; gap:8px; margin: 14px 0; }
-  .crowd-tag {
-    display:inline-flex; align-items:center; gap:8px; padding: 7px 12px; border-radius: 999px;
-    background: var(--sand); border:1px solid var(--navy); font-size: 13px; color: var(--navy);
-  }
-  .crowd-tag button { background:none; border:none; cursor:pointer; color: var(--navy); font-size: 15px; line-height:1; opacity:0.6; }
+  /* crowd */
+  .crowd-tags { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
+  .crowd-tag { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border-radius:999px;
+    background: var(--sky); border:1.5px solid var(--navy); font-size:13px; color: var(--navy); font-weight:500; }
+  .crowd-tag button { background:none; border:none; cursor:pointer; color: var(--navy); font-size:15px; line-height:1; opacity:0.6; }
   .crowd-tag button:hover { opacity:1; }
   .crowd-row { display:flex; gap:10px; flex-wrap:wrap; }
-  .crowd-row input {
-    flex:1; min-width: 220px; padding: 12px 15px; border-radius: 11px; border:1px solid var(--line-strong);
-    background: var(--cream); color: var(--navy); font-family:'DM Sans',sans-serif; font-size: 15px; outline:none;
-  }
-  .crowd-row input:focus { border-color: var(--green-deep); }
-  .btn-ghost {
-    display:inline-flex; align-items:center; gap:8px; padding: 12px 18px; cursor:pointer;
-    background: transparent; border:1px solid var(--navy); border-radius: 11px; color: var(--navy);
-    font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:500;
-    transition: background .2s, color .2s;
-  }
-  .btn-ghost:hover { background: var(--navy); color: var(--cream); }
+  .crowd-row input { flex:1; min-width:220px; padding:12px 15px; border-radius:12px; border:1.5px solid rgba(255,254,247,0.2);
+    background: rgba(255,254,247,0.06); color: var(--cream); font-family:'DM Sans',sans-serif; font-size:15px; outline:none; }
+  .crowd-row input::placeholder { color: rgba(255,254,247,0.45); }
+  .crowd-row input:focus { border-color: var(--green); }
+  .btn-on-navy { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; cursor:pointer;
+    background:transparent; border:1.5px solid rgba(255,254,247,0.35); border-radius:12px; color: var(--cream);
+    font-family: var(--display); font-weight:500; font-size:13px; transition: all .2s; }
+  .btn-on-navy:hover { background: var(--green); border-color: var(--green); color: var(--navy); }
 
-  /* ── markdown deep dive bits ───────────────────── */
-  .md-steps { counter-reset: md; display:grid; gap: 4px; }
-  .md-step { display:flex; gap:16px; padding: 18px 0; border-top:1px solid var(--line); }
-  .md-step:last-child { border-bottom:1px solid var(--line); }
-  .md-step .ms-n { counter-increment: md; font-family:'Fraunces',serif; font-size: 24px; font-weight:300;
-    color: var(--clay); width: 30px; flex-shrink:0; }
-  .md-step .ms-n::before { content: counter(md); }
-  .md-step h5 { font-family:'Fraunces',serif; font-size: 18px; font-weight:500; margin-bottom: 5px; }
-  .md-step p { font-size: 14px; color: var(--ink-soft); line-height:1.6; }
-  .md-step code, .inline-code { font-family:'DM Mono',monospace; font-size: 12.5px; background: var(--sand);
-    padding: 1px 6px; border-radius: 5px; color: var(--navy); }
+  /* live preview */
+  .preview-wrap { margin-top:14px; }
+  .preview-frame { width:100%; height: 440px; border:1.5px solid rgba(255,254,247,0.2); border-radius:12px;
+    background: var(--cream); margin-top:14px; display:none; }
+  .preview-frame.show { display:block; }
 
-  /* ── OVERLAY (Flow + Three Questions) ──────────── */
-  .overlay {
-    position: fixed; inset: 0; z-index: 90; background: rgba(32,42,68,0.55);
-    backdrop-filter: blur(6px); display:flex; justify-content:center; align-items:flex-start;
-    padding: 40px 20px; overflow-y:auto; opacity:0; pointer-events:none; transition: opacity .3s;
-  }
+  /* md steps */
+  .md-steps { display:grid; gap:4px; }
+  .md-step { display:flex; gap:16px; padding:16px 0; border-top:1px solid rgba(255,254,247,0.12); }
+  .md-step:last-child { border-bottom:1px solid rgba(255,254,247,0.12); }
+  .md-step .ms-n { font-family: var(--display); font-weight:700; font-size:24px; color: var(--clay); width:30px; flex-shrink:0; line-height:1; }
+  .md-step h6 { font-family:'Fraunces',serif; font-size:17px; font-weight:500; margin-bottom:4px; color: var(--cream); }
+  .md-step p { font-size:14px; color: rgba(255,254,247,0.75); line-height:1.55; }
+  .inline-code { font-family:'DM Mono',monospace; font-size:12.5px; background: rgba(117,197,150,0.18); padding:1px 6px; border-radius:5px; color: var(--green); }
+
+  /* ── THREE QUESTIONS (navy carton) ─────────────── */
+  .threeq { position:relative; overflow:hidden; background: var(--navy); color: var(--cream); }
+  .threeq .section { padding-top:96px; padding-bottom:96px; }
+  .threeq .sec-head h2 { color: var(--cream); }
+  .threeq .sec-head h2 em { color: var(--green); }
+  .threeq .kicker { color: var(--sky); }
+  .threeq .lead { font-size: clamp(17px,1.9vw,22px); color: rgba(255,254,247,0.8); max-width:56ch; line-height:1.5; margin-bottom:36px; }
+  .threeq .lead b { color: var(--cream); }
+  .tq { display:flex; gap:22px; padding:28px 0; border-top:1px solid rgba(255,254,247,0.15); align-items:flex-start; }
+  .tq:last-child { border-bottom:1px solid rgba(255,254,247,0.15); }
+  .tq .qn { font-family: var(--display); font-weight:700; font-size:46px; color: var(--green); width:56px; flex-shrink:0; line-height:0.85; }
+  .tq:nth-child(3) .qn { color: var(--sky); }
+  .tq:nth-child(4) .qn { color: var(--orange); }
+  .tq h3 { font-family:'Fraunces',serif; font-weight:400; font-size: clamp(21px,3vw,32px); letter-spacing:-0.02em; line-height:1.12; color: var(--cream); }
+  .tq p { font-size:14.5px; color: rgba(255,254,247,0.65); margin-top:8px; max-width:54ch; }
+  .answer-chip { display:inline-flex; align-items:center; gap:8px; margin-top:16px; padding:9px 15px; border-radius:999px;
+    background: var(--green); color: var(--navy); font-family: var(--display); font-weight:600; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; }
+  .slider-demo { margin-top:16px; display:flex; align-items:center; gap:18px; }
+  .slider-demo input { flex:1; max-width:340px; accent-color: var(--green); }
+  .slider-val { font-family: var(--display); font-weight:700; font-size:38px; color: var(--green); min-width:60px; }
+
+  /* ── OVERLAY ───────────────────────────────────── */
+  .overlay { position:fixed; inset:0; z-index:150; background: rgba(32,42,68,0.6); backdrop-filter: blur(6px);
+    display:flex; justify-content:center; align-items:flex-start; padding:40px 20px; overflow-y:auto;
+    opacity:0; pointer-events:none; transition: opacity .3s; }
   .overlay.open { opacity:1; pointer-events:auto; }
-  .overlay-card {
-    background: var(--cream); border-radius: 24px; max-width: 920px; width:100%;
-    border:1px solid var(--navy); box-shadow: 0 30px 80px rgba(0,0,0,0.3);
-    transform: translateY(16px) scale(0.98); transition: transform .3s; overflow:hidden;
-  }
+  .overlay-card { background: var(--cream); border-radius:26px; max-width:900px; width:100%;
+    border:1.5px solid var(--navy); box-shadow:0 30px 80px rgba(0,0,0,0.3); overflow:hidden; position:relative;
+    transform: translateY(16px) scale(0.98); transition: transform .3s; }
   .overlay.open .overlay-card { transform: translateY(0) scale(1); }
-  .ov-head {
-    padding: 30px clamp(22px,4vw,44px) 24px; border-bottom:1px solid var(--line);
-    display:flex; justify-content:space-between; align-items:flex-start; gap: 16px;
-    background: radial-gradient(700px 240px at 90% -40%, rgba(117,197,150,0.22), transparent 60%);
-  }
-  .ov-head h2 { font-family:'Fraunces',serif; font-weight:300; font-size: clamp(28px, 4vw, 46px);
-    line-height:1.0; letter-spacing:-0.025em; }
+  .ov-head { padding:32px clamp(22px,4vw,44px) 26px; border-bottom:1px solid var(--line); position:relative; z-index:1;
+    display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+  .ov-head h2 { font-family:'Fraunces',serif; font-weight:300; font-size: clamp(30px,4vw,48px); line-height:1.0; letter-spacing:-0.03em; }
   .ov-head h2 em { font-style:italic; color: var(--green-deep); }
-  .ov-head p { font-size: 14px; color: var(--ink-soft); margin-top: 8px; max-width: 50ch; }
-  .ov-close {
-    width: 40px; height:40px; border-radius:50%; border:1px solid var(--navy); background:transparent;
-    cursor:pointer; font-size: 20px; line-height:1; color: var(--navy); flex-shrink:0;
-    display:grid; place-items:center; transition: background .2s, color .2s;
-  }
+  .ov-head p { font-size:14.5px; color: var(--ink-soft); margin-top:9px; max-width:50ch; }
+  .ov-close { width:42px; height:42px; border-radius:50%; border:1.5px solid var(--navy); background:transparent; cursor:pointer;
+    font-size:20px; line-height:1; color: var(--navy); flex-shrink:0; display:grid; place-items:center; transition: background .2s, color .2s; }
   .ov-close:hover { background: var(--navy); color: var(--cream); }
-  .ov-body { padding: 30px clamp(22px,4vw,44px) 40px; }
+  .ov-body { padding:30px clamp(22px,4vw,44px) 42px; position:relative; z-index:1; }
 
-  /* flow beats */
-  .beat { display:flex; gap: 22px; padding: 22px 0; border-top: 1px solid var(--line); position:relative; }
-  .beat:last-child { border-bottom: 1px solid var(--line); }
-  .beat .bn {
-    font-family:'Fraunces',serif; font-size: 38px; font-weight:300; line-height:0.9; color: var(--green-deep);
-    width: 54px; flex-shrink:0;
-  }
-  .beat.under .bn { color: var(--caramel); }
-  .beat h3 { font-family:'Fraunces',serif; font-weight:500; font-size: clamp(20px, 2.6vw, 28px);
-    letter-spacing:-0.015em; margin-bottom: 5px; }
-  .beat p { font-size: 14.5px; color: var(--ink-soft); line-height:1.55; }
-  .beat .tagline { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase;
-    color: var(--caramel); margin-top: 7px; display:inline-block; }
+  .beat { display:flex; gap:22px; padding:22px 0; border-top:1px solid var(--line); }
+  .beat:last-child { border-bottom:1px solid var(--line); }
+  .beat .bn { font-family: var(--display); font-weight:700; font-size:40px; line-height:0.85; color: var(--green-deep); width:56px; flex-shrink:0; }
+  .beat.under .bn { color: var(--orange); }
+  .beat h3 { font-family:'Fraunces',serif; font-weight:500; font-size: clamp(20px,2.6vw,28px); letter-spacing:-0.015em; margin-bottom:5px; }
+  .beat p { font-size:14.5px; color: var(--ink-soft); line-height:1.55; }
+  .beat .tagline { font-family: var(--display); font-weight:600; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color: var(--orange); margin-top:8px; display:inline-block; }
 
-  /* three questions */
-  .tq { display:flex; gap: 20px; padding: 26px 0; border-top:1px solid var(--line); align-items:flex-start; }
-  .tq:last-child { border-bottom:1px solid var(--line); }
-  .tq .qn { font-family:'Fraunces',serif; font-size: 40px; font-weight:300; color: var(--green-deep); width:50px; flex-shrink:0; line-height:0.9; }
-  .tq h3 { font-family:'Fraunces',serif; font-weight:400; font-size: clamp(20px, 3vw, 30px); letter-spacing:-0.02em; line-height:1.12; }
-  .tq p { font-size: 14px; color: var(--ink-soft); margin-top:8px; }
-  .answer-chip {
-    display:inline-flex; align-items:center; gap:8px; margin-top: 14px; padding: 9px 14px; border-radius:999px;
-    background: var(--navy); color: var(--cream); font-family:'DM Mono',monospace; font-size:10px;
-    letter-spacing:0.14em; text-transform:uppercase;
-  }
-  .slider-demo { margin-top: 16px; }
-  .slider-demo input { width: 100%; accent-color: var(--green-deep); }
-  .slider-val { font-family:'Fraunces',serif; font-size: 34px; color: var(--green-deep); font-weight:400; }
-
-  /* ── FLOATING BUTTON + PANEL (Hacks / Best Practices) ── */
-  .float-btn {
-    position: fixed; right: 22px; bottom: 22px; z-index: 80;
-    display:inline-flex; align-items:center; gap: 11px; padding: 15px 20px; cursor:pointer;
-    background: var(--navy); color: var(--cream); border:none; border-radius: 16px;
-    font-family:'DM Mono',monospace; font-size: 11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:500;
-    box-shadow: 0 12px 30px rgba(32,42,68,0.28); transition: transform .2s, background .2s;
-  }
-  .float-btn:hover { transform: translateY(-3px); background: var(--green-deep); }
-  .float-btn .fb-spark { color: var(--green); font-size: 15px; }
-  .float-btn:hover .fb-spark { color: var(--cream); }
-  @media (max-width: 560px){ .float-btn span.fb-label { display:none; } }
-
-  .drawer {
-    position: fixed; top:0; right:0; bottom:0; width: 480px; max-width: 96vw; z-index: 95;
-    background: var(--cream); border-left: 1px solid var(--navy); box-shadow: -16px 0 50px rgba(0,0,0,0.18);
-    transform: translateX(100%); transition: transform .4s ease; display:flex; flex-direction:column;
-  }
+  /* ── DRAWER ────────────────────────────────────── */
+  .drawer { position:fixed; top:0; right:0; bottom:0; width:480px; max-width:96vw; z-index:160;
+    background: var(--cream); border-left:1.5px solid var(--navy); box-shadow:-16px 0 50px rgba(0,0,0,0.18);
+    transform: translateX(100%); transition: transform .4s ease; display:flex; flex-direction:column; }
   .drawer.open { transform: translateX(0); }
-  .drawer-head { padding: 24px 24px 0; }
+  .drawer-head { padding:24px 24px 0; }
   .drawer-top { display:flex; justify-content:space-between; align-items:flex-start; }
-  .drawer-top h2 { font-family:'Fraunces',serif; font-weight:400; font-size: 28px; letter-spacing:-0.02em; line-height:1.05; }
-  .drawer-top p { font-size: 13px; color: var(--ink-soft); margin-top: 6px; max-width: 38ch; }
-  .tabs { display:flex; gap: 8px; margin-top: 22px; border-bottom: 1px solid var(--line); }
-  .tab {
-    padding: 12px 16px; cursor:pointer; background:transparent; border:none; border-bottom: 2px solid transparent;
-    font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:500;
-    color: var(--ink-quiet); margin-bottom:-1px; transition: color .2s, border-color .2s;
-  }
+  .drawer-top h2 { font-family:'Fraunces',serif; font-weight:400; font-size:28px; letter-spacing:-0.02em; line-height:1.05; }
+  .drawer-top p { font-size:13.5px; color: var(--ink-soft); margin-top:6px; max-width:38ch; }
+  .tabs { display:flex; gap:8px; margin-top:22px; border-bottom:1px solid var(--line); }
+  .tab { padding:12px 16px; cursor:pointer; background:transparent; border:none; border-bottom:2px solid transparent;
+    font-family: var(--display); font-weight:600; font-size:13px; letter-spacing:0.04em; color: var(--ink-quiet); margin-bottom:-1px; transition: color .2s, border-color .2s; }
   .tab.active { color: var(--navy); border-bottom-color: var(--green-deep); }
   .tab.active.bp-tab { border-bottom-color: var(--clay); }
-  .drawer-body { flex:1; overflow-y:auto; padding: 18px 24px 32px; }
-  .tabpane { display:none; }
-  .tabpane.active { display:block; }
+  .drawer-body { flex:1; overflow-y:auto; padding:18px 24px 32px; }
+  .tabpane { display:none; } .tabpane.active { display:block; }
 
   /* ── FOOTER ────────────────────────────────────── */
-  footer { background: var(--navy); color: var(--cream); padding: 90px 28px 50px; }
-  .footer-inner { max-width: 1240px; margin: 0 auto; }
-  .footer-big {
-    font-family:'Fraunces',serif; font-weight:300; font-size: clamp(36px, 6vw, 78px);
-    line-height:0.96; letter-spacing:-0.03em; max-width: 16ch;
-  }
+  footer { background: var(--navy); color: var(--cream); padding:100px 24px 56px; position:relative; overflow:hidden; }
+  .footer-inner { max-width:1180px; margin:0 auto; position:relative; z-index:1; }
+  .footer-big { font-family:'Fraunces',serif; font-weight:300; font-size: clamp(38px,6.5vw,86px); line-height:0.95; letter-spacing:-0.035em; max-width:15ch; }
   .footer-big em { font-style:italic; color: var(--green); }
-  .footer-meta { display:flex; justify-content:space-between; align-items:flex-end; gap: 30px; flex-wrap:wrap;
-    margin-top: 56px; padding-top: 28px; border-top: 1px solid rgba(255,254,247,0.18); }
-  .footer-meta .fm-mono { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.16em;
-    text-transform:uppercase; color: rgba(255,254,247,0.6); line-height:1.9; }
-  .footer-meta .fm-mono b { color: var(--green); font-weight:500; }
+  .footer-meta { display:flex; justify-content:space-between; align-items:flex-end; gap:30px; flex-wrap:wrap;
+    margin-top:60px; padding-top:28px; border-top:1px solid rgba(255,254,247,0.18); }
+  .footer-meta .fm { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color: rgba(255,254,247,0.6); line-height:1.9; }
+  .footer-meta .fm b { color: var(--green); font-weight:500; }
 
-  /* spark divider */
-  .spark-rule { display:flex; align-items:center; justify-content:center; gap: 18px; padding: 8px 0;
-    color: var(--green-deep); }
-  .spark-rule::before, .spark-rule::after { content:""; height:1px; flex:1; max-width: 120px; background: var(--line-strong); }
-
-  @media (max-width: 760px){
-    .section { padding: 64px 20px; }
-    .hero-inner { padding: 18px 0 40px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+    .ticker-track { animation:none !important; }
   }
+  @media (max-width:760px){ .section{ padding:64px 20px; } .hero-inner{ padding:20px 0 44px; } }
 </style>
 </head>
 <body>
 <div class="grain"></div>
 
-<!-- META BAR -->
-<div class="meta-bar">
-  <div><span class="pulse"></span><b>WILLA'S × OBSOLETE</b> · AI 101</div>
-  <div class="meta-right">
-    <span class="hide-sm">LIVE WORKING SESSION</span>
-    <span>JUN 2026</span>
+<!-- TOP NAV -->
+<nav class="nav">
+  <div class="nav-brand"><span class="star">✦</span> Willa's × OBSOLETE <small>AI 101</small></div>
+  <div class="nav-actions">
+    <button class="nav-btn" id="navFlow"><span class="star">✦</span> <span class="lbl-long">Flow for</span> Today</button>
+    <button class="nav-btn primary" id="navHacks"><span class="star">✦</span> Hacks <span class="lbl-long">&amp; Best Practices</span></button>
   </div>
-</div>
+</nav>
+
+<!-- PROGRESS SPINE -->
+<nav class="spine" id="spine">
+  <a href="#top" data-spine="top"><span class="dot"></span><span class="slabel">Start</span></a>
+  <a href="#three-q" data-spine="three-q"><span class="dot"></span><span class="slabel">Warm-up</span></a>
+  <a href="#card1" data-spine="card1"><span class="dot"></span><span class="slabel">Build · Make</span></a>
+  <a href="#card2" data-spine="card2"><span class="dot"></span><span class="slabel">Build · Automate</span></a>
+</nav>
 
 <!-- HERO -->
-<header class="hero">
+<header class="hero" id="top">
+  <div class="sparkles" id="heroSparkles"></div>
   <div class="hero-inner">
     <div class="hero-chips">
       <span class="chip solid-green">✦ A Live Working Session</span>
       <span class="chip">Hosted by Alex + Ed</span>
-      <span class="chip">Bring your laptop</span>
+      <span class="chip solid-sky">Bring your laptop</span>
     </div>
-    <h1 class="hero-title serif">Let's build this <em>puppy.</em></h1>
-    <p class="hero-sub">Today we stop <i>talking</i> about AI and start <b>making things with it</b> — together, out loud, in real time. No slides about the future. Just you, a chat window, and the leap from idea to <span class="hl">done</span>.</p>
+    <h1 class="hero-title serif">Let's <span class="squiggle">build.</span></h1>
+    <p class="hero-sub">Today we stop <i>talking</i> about AI and start <b>making things with it</b> — together, out loud, in real time. No slides about the future. Just you, a chat window, and the leap from idea to done.</p>
 
     <div class="flow-launch-wrap">
       <button class="flow-launch" id="flowBtn">
         <span class="play" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><path d="M4 3l9 5-9 5V3z" fill="#202a44"/></svg></span>
-        <span>Flow for Today<small>Tap to see the run-of-show</small></span>
+        <span>Flow for Today<small>Tap for the run-of-show</small></span>
       </button>
       <span class="flow-hint">Five beats. Two builds. Zero PowerPoints.</span>
     </div>
 
     <div class="fineprint">
-      <span class="fp"><span class="dot" style="background:var(--clay)"></span> Things here might break — that's the point</span>
-      <span class="fp"><span class="dot" style="background:var(--caramel)"></span> We are not experts — we're a few steps ahead</span>
-      <span class="fp"><span class="dot" style="background:var(--green-deep)"></span> We are here to help — pull us in anytime</span>
+      <span class="fp"><span class="dot" style="background:var(--orange)"></span> Things here might break — that's the point</span>
+      <span class="fp"><span class="dot" style="background:var(--caramel)"></span> We're not experts — just a few steps ahead</span>
+      <span class="fp"><span class="dot" style="background:var(--green-deep)"></span> We're here to help — pull us in anytime</span>
     </div>
   </div>
 </header>
 
-<!-- TICKER -->
+<!-- TICKER (only one, right after hero) -->
 <div class="ticker" id="ticker1"></div>
 
-<!-- THE TWO BUILDS -->
+<!-- THREE QUESTIONS (navy carton) -->
+<div class="threeq" id="three-q">
+  <div class="sparkles" id="tqSparkles"></div>
+  <section class="section">
+    <div class="sec-head">
+      <span class="kicker">Warm-up · Ed runs this one</span>
+      <h2 class="serif">First, three <em>questions.</em></h2>
+    </div>
+    <p class="lead">A quick read on the room. <b>Drop your answers in your chat window</b> — no wrong answers, no grades. We just want to know who we're building with.</p>
+    <div id="tqBody"></div>
+  </section>
+</div>
+
+<!-- TWO BUILDS -->
 <section class="section" id="builds">
   <div class="sec-head">
+    <span class="kicker">Pick a card · open it · build along</span>
     <h2 class="serif">Today's two <em>builds.</em></h2>
-    <div class="num">SECTION 01<br>PICK A CARD · OPEN IT · BUILD ALONG</div>
   </div>
 
   <div class="cards" id="cards">
-    <!-- CARD 1 -->
-    <article class="bigcard c1" data-card="1" tabindex="0" role="button" aria-expanded="false">
-      <div class="bc-glow"></div>
-      <div class="bc-top">
-        <span class="bc-tag">Build One · Make</span>
-        <span class="bc-index serif">01</span>
-      </div>
+    <article class="bigcard c1" id="card1" data-card="1" tabindex="0" role="button" aria-expanded="false">
+      <div class="sparkles" data-card-spk="1"></div>
+      <div class="bc-top"><span class="bc-tag">Build One · Make</span><span class="bc-index">01</span></div>
       <div class="bc-body">
         <h3 class="serif">"Make me a thing"</h3>
-        <p class="bc-usecase">Today's use case: <b>a brand-new Willa's website</b>, prototyped live in under five minutes.</p>
+        <p class="bc-usecase">Today: <b>a brand-new Willa's website</b>, prototyped live in under five minutes.</p>
         <span class="bc-cta">Open this build <span class="arrow">→</span></span>
       </div>
     </article>
 
-    <!-- CARD 2 -->
-    <article class="bigcard c2" data-card="2" tabindex="0" role="button" aria-expanded="false">
-      <div class="bc-glow"></div>
-      <div class="bc-top">
-        <span class="bc-tag">Build Two · Automate</span>
-        <span class="bc-index serif">02</span>
-      </div>
+    <article class="bigcard c2" id="card2" data-card="2" tabindex="0" role="button" aria-expanded="false">
+      <div class="sparkles" data-card-spk="2"></div>
+      <div class="bc-top"><span class="bc-tag">Build Two · Automate</span><span class="bc-index">02</span></div>
       <div class="bc-body">
         <h3 class="serif">"Do this for me, every time"</h3>
-        <p class="bc-usecase">Today's use case: <b>Markdown automation</b> — turn a chore you repeat into a tool you keep.</p>
+        <p class="bc-usecase">Today: <b>Markdown automation</b> — a chore you repeat, turned into a tool you keep.</p>
         <span class="bc-cta">Open this build <span class="arrow">→</span></span>
       </div>
     </article>
@@ -631,20 +539,20 @@
     <!-- CHAPTER 1 -->
     <div class="chapter c1" id="chapter1">
       <div class="chapter-inner">
-        <span class="label">Build One · Make me a thing</span>
+        <span class="kicker">Build One · Make me a thing</span>
         <h3 class="ch-headline serif">The leap from <em>talking</em> about an idea to <em>seeing</em> and <em>sending</em> it.</h3>
 
-        <span class="ch-block-label">Five ways to think about it</span>
-        <div class="principles" id="c1-principles"></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>The mindset</h4><span class="hr"></span></div>
+          <div class="principles" id="c1-principles"></div></div>
 
-        <span class="ch-block-label">Steal a starter — tap any idea for a copy-paste prompt</span>
-        <div class="acc" id="c1-usecases"></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>Steal a starter prompt</h4><span class="hr"></span></div>
+          <div class="acc" id="c1-usecases"></div></div>
 
-        <span class="ch-block-label">…or bring your own — Claude writes the starter for you</span>
-        <div class="gen" data-mode="make" id="gen-make"></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>…or bring your own</h4><span class="hr"></span></div>
+          <div class="gen" data-mode="make" id="gen-make"></div></div>
 
-        <span class="ch-block-label">The main event — build the new Willa's site, live</span>
-        <div class="hero-module" id="poc-module"></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>The main event — build it live</h4><span class="hr"></span></div>
+          <div class="hero-module" id="poc-module"></div></div>
 
         <button class="ch-close" data-close="1">✕ Close this build</button>
       </div>
@@ -653,20 +561,20 @@
     <!-- CHAPTER 2 -->
     <div class="chapter c2" id="chapter2">
       <div class="chapter-inner">
-        <span class="label">Build Two · Do this for me, every time</span>
+        <span class="kicker">Build Two · Do this for me, every time</span>
         <h3 class="ch-headline serif">Turning a repeated manual <em>chore</em> into a reusable <em>tool.</em></h3>
 
-        <span class="ch-block-label">Five ways to think about it</span>
-        <div class="principles" id="c2-principles"></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>The mindset</h4><span class="hr"></span></div>
+          <div class="principles" id="c2-principles"></div></div>
 
-        <span class="ch-block-label">Steal a starter — tap any chore for a copy-paste prompt</span>
-        <div class="acc" id="c2-usecases"></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>Steal a starter prompt</h4><span class="hr"></span></div>
+          <div class="acc" id="c2-usecases"></div></div>
 
-        <span class="ch-block-label">…or bring your own — Claude writes the starter for you</span>
-        <div class="gen" data-mode="automate" id="gen-automate"></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>…or bring your own</h4><span class="hr"></span></div>
+          <div class="gen" data-mode="automate" id="gen-automate"></div></div>
 
-        <span class="ch-block-label">The main event — Markdown automation, start to finish</span>
-        <div class="hero-module" id="md-module"></div>
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>The main event — Markdown automation</h4><span class="hr"></span></div>
+          <div class="hero-module" id="md-module"></div></div>
 
         <button class="ch-close" data-close="2">✕ Close this build</button>
       </div>
@@ -674,75 +582,26 @@
   </div>
 </section>
 
-<!-- TICKER -->
-<div class="ticker sand" id="ticker2"></div>
-
-<!-- THREE QUESTIONS -->
-<section class="section" id="three-q">
-  <div class="sec-head">
-    <h2 class="serif">First, three <em>questions.</em></h2>
-    <div class="num">SECTION 00 · WARM-UP<br>ED RUNS THIS ONE</div>
-  </div>
-  <p class="hero-sub" style="margin-top:-26px; margin-bottom: 36px;">Before we build — a quick read on the room. <b>Drop your answers in your chat window.</b> No wrong answers, no grades. We just want to know who we're building with.</p>
-  <button class="btn-primary" id="tqBtn" style="font-size:12px; padding:14px 22px;">
-    <svg viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="#fffef7" stroke-width="1.6" stroke-linecap="round"/></svg>
-    <span>Open the three questions</span>
-  </button>
-</section>
-
-<!-- TICKER -->
-<div class="ticker green" id="ticker3"></div>
-
-<!-- CLOSING -->
-<section class="section" id="closing">
-  <div class="spark-rule"><span class="serif" style="font-size:22px;">✦</span></div>
-  <h2 class="serif" style="text-align:center; font-weight:300; font-size:clamp(30px,5vw,56px); letter-spacing:-0.03em; line-height:1.05; max-width:18ch; margin: 24px auto 0;">
-    When Claude is working, that's our <em style="color:var(--green-deep)">commercial break.</em>
-  </h2>
-  <p style="text-align:center; color:var(--ink-soft); max-width: 54ch; margin: 22px auto 0; font-size: 17px; line-height:1.55;">
-    Hit the <b style="color:var(--navy)">Hacks &amp; Best Practices</b> button — bottom right, always there — for the little moves that make all of this faster. Pull it open any time the room is waiting on a build.
-  </p>
-  <div style="text-align:center; margin-top: 30px;">
-    <button class="btn-ghost" id="openDrawerInline">✦ Open Hacks &amp; Best Practices</button>
-  </div>
-</section>
-
 <!-- FOOTER -->
 <footer>
+  <div class="sparkles" id="footSparkles"></div>
   <div class="footer-inner">
     <p class="footer-big serif">Think, don't code.<br>Prototype, don't pitch.<br><em>Make, don't wait.</em></p>
     <div class="footer-meta">
-      <div class="fm-mono">
-        WILLA'S × OBSOLETE<br>
-        AI 101 — A LIVE WORKING SESSION<br>
-        <b>NOURISH THE SPARK IN EVERYONE ✦</b>
-      </div>
-      <div class="fm-mono" style="text-align:right;">
-        REAL FOOD, PASSED DOWN.<br>REINVENTED FORWARD.<br>JUN 2026
-      </div>
+      <div class="fm">WILLA'S × OBSOLETE<br>AI 101 — A LIVE WORKING SESSION<br><b>NOURISH THE SPARK IN EVERYONE ✦</b></div>
+      <div class="fm" style="text-align:right;">REAL FOOD, PASSED DOWN.<br>REINVENTED FORWARD.<br>JUN 2026</div>
     </div>
   </div>
 </footer>
-
-<!-- FLOATING BUTTON -->
-<button class="float-btn" id="floatBtn">
-  <span class="fb-spark">✦</span><span class="fb-label">Hacks &amp; Best Practices</span>
-</button>
 
 <!-- DRAWER -->
 <aside class="drawer" id="drawer">
   <div class="drawer-head">
     <div class="drawer-top">
-      <div>
-        <h2 class="serif">Commercial breaks</h2>
-        <p>Little moves for while Claude works. Tap any row for a copy-paste starter.</p>
-      </div>
+      <div><h2 class="serif">Commercial breaks</h2><p>Little moves for while Claude works. Tap a row for a copy-paste starter.</p></div>
       <button class="ov-close" id="drawerClose">✕</button>
     </div>
-    <div class="tabs">
-      <button class="tab active" data-tab="hacks">Hacks</button>
-      <button class="tab bp-tab" data-tab="bp">Best Practices</button>
-    </div>
+    <div class="tabs"><button class="tab active" data-tab="hacks">Hacks</button><button class="tab bp-tab" data-tab="bp">Best Practices</button></div>
   </div>
   <div class="drawer-body">
     <div class="tabpane active" id="pane-hacks"></div>
@@ -753,69 +612,47 @@
 <!-- FLOW OVERLAY -->
 <div class="overlay" id="flowOverlay">
   <div class="overlay-card">
-    <div class="ov-head">
-      <div>
-        <h2 class="serif">The <em>flow</em> for today</h2>
-        <p>Five beats. We move together — nobody gets left behind. Ed and Alex drive; you build along.</p>
-      </div>
-      <button class="ov-close" data-ov-close>✕</button>
-    </div>
+    <div class="sparkles" id="flowSparkles"></div>
+    <div class="ov-head"><div><h2 class="serif">The <em>flow</em> for today</h2><p>Five beats. We move together — Ed and Alex drive, you build along.</p></div><button class="ov-close" data-ov-close>✕</button></div>
     <div class="ov-body" id="flowBeats"></div>
   </div>
 </div>
 
-<!-- THREE QUESTIONS OVERLAY -->
-<div class="overlay" id="tqOverlay">
-  <div class="overlay-card">
-    <div class="ov-head">
-      <div>
-        <h2 class="serif">Three <em>questions</em></h2>
-        <p>Drop your answers in your chat window — we'll read the room together.</p>
-      </div>
-      <button class="ov-close" data-ov-close>✕</button>
-    </div>
-    <div class="ov-body" id="tqBody"></div>
-  </div>
-</div>
-
 <script>
-/* ──────────────────────────────────────────────────────────
-   DATA
-   ────────────────────────────────────────────────────────── */
+/* ───────── DATA ───────── */
 const TICKER = ["Think, don't code", "Prototype, don't pitch", "Make, don't wait"];
 
 const FLOW = [
   { n:"1", title:"Three Questions", body:"A quick warm-up to read the room. You answer in your own chat — Ed walks us through it." },
   { n:"2", title:"“Make me a thing”", body:"The idea-to-artifact leap. We prototype a brand-new Willa's website together, live, in under five minutes." },
   { n:"3", title:"“Do this for me, every time”", body:"The chore-to-tool leap. We turn a repeated manual task into a reusable Markdown automation you keep." },
-  { n:"4", title:"Q&A + Conversation", body:"Open floor. Bring the thing you're stuck on, the thing you wish existed, the thing you're skeptical about." },
-  { n:"✶", title:"Commercial Breaks", under:true, tagline:"Running underneath the whole session", body:"While Claude works, we drop in Hacks & Best Practices — the little moves that make all of this faster. Always one tap away, bottom-right." }
+  { n:"4", title:"Q&A + Conversation", body:"Open floor. Bring what you're stuck on, what you wish existed, what you're skeptical about." },
+  { n:"✶", title:"Commercial Breaks", under:true, tagline:"Running underneath the whole session", body:"While Claude works, we drop in Hacks & Best Practices — the little moves that make all of this faster. Always one tap away, up in the nav." }
 ];
 
 const TQ = [
   { n:"1", q:"On a scale of 1–100, how would you rate your AI fluency?", note:"Be honest — “I’ve typed into a chatbot twice” is a totally valid 12.", slider:true },
-  { n:"2", q:"Do you know what a Cron is?", note:"Yes / no / “isn’t that a Lord of the Rings thing?” all accepted. (We’ll demystify it.)" },
+  { n:"2", q:"Do you know what a Cron is?", note:"Yes / no / “isn’t that a Lord of the Rings thing?” all accepted. We’ll demystify it." },
   { n:"3", q:"What’s something you do every day or week that your gut says needs AI?", note:"This is the good one. Whatever you just thought of — that’s your homework for Build Two." }
 ];
 
 const C1_PRINCIPLES = [
-  { h:"Describe the outcome, not the steps", p:"Say what “done” looks like — who it’s for, what it needs to do, how it should feel — and let the AI find the path there." },
-  { h:"Show, don’t just tell", p:"Paste a real example, a photo, a link, a line in our voice. The AI matches what it can see far better than what you describe." },
-  { h:"Start ugly, on purpose", p:"The first version exists to be reacted to, not admired. A rough thing you can see beats a perfect thing you’re still describing." },
-  { h:"Talk back to it", p:"Treat it like a draft in a meeting: “warmer,” “lose the third one,” “what if it were a carousel?” The iteration is the work." },
-  { h:"Ship it while it’s warm", p:"Seeing it isn’t the finish line — sending it is. Export, screenshot, paste it in the thread. Done-and-shared beats perfect-and-someday." }
+  { h:"Describe the outcome", p:"Say what “done” looks like — not the steps to get there." },
+  { h:"Show, don’t tell", p:"Paste an example, a photo, a link. It matches what it can see." },
+  { h:"Start ugly", p:"A rough thing you can see beats a perfect thing you describe." },
+  { h:"Talk back to it", p:"“Warmer.” “Lose the third one.” “Make it a carousel.”" },
+  { h:"Ship it warm", p:"Seeing it isn’t the finish line. Sending it is." }
 ];
-
 const C2_PRINCIPLES = [
-  { h:"Start with the chore that annoys you", p:"The best automation candidate is the thing you’ve done by hand more than three times and resent a little every time." },
-  { h:"Sketch the perfect version first", p:"Describe the ideal outcome end-to-end before you mention any tool. You’re designing the finish line, not the machine." },
-  { h:"Feed it everything", p:"The form, the past examples, the weird edge cases, the file it reads from. Automations break on the context you forgot to give it." },
-  { h:"Make it reusable, not one-and-done", p:"Save the instructions as a file you can run again next week. A good automation is a tool you keep, not a task you finished." },
-  { h:"Name it, store it, maintain it", p:"Give it a home (a Markdown file), a name you’ll remember, and a 30-second tune-up when something changes. Tools rust — keep yours sharp." }
+  { h:"Pick the chore you resent", p:"The thing you’ve done by hand one too many times." },
+  { h:"Sketch the perfect version", p:"Describe the finish line first — not the machine." },
+  { h:"Feed it everything", p:"The form, the examples, the weird edge cases." },
+  { h:"Make it reusable", p:"Save it as a file you can run again next week." },
+  { h:"Name it, store it, keep it", p:"Give your tool a home and a 30-second tune-up." }
 ];
 
 const C1_USECASES = [
-  { title:"A one-page sell sheet for Barista oat milk", forwho:"For: a coffee-shop owner", sub:"You want a clean, single-page leave-behind that makes a café owner want Willa's Barista on their bar tomorrow.",
+  { title:"A one-page sell sheet for Barista oat milk", forwho:"For: a coffee-shop owner", sub:"A clean, single-page leave-behind that makes a café owner want Willa's Barista on their bar tomorrow.",
     prompt:`You are a brand designer + copywriter for Willa's, the first & only WHOLE plant milk (made from the entire oat groat, not oat syrup — so more protein, more prebiotic fiber, 1g sugar).
 
 Make me a one-page sell sheet for [WILLA'S BARISTA OAT MILK] aimed at [an independent coffee-shop owner deciding what to put on their bar].
@@ -823,26 +660,26 @@ Make me a one-page sell sheet for [WILLA'S BARISTA OAT MILK] aimed at [an indepe
 It should:
 - Lead with the one reason a barista will love it: [steams + lattes like dairy / clean ingredient story / customers ask for it].
 - Hit 3 quick proof points a busy owner can skim in 10 seconds.
-- Sound warm and confident, never clinical. Our north star: "Nourish the spark in everyone."
+- Sound warm and confident, never clinical. North star: "Nourish the spark in everyone."
 - End with a simple next step: [email / sample request / rep contact].
 
 Build it as a single self-contained HTML page I can open in a browser and screenshot. Make a rough first version fast — I'll react and we'll refine.` },
   { title:"An email template that sounds like us", forwho:"For: any inbox",
-    sub:"A reusable email skeleton in Willa's voice — warm, witty, human — that you can reach for again and again.",
+    sub:"A reusable email skeleton in Willa's voice — warm, witty, human — you can reach for again and again.",
     prompt:`You are a copywriter who knows Willa's voice cold: warm, clean, a little witty, confident but never preachy. Heritage brand — "real food, passed down, reinvented forward."
 
 Write me a reusable email template for [the situation: replying to a retailer / following up with a creator / answering a customer question].
 
 Details:
 - Audience: [who's receiving it]
-- Goal of the email: [what I want them to do or feel]
+- Goal: [what I want them to do or feel]
 - Tone dial: [extra warm / playful / buttoned-up]
 - Must include: [any required info, links, or dates]
 
-Give me a fill-in-the-blanks version with [brackets] for the parts that change each time, plus one example filled in so I can see it working. Keep it short and human — no corporate filler.` },
+Give me a fill-in-the-blanks version with [brackets] for the parts that change each time, plus one example filled in so I can see it working. Short and human — no corporate filler.` },
   { title:"A comp for an IG Reel we should post", forwho:"For: the content calendar",
     sub:"A shot-by-shot mock of a Reel concept — hook, beats, on-screen text, audio idea — you can hand straight to whoever shoots it.",
-    prompt:`You are a short-form content strategist for Willa's (first & only whole plant milk; warm, witty, confident voice; tagline "Nourish the spark in everyone").
+    prompt:`You are a short-form content strategist for Willa's (first & only whole plant milk; warm, witty, confident voice; "Nourish the spark in everyone").
 
 Comp up one Instagram Reel we should post about [TOPIC / PRODUCT / MOMENT].
 
@@ -853,9 +690,9 @@ Give me:
 - An audio / trend idea to ride
 - A caption + 3 hashtag options
 
-Keep it producible by one person with a phone. Make it feel native to how real people post — not like an ad. Rough draft first; I'll tell you what to push.` },
+Keep it producible by one person with a phone, native to how real people post — not like an ad. Rough draft first; I'll tell you what to push.` },
   { title:"A line-review leave-behind for a buyer", forwho:"For: a retail category manager",
-    sub:"The one-pager you leave on the table after a buyer meeting so the brand keeps selling itself once you've left the room.",
+    sub:"The one-pager you leave on the table so the brand keeps selling itself after you've left the room.",
     prompt:`You are a CPG sales strategist + designer for Willa's (whole plant milk: whole oat groat, 4g+ protein, 2g+ prebiotic fiber, 1g sugar, 4 ingredients).
 
 Make me a one-page line-review leave-behind for [a category buyer at RETAILER] reviewing the plant-milk set.
@@ -863,19 +700,19 @@ Make me a one-page line-review leave-behind for [a category buyer at RETAILER] r
 Include:
 - The white space we fill in their set: [clean / high-protein / whole-food story]
 - The lineup we're pitching: [Original / Barista / Kids]
-- 3 reasons we move units (consumer demand signal, margin, differentiation)
+- 3 reasons we move units (consumer demand, margin, differentiation)
 - A simple "what we're asking for": [# of SKUs, shelf placement, timing]
 
-Single self-contained HTML page, screenshot-ready, on-brand and confident. Draft fast — we'll refine the numbers together.` },
+Single self-contained HTML page, screenshot-ready, on-brand and confident. Draft fast — we'll refine numbers together.` },
   { title:"A recipe card for a new flavor", forwho:"For: social + on-pack",
     sub:"A beautiful, on-brand recipe card that makes the product the hero and is easy to screenshot or print.",
     prompt:`You are a food stylist + designer for Willa's (whole plant milk; warm, real-food heritage voice).
 
-Make me a recipe card featuring [WILLA'S PRODUCT] in [a recipe: overnight oats / golden latte / smoothie / etc.].
+Make me a recipe card featuring [WILLA'S PRODUCT] in [a recipe: overnight oats / golden latte / smoothie].
 
 It should:
 - Have a mouth-watering title and a one-line "why you'll love it"
-- List ingredients + 3–5 simple steps a real person will actually follow
+- List ingredients + 3–5 simple steps a real person will follow
 - Put Willa's at the center without sounding like an ad
 - Feel warm, homemade, grandmother-Willa-approved
 
@@ -884,12 +721,12 @@ Build it as a single self-contained HTML card I can open and screenshot, square-
 
 const C2_USECASES = [
   { title:"A retailer new-item form, filled for you", forwho:"For: sales ops",
-    sub:"You paste the blank form + the product facts; the AI fills every field consistently, every time, and flags anything it's missing.",
-    prompt:`You are my sales-operations assistant for Willa's. Your job is to fill out [RETAILER]'s new-item setup form accurately and consistently.
+    sub:"Paste the blank form + the product facts; it fills every field consistently and flags anything it's missing.",
+    prompt:`You are my sales-operations assistant for Willa's. Fill out [RETAILER]'s new-item setup form accurately and consistently.
 
 I'll give you:
-- The blank form (fields + any instructions): [paste form here]
-- The product facts for this SKU: [product name, UPC, case pack, dimensions, price, etc.]
+- The blank form (fields + instructions): [paste form here]
+- The product facts for this SKU: [name, UPC, case pack, dimensions, price, etc.]
 
 Do this:
 1. Fill every field you can from the facts I gave you.
@@ -897,10 +734,10 @@ Do this:
 3. Keep formatting and units exactly as the retailer asks.
 4. Return the completed form + the needs list.
 
-Build this so I can reuse it next time by just swapping in a new form and new product facts.` },
+Build it so I can reuse it next time by swapping in a new form and new facts.` },
   { title:"A UPC / barcode wrangler", forwho:"For: item setup",
-    sub:"Turn a messy list of products into a clean, validated UPC table — check digits and all — in the format each retailer wants.",
-    prompt:`You are a data assistant handling UPC codes for Willa's product catalog.
+    sub:"Turn a messy product list into a clean, validated UPC table — check digits and all — in each retailer's format.",
+    prompt:`You are a data assistant handling UPC codes for Willa's catalog.
 
 Here's my list: [paste products + any UPCs / GTINs you have].
 
@@ -908,12 +745,12 @@ Do this:
 1. Put everything in a clean table: Product | Size/Flavor | UPC-12 | Notes.
 2. Validate each UPC's check digit and flag any that look wrong.
 3. Note any product missing a code under "NEEDS A UPC."
-4. Then re-export the table in [the format RETAILER wants: GTIN-14 / with leading zeros / CSV].
+4. Re-export the table in [format RETAILER wants: GTIN-14 / leading zeros / CSV].
 
-Make it reusable — I'll paste a fresh list next time and run it again.` },
+Make it reusable — I'll paste a fresh list next time.` },
   { title:"A case-pack & pallet spec sheet", forwho:"For: logistics",
-    sub:"Hand it the carton math; it produces a clean, retailer-ready spec sheet with cases per layer, layers per pallet, and total units.",
-    prompt:`You are a logistics assistant for Willa's. Build me a clean case-pack & pallet spec sheet.
+    sub:"Hand it the carton math; it produces a clean, retailer-ready spec sheet with the full pallet breakdown.",
+    prompt:`You are a logistics assistant for Willa's. Build a clean case-pack & pallet spec sheet.
 
 Inputs: [units per case, case dimensions + weight, pallet type (e.g. 48x40), max stack height].
 
@@ -922,163 +759,158 @@ Do the math and return:
 - Pallet weight + height (flag if it exceeds [retailer max])
 - A tidy spec table ready to paste into a new-item form
 
-Show your math briefly so I can sanity-check it. Make it reusable for any product — I'll swap the inputs next time.` },
+Show your math briefly so I can sanity-check it. Reusable for any product — I'll swap the inputs.` },
   { title:"A vendor-info collector", forwho:"For: onboarding",
-    sub:"A standard intake template + a polite request email, so every new partner gives you the same complete info the first time.",
+    sub:"A standard intake template + a warm request email, so every new partner gives you complete info the first time.",
     prompt:`You are an operations assistant for Willa's. Create a reusable vendor / partner intake kit.
 
 Make two things:
-1. A clean intake template listing every piece of info we need from a new [vendor / co-packer / broker]: [company, contacts, certs, lead times, terms, remittance, etc.].
-2. A short, warm request email I can send asking them to fill it in by [date].
+1. A clean intake template listing every piece of info we need from a new [vendor / co-packer / broker]: [company, contacts, certs, lead times, terms, remittance].
+2. A short, warm request email asking them to fill it in by [date].
 
-Keep our voice friendly and human. Leave [brackets] for anything specific to the partner. I'll reuse this for every new vendor — design it that way.` },
+Keep our voice friendly and human. Leave [brackets] for partner-specifics. I'll reuse this for every new vendor — design it that way.` },
   { title:"An annual-certifications tracker", forwho:"For: compliance",
-    sub:"A living checklist of every cert, its expiry, and who owns the renewal — plus the heads-up email when one's coming due.",
-    prompt:`You are a compliance assistant for Willa's. Build me a reusable annual-certifications tracker.
+    sub:"A living checklist of every cert, its expiry, and who owns the renewal — plus the heads-up email when one's due.",
+    prompt:`You are a compliance assistant for Willa's. Build a reusable annual-certifications tracker.
 
-I'll give you our certs: [Organic, Non-GMO, Kosher, WBENC, etc.] with [issue + expiry dates] if I have them.
+I'll give you our certs: [Organic, Non-GMO, Kosher, WBENC] with [issue + expiry dates] if I have them.
 
 Do this:
 1. Make a clean table: Certification | Issuing Body | Expiry | Owner | Status | Renewal Lead Time.
 2. Flag anything expiring within [90 days] as "RENEW SOON."
-3. Draft a short reminder email I can send to the owner of each one that's due.
+3. Draft a short reminder email for the owner of each one that's due.
 
 Design it so I can paste an updated cert list next quarter and re-run it.` }
 ];
 
 const POC = {
-  intro:"This is the one. We're going to prototype a brand-new Willa's website, live, right now. Copy the prompt, paste it into Claude, and watch an idea become something you can click in under five minutes. First we'll take requests from the room — then we run it.",
+  intro:"This is the one. We'll prototype a brand-new Willa's website, live, right now. First we take requests from the room — then we run it and watch an idea become something you can click.",
   files:[
-    { f:"index.html", d:"The whole prototype — one self-contained file. Open it in a browser, no setup." },
-    { f:"(that's it)", d:"One file is the magic. No build step, no install. Drag it into a browser and it's live." },
-    { f:"→ then: push to GitHub", d:"When we love it, the same one-push-deploys-to-Vercel loop we set this site up with." }
+    { f:"index.html", d:"The whole prototype — one self-contained file." },
+    { f:"(that's it)", d:"One file. No build step, no install. Drag it into a browser." },
+    { f:"→ push to GitHub", d:"When we love it, same one-push-to-Vercel loop we used for this site." }
   ],
   basePrompt:`You are a world-class web designer + front-end engineer. Build me a single self-contained index.html (inline CSS + JS, no build step, no external files except Google Fonts) for a brand-new Willa's website.
 
-WILLA'S: the first & only WHOLE plant milk — made from the entire oat groat, not oat syrup. 1g sugar, 4g+ protein, 2g+ prebiotic fiber, 4 clean ingredients. Heritage brand named for the founder's grandmother Willa — "real food, passed down, reinvented forward." North star: "Nourish the spark in everyone." Voice: warm, clean, witty, confident — never clinical.
+WILLA'S: the first & only WHOLE plant milk — made from the entire oat groat, not oat syrup. 1g sugar, 4g+ protein, 2g+ prebiotic fiber, 4 clean ingredients. Heritage brand named for the founder's grandmother Willa — "real food, passed down, reinvented forward." North star: "Nourish the spark in everyone." Voice: warm, clean, witty, confident.
 
-PALETTE: cream #fffef7, deep navy #202a44, oat green #75c596 / #4e8c63, warm caramel #9e652e, soft blue #73b2c9, sand #e8e1c2. Fonts: Fraunces (serif headlines) + DM Sans (body).
+PALETTE: cream #fffef7, deep navy #202a44, oat green #75c596, sky blue #93c4e0, tiger orange #e07a45, warm caramel #9e652e, sand #e8e1c2. Fonts: Fraunces (serif headlines) + a chunky rounded sans for labels. Use scattered star/sparkle confetti as a flourish.
 
-BUILD a beautiful, modern, scroll-friendly single-page site with: a hero, the "whole oat" story, the 4 facts, the product lineup, and a warm footer. Make it feel premium and playful, not like a template.`,
-  closer:"Make a bold, complete first version — I'll react in real time and we'll push it together. Speed over polish; we can always refine."
+BUILD a beautiful, modern, scroll-friendly single-page site with: a hero, the "whole oat" story, the 4 facts, the product lineup, and a warm footer. Premium and playful, not a template.`,
+  closer:"Make a bold, complete first version — I'll react in real time and we'll push it together. Speed over polish."
 };
 
 const HACKS = [
-  { title:"AI Inbox", forwho:"Triage", sub:"Stop reading every email cold. Let an agent sort, summarize, and draft replies so you only touch what actually needs you.",
-    prompt:`You are my inbox assistant. I'll paste a batch of emails (or forward them).
+  { title:"AI Inbox", forwho:"Triage", sub:"Stop reading every email cold. Let an agent sort, summarize, and draft replies so you only touch what needs you.",
+    prompt:`You are my inbox assistant. I'll paste a batch of emails.
 
 For each one, give me:
 - A one-line summary
-- A priority: 🔴 needs me today / 🟡 this week / ⚪ FYI only
+- A priority: 🔴 today / 🟡 this week / ⚪ FYI
 - If it needs a reply, a 2–3 sentence draft in my voice: [warm + concise]
 
-Then give me a single "here's your morning" rundown at the top — what to handle first. Don't make me read all of it; make me decide.
+Then a single "here's your morning" rundown at the top — what to handle first. Don't make me read all of it; make me decide.
 
 [Paste emails here]` },
   { title:"Scheduling this call", forwho:"Calendars", sub:"Hand the back-and-forth to the AI. Describe who needs to meet and the constraints; let it draft the times and the message.",
-    prompt:`Help me schedule [this call / meeting] without the email ping-pong.
+    prompt:`Help me schedule [this call] without the email ping-pong.
 
 Details:
 - Who needs to be there: [names / roles]
 - Length: [30 / 45 / 60 min]
-- My availability: [days + time windows, time zone]
+- My availability: [days + windows, time zone]
 - Constraints: [no Fridays / mornings only / before a date]
 
 Give me:
 1. Three specific time options to propose.
-2. A short, friendly message I can send offering them.
+2. A short, friendly message offering them.
 3. A calendar-invite blurb (title + one-line agenda) once we land on one.` },
-  { title:"Exploit multi-modal", forwho:"Show it", sub:"Don't type what you can show. Dump a voice memo, drag in screenshots, paste a photo — the AI reads all of it.",
-    prompt:`I'm going to give you raw material instead of typing everything out — [a voice-memo transcript / screenshots / a photo of my notebook / a picture of a shelf].
+  { title:"Exploit multi-modal", forwho:"Show it", sub:"Don't type what you can show. Dump a voice memo, drag in screenshots, paste a photo — it reads all of it.",
+    prompt:`I'm going to give you raw material instead of typing it all out — [a voice-memo transcript / screenshots / a photo of my notebook].
 
 [Paste transcript or describe what you're attaching]
 
 Read all of it and:
-1. Pull out what matters — the decisions, the to-dos, the ideas.
+1. Pull out what matters — decisions, to-dos, ideas.
 2. Organize it into [a clean brief / a checklist / next steps].
-3. Ask me about anything that's unclear instead of guessing.
+3. Ask me about anything unclear instead of guessing.
 
 Treat the messy input as the source of truth — your job is to make it usable.` },
-  { title:"Hooks — “every time I finish, push to main”", forwho:"Automate the boring", sub:"A hook is a rule that fires automatically. Set one once and the tedious step (saving, pushing, logging) just happens.",
-    prompt:`Explain how to set up a hook so that [every time I finish a coding turn, my work is automatically pushed to GitHub — or: every time I save a brief, it's logged to a file].
+  { title:"Hooks — “every time I finish, push to main”", forwho:"Auto the boring", sub:"A hook is a rule that fires automatically. Set it once and the tedious step just happens.",
+    prompt:`Explain how to set up a hook so that [every time I finish a coding turn, my work is automatically pushed to GitHub].
 
 I'm a non-engineer using [Claude Code / my tool]. For my situation:
-1. Tell me in plain language what the hook will do.
-2. Give me the exact thing to add and where it goes.
-3. Show me how to test that it's working.
-4. Tell me how to turn it off if it gets annoying.
+1. In plain language, what the hook will do.
+2. The exact thing to add, and where it goes.
+3. How to test that it's working.
+4. How to turn it off if it gets annoying.
 
-Keep it simple — assume I've never set one up before.` },
-  { title:"Set a Cron — it runs while you sleep", forwho:"Scheduling", sub:"A Cron is just a timer for a task: “do this every Monday at 9am.” Set it once and the recurring job runs itself — no you required.",
-    prompt:`I want to set up a Cron — a scheduled job that runs automatically on a repeating timer — to [do this task: pull a weekly summary / check a thing / send me a digest] every [Monday at 9am].
+Keep it simple — assume I've never set one up.` },
+  { title:"Set a Cron — it runs while you sleep", forwho:"Scheduling", sub:"A Cron is a timer for a task: “do this every Monday at 9am.” Set it once; the recurring job runs itself.",
+    prompt:`I want to set up a Cron — a scheduled job on a repeating timer — to [pull a weekly summary / send me a digest] every [Monday at 9am].
 
-I'm not an engineer. Walk me through it:
+I'm not an engineer. Walk me through:
 1. In plain English, what a Cron is and what mine will do.
 2. The exact schedule setting for "[every Monday at 9am]".
-3. What the scheduled task should actually do, step by step.
-4. How I'll know it ran, and how to change or stop it later.
+3. What the task should actually do, step by step.
+4. How I'll know it ran, and how to change or stop it.
 
-Assume this is my first one — keep it friendly.` }
+Assume it's my first one.` }
 ];
 
 const BEST_PRACTICES = [
-  { title:"Be precise", forwho:"Inputs", sub:"Vague in, vague out. The more specific your ask — audience, format, length, tone — the less guessing the AI does.",
+  { title:"Be precise", forwho:"Inputs", sub:"Vague in, vague out. The more specific your ask — audience, format, length, tone — the less it guesses.",
     prompt:`I'm going to make a request, and I want you to push me to be precise before you start.
 
 My rough ask: [paste your vague request, e.g. "write something for our newsletter"]
 
-Before you do anything, ask me up to 4 sharp questions that would make your output 10x better — things like audience, goal, length, tone, format, must-includes. Then wait for my answers, THEN do the work. Don't fill the gaps with assumptions.` },
-  { title:"Describe the symptoms", forwho:"Debugging", sub:"When something's wrong, don't diagnose — describe. Tell the AI exactly what you did, what you expected, and what actually happened.",
-    prompt:`Something isn't working and I want your help fixing it. I'm going to describe the symptoms, not guess at the cause.
+Before doing anything, ask me up to 4 sharp questions that would make your output 10x better — audience, goal, length, tone, must-includes. Then wait for my answers, THEN do the work. Don't fill gaps with assumptions.` },
+  { title:"Describe the symptoms", forwho:"Debugging", sub:"When something's wrong, don't diagnose — describe. What you did, what you expected, what actually happened.",
+    prompt:`Something isn't working and I want your help. I'll describe the symptoms, not guess the cause.
 
 - What I was trying to do: [goal]
 - What I did, step by step: [actions]
-- What I expected to happen: [expectation]
+- What I expected: [expectation]
 - What actually happened: [the error / weird result — paste it exactly]
 
-Based on the symptoms, give me your top 2–3 likely causes, the single most likely one first, and the exact next step to test it. Ask me for anything you need to narrow it down.` },
-  { title:"Put the burden on the AI", forwho:"Mindset", sub:"You're the director, not the laborer. Make it do the heavy lifting — the drafting, the options, the figuring-out — while you decide.",
-    prompt:`For this task, I want you to carry the load — I'll direct, you do the heavy lifting.
+Give me your top 2–3 likely causes, the most likely first, and the exact next step to test it. Ask for anything you need to narrow it down.` },
+  { title:"Put the burden on the AI", forwho:"Mindset", sub:"You're the director, not the laborer. Make it do the heavy lifting while you decide.",
+    prompt:`For this task, carry the load — I'll direct, you do the heavy lifting.
 
 The task: [describe it]
 
-Instead of asking me to make every decision, you should:
+Instead of asking me to decide everything, you should:
 - Make reasonable choices and tell me what you chose and why.
 - Give me 2–3 options where it genuinely matters, with a recommendation.
-- Do the tedious parts (drafting, formatting, listing, checking) without being asked.
+- Do the tedious parts (drafting, formatting, listing, checking) unasked.
 - Flag only the decisions that actually need me.
 
 I'm the editor. You're the writer. Go.` },
-  { title:"Ask it to teach you how", forwho:"Leveling up", sub:"Don't just take the answer — ask it to explain the move, so next time you can do it (or ask better) yourself.",
-    prompt:`Help me with [the task] — but I also want to actually learn how, not just get the output.
+  { title:"Ask it to teach you how", forwho:"Leveling up", sub:"Don't just take the answer — ask it to explain the move, so next time you can do it yourself.",
+    prompt:`Help me with [the task] — but I also want to learn how, not just get the output.
 
-So as you work:
+As you work:
 1. Do the thing.
-2. Then explain, in plain language, the key move you made and WHY — the part I'd need to understand to do this myself next time.
-3. Give me one tip for how to ask for this better in the future.
+2. Then explain, in plain language, the key move you made and WHY — the part I'd need to do this myself next time.
+3. Give me one tip for asking better in future.
 
-Teach me like I'm smart but brand-new to this. Skip the jargon, or define it when you use it.` },
+Teach me like I'm smart but brand-new. Skip the jargon, or define it when you use it.` },
   { title:"Know when to start fresh", forwho:"Resetting", sub:"When a chat goes in circles, don't keep pushing — a clean restart with a tight summary beats fighting a confused thread.",
-    prompt:`This conversation has gotten tangled and I think we should start clean. Before I open a fresh chat, help me carry over only what matters.
+    prompt:`This conversation's gotten tangled — let's start clean. Before I open a fresh chat, help me carry over only what matters.
 
-Look back at what we've done and give me a tight "handoff" I can paste into a new conversation:
+Give me a tight "handoff" I can paste into a new conversation:
 - The goal (one line)
 - What we've decided / what's working
 - What's still broken or open
 - The exact next step
 
-Keep it short — just enough context to pick up cleanly without dragging the confusion along.` }
+Keep it short — just enough to pick up cleanly without dragging the confusion along.` }
 ];
 
-/* ──────────────────────────────────────────────────────────
-   RENDER HELPERS
-   ────────────────────────────────────────────────────────── */
+/* ───────── HELPERS ───────── */
 function esc(s){ return String(s).replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
-
-// highlight [BRACKETS] as placeholders inside prompt text
-function fmtPrompt(t){
-  return esc(t).replace(/\[([^\]]+)\]/g, '<span class="ph">[$1]</span>');
-}
+function fmtPrompt(t){ return esc(t).replace(/\[([^\]]+)\]/g, '<span class="ph">[$1]</span>'); }
+function decodeAttr(s){ return s.replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&'); }
 
 function promptBlock(label, text){
   return `<div class="prompt-block">
@@ -1087,141 +919,106 @@ function promptBlock(label, text){
     <pre class="prompt-text">${fmtPrompt(text)}</pre>
   </div>`;
 }
-
 function renderPrinciples(el, list){
-  el.innerHTML = list.map((p,i)=>`
-    <div class="principle">
-      <span class="pn serif">${i+1}</span>
-      <div><h4>${esc(p.h)}</h4><p>${esc(p.p)}</p></div>
-    </div>`).join('');
+  el.innerHTML = list.map((p,i)=>`<div class="principle"><span class="pn">${i+1}</span><h5 class="serif">${esc(p.h)}</h5><p>${esc(p.p)}</p></div>`).join('');
 }
-
 function renderAccordion(el, list, label){
-  el.innerHTML = list.map((u,i)=>`
+  el.innerHTML = list.map(u=>`
     <div class="acc-item">
-      <button class="acc-head" aria-expanded="false">
-        <span class="ac-spark">✦</span>
-        <span class="acc-title serif">${esc(u.title)}</span>
-        <span class="acc-for">${esc(u.forwho||'')}</span>
-      </button>
-      <div class="acc-body"><div class="acc-body-inner">
-        <p class="acc-sub">${u.sub.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')}</p>
-        ${promptBlock(label, u.prompt)}
-      </div></div>
+      <button class="acc-head" aria-expanded="false"><span class="ac-spark">✦</span><span class="acc-title serif">${esc(u.title)}</span><span class="acc-for">${esc(u.forwho||'')}</span></button>
+      <div class="acc-body"><div class="acc-body-inner"><p class="acc-sub">${esc(u.sub)}</p>${promptBlock(label, u.prompt)}</div></div>
     </div>`).join('');
 }
-
 function renderTicker(el){
   const items = TICKER.map(t=>`<span class="ticker-item">${esc(t)}</span>`).join('');
   el.innerHTML = `<div class="ticker-track">${items}${items}${items}${items}</div>`;
 }
-
 function renderGen(el, mode){
   el.innerHTML = `
-    <div class="gen-top">
-      <span class="badge"><span class="pulse"></span>Live · Powered by Claude</span>
-      <p>Describe something you actually want to <b>${mode==='automate'?'automate':'make'}</b> — Claude writes you a custom starter prompt to copy, fill in, and run.</p>
-    </div>
+    <div class="gen-top"><span class="badge"><span class="ld"></span>Live · Powered by Claude</span>
+      <p>Describe something you actually want to <b>${mode==='automate'?'automate':'make'}</b> — Claude writes you a custom starter prompt, live.</p></div>
     <div class="gen-body">
-      <textarea placeholder="${mode==='automate'
-        ? 'e.g. Every week I copy sales numbers from three emails into one recap…'
-        : 'e.g. A little landing page for our new Barista flavor that a café could see…'}"></textarea>
-      <div class="gen-actions">
-        <button class="btn-primary gen-go"><svg viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="#fffef7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="bt">Write my starter prompt</span></button>
-        <span class="gen-hint">Takes a few seconds.</span>
-      </div>
+      <textarea placeholder="${mode==='automate' ? 'e.g. Every week I copy sales numbers from three emails into one recap…' : 'e.g. A little landing page for our new Barista flavor a café could see…'}"></textarea>
+      <div class="gen-actions"><button class="btn-primary gen-go"><svg viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="#fffef7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="bt">Write my starter prompt</span></button><span class="gen-hint">Watch it write in real time.</span></div>
       <div class="gen-result"></div>
     </div>`;
 }
 
+let CROWD = [];
+function renderCrowd(el){
+  el.innerHTML = CROWD.map((c,i)=>`<span class="crowd-tag">${esc(c)} <button data-crowd-rm="${i}">✕</button></span>`).join('')
+    || `<span class="gen-hint" style="color:rgba(255,254,247,0.55);font-size:13px;">No requests yet — the base prompt works great on its own.</span>`;
+}
+function buildPOCPrompt(){
+  let p = POC.basePrompt;
+  if(CROWD.length) p += `\n\nTHE ROOM ALSO WANTS (fold these in):\n` + CROWD.map(c=>`- ${c}`).join('\n');
+  return p + `\n\n${POC.closer}`;
+}
+function mountPOCPrompt(){ const m=document.getElementById('pocPromptMount'); if(m) m.innerHTML = promptBlock("Willa's website — live build prompt", buildPOCPrompt()); }
+
 function renderPOC(el){
   el.innerHTML = `
-    <div class="hm-banner">
-      <span>✦ The hero of this build</span>
-      <span class="timer">⏱ Under 5 minutes</span>
-    </div>
+    <div class="hm-banner"><span>✦ The hero of this build</span><span>⏱ Under 5 minutes</span></div>
     <div class="hm-body">
       <p class="acc-sub" style="font-size:16px;">${esc(POC.intro)}</p>
 
       <h4 class="serif">1 · Take requests from the room</h4>
-      <p class="acc-sub">Ask the team: what should this site <b>do</b>? What sections or features does it need? Type each one in — we'll fold them into the prompt before we run it.</p>
-      <div class="crowd" id="crowd">
-        <div class="crowd-tags" id="crowdTags"></div>
-        <div class="crowd-row">
-          <input id="crowdInput" placeholder="e.g. a 'find us in stores' map, a quiz, a barista section…" />
-          <button class="btn-ghost" id="crowdAdd">+ Add request</button>
-        </div>
-      </div>
+      <p class="acc-sub">What should this site <b>do</b>? Type each request in — they fold into the prompt automatically.</p>
+      <div class="crowd-tags" id="crowdTags"></div>
+      <div class="crowd-row"><input id="crowdInput" placeholder="e.g. a 'find us in stores' map, a quiz, a barista section…" /><button class="btn-on-navy" id="crowdAdd">+ Add</button></div>
 
       <h4 class="serif">2 · Grab the prompt</h4>
-      <p class="acc-sub">Your room's requests get merged into the prompt automatically. Copy it, paste it into Claude, and go.</p>
+      <p class="acc-sub">Copy it, paste into Claude, and go.</p>
       <div id="pocPromptMount"></div>
 
-      <h4 class="serif">3 · The files it'll make</h4>
-      <div class="files">
-        ${POC.files.map(f=>`<div class="file-row"><span class="fdot"></span><span class="fi">${esc(f.f)}</span><span class="fd">${esc(f.d)}</span></div>`).join('')}
+      <h4 class="serif">3 · See it come alive</h4>
+      <p class="acc-sub">Paste the HTML Claude builds back in here — your new Willa's site renders right on the screen.</p>
+      <div class="preview-wrap">
+        <textarea id="previewInput" style="width:100%;min-height:76px;resize:vertical;padding:14px;border-radius:12px;border:1.5px solid rgba(255,254,247,0.2);background:rgba(255,254,247,0.06);color:var(--cream);font-family:'DM Mono',monospace;font-size:12.5px;outline:none;" placeholder="Paste the full HTML here…"></textarea>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;"><button class="btn-on-navy" id="previewRun">✦ See it live</button><button class="btn-on-navy" id="previewOpen">↗ Open full screen</button></div>
+        <iframe class="preview-frame" id="previewFrame" sandbox="allow-scripts allow-modals" title="Live preview"></iframe>
       </div>
+
+      <h4 class="serif">The files it'll make</h4>
+      <div class="files">${POC.files.map(f=>`<div class="file-row"><span class="fdot"></span><span class="fi">${esc(f.f)}</span><span class="fd">${esc(f.d)}</span></div>`).join('')}</div>
     </div>`;
   mountPOCPrompt();
-  // crowd logic
-  const tagsEl = el.querySelector('#crowdTags');
-  const input = el.querySelector('#crowdInput');
-  const addBtn = el.querySelector('#crowdAdd');
-  function add(){
-    const v = input.value.trim(); if(!v) return;
-    CROWD.push(v); input.value=''; renderCrowd(tagsEl); mountPOCPrompt();
-  }
+  const tagsEl=el.querySelector('#crowdTags'), input=el.querySelector('#crowdInput'), addBtn=el.querySelector('#crowdAdd');
+  const add=()=>{ const v=input.value.trim(); if(!v)return; CROWD.push(v); input.value=''; renderCrowd(tagsEl); mountPOCPrompt(); };
   addBtn.addEventListener('click', add);
   input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); add(); }});
   renderCrowd(tagsEl);
-}
-let CROWD = [];
-function renderCrowd(el){
-  el.innerHTML = CROWD.map((c,i)=>`<span class="crowd-tag">${esc(c)} <button data-crowd-rm="${i}">✕</button></span>`).join('')
-    || `<span class="gen-hint" style="font-size:13px;">No requests yet — the base prompt works great on its own.</span>`;
-}
-function buildPOCPrompt(){
-  let p = POC.basePrompt;
-  if(CROWD.length){
-    p += `\n\nTHE ROOM ALSO WANTS (fold these in):\n` + CROWD.map(c=>`- ${c}`).join('\n');
-  }
-  p += `\n\n${POC.closer}`;
-  return p;
-}
-function mountPOCPrompt(){
-  const m = document.getElementById('pocPromptMount');
-  if(m) m.innerHTML = promptBlock('Willa\'s website — live build prompt', buildPOCPrompt());
+  // live preview
+  const pin=el.querySelector('#previewInput'), frame=el.querySelector('#previewFrame');
+  el.querySelector('#previewRun').addEventListener('click', ()=>{ const html=pin.value.trim(); if(!html)return; frame.srcdoc=html; frame.classList.add('show'); });
+  el.querySelector('#previewOpen').addEventListener('click', ()=>{ const html=pin.value.trim(); if(!html)return; const w=window.open(); if(w){ w.document.open(); w.document.write(html); w.document.close(); } });
 }
 
 function renderMD(el){
   el.innerHTML = `
-    <div class="hm-banner">
-      <span>✦ The hero of this build</span>
-      <span class="timer">♻ Build once · run forever</span>
-    </div>
+    <div class="hm-banner"><span>✦ The hero of this build</span><span>♻ Build once · run forever</span></div>
     <div class="hm-body">
-      <p class="acc-sub" style="font-size:16px;">Here's the secret almost nobody tells you: <b>a Markdown file is a reusable command.</b> You write the steps for a chore once, in plain English, save it as a <span class="inline-code">.md</span> file — and from then on you just say "do <span class="inline-code">new-item-form.md</span> with this data." The AI follows your recipe every time. That's automation without code.</p>
+      <p class="acc-sub" style="font-size:16px;">The secret almost nobody tells you: <b>a Markdown file is a reusable command.</b> Write the steps for a chore once, in plain English, save it as a <span class="inline-code">.md</span> — then just say "do <span class="inline-code">new-item-form.md</span> with this data." The AI follows your recipe every time. Automation without code.</p>
 
       <h4 class="serif">How to do it</h4>
       <div class="md-steps">
-        <div class="md-step"><span class="ms-n serif"></span><div><h5>Catch yourself repeating</h5><p>Next time you do a chore for the 3rd time, stop. That repetition is the signal. Open a chat and just <i>talk through</i> exactly how you do it, start to finish.</p></div></div>
-        <div class="md-step"><span class="ms-n serif"></span><div><h5>Ask the AI to write the recipe</h5><p>"Turn what I just described into a clear, reusable Markdown instruction file I can hand you next time." It writes the steps; you sanity-check them.</p></div></div>
-        <div class="md-step"><span class="ms-n serif"></span><div><h5>Save it as a named <span class="inline-code">.md</span> file</h5><p>Something obvious: <span class="inline-code">retailer-new-item-form.md</span>, <span class="inline-code">weekly-recap.md</span>. The name <i>is</i> the command.</p></div></div>
-        <div class="md-step"><span class="ms-n serif"></span><div><h5>Run it by pointing at it</h5><p>"Follow <span class="inline-code">weekly-recap.md</span> using these three emails." The AI reads your recipe and does the whole thing — same way, every time.</p></div></div>
+        <div class="md-step"><span class="ms-n">1</span><div><h6>Catch yourself repeating</h6><p>3rd time doing a chore? Stop. Talk through exactly how you do it, start to finish.</p></div></div>
+        <div class="md-step"><span class="ms-n">2</span><div><h6>Ask the AI to write the recipe</h6><p>"Turn what I just described into a reusable Markdown instruction file." It drafts; you sanity-check.</p></div></div>
+        <div class="md-step"><span class="ms-n">3</span><div><h6>Save it as a named <span class="inline-code">.md</span></h6><p>Something obvious: <span class="inline-code">retailer-new-item-form.md</span>. The name is the command.</p></div></div>
+        <div class="md-step"><span class="ms-n">4</span><div><h6>Run it by pointing at it</h6><p>"Follow <span class="inline-code">weekly-recap.md</span> using these three emails." Same way, every time.</p></div></div>
       </div>
 
       <h4 class="serif">How to keep a library</h4>
-      <p class="acc-sub">One folder. Call it <span class="inline-code">/recipes</span> (or <span class="inline-code">/commands</span>). Every chore you automate becomes one <span class="inline-code">.md</span> file in there. Clear names, one job each. In tools like Claude Code, files in a <span class="inline-code">/commands</span> folder can even become <span class="inline-code">/slash-commands</span> you trigger by name — but a plain folder of Markdown files is already 90% of the magic. Keep a one-line index at the top of the folder so the team knows what exists.</p>
+      <p class="acc-sub">One folder — call it <span class="inline-code">/recipes</span>. Every chore you automate becomes one <span class="inline-code">.md</span> file with a clear name and one job. Keep a one-line index at the top so the team knows what exists. In tools like Claude Code these can even become <span class="inline-code">/slash-commands</span> — but a plain folder of Markdown files is already 90% of the magic.</p>
 
-      <h4 class="serif">How to activate it &amp; keep it alive</h4>
+      <h4 class="serif">How to keep it alive</h4>
       <div class="md-steps">
-        <div class="md-step"><span class="ms-n serif"></span><div><h5>Invoke by name</h5><p>"Run <span class="inline-code">[recipe].md</span> with <span class="inline-code">[this input]</span>." That's the whole interface. No menus, no setup.</p></div></div>
-        <div class="md-step"><span class="ms-n serif"></span><div><h5>Tune it when reality changes</h5><p>Retailer changes their form? Open the <span class="inline-code">.md</span>, fix the one line, save. 30 seconds. The fix sticks for every future run.</p></div></div>
-        <div class="md-step"><span class="ms-n serif"></span><div><h5>Let the AI improve its own recipe</h5><p>After a run: "That worked — update <span class="inline-code">[recipe].md</span> so it handles that edge case next time." Your tools get sharper the more you use them.</p></div></div>
+        <div class="md-step"><span class="ms-n">5</span><div><h6>Tune it when reality changes</h6><p>Retailer changes their form? Open the <span class="inline-code">.md</span>, fix one line, save. 30 seconds, sticks forever.</p></div></div>
+        <div class="md-step"><span class="ms-n">6</span><div><h6>Let the AI improve its own recipe</h6><p>"That worked — update the recipe so it handles that edge case next time." Tools get sharper as you use them.</p></div></div>
       </div>
 
-      <h4 class="serif">Steal this one to start</h4>
-      <p class="acc-sub">Paste this into Claude to build your <i>first</i> recipe from a chore you already hate doing.</p>
+      <h4 class="serif">Steal this to start</h4>
+      <p class="acc-sub">Paste this into Claude to build your first recipe from a chore you already hate.</p>
       ${promptBlock('Build my first Markdown recipe', `You are helping me turn a chore I do over and over into a reusable Markdown "recipe" file.
 
 The chore: [describe the repetitive task — what triggers it, what you do step by step, what the finished result looks like].
@@ -1230,7 +1027,7 @@ Do this:
 1. Ask me 2–3 quick questions if anything's unclear.
 2. Write a clean, reusable Markdown file (.md) that captures the steps so you can follow it next time I say "run this."
 3. Use clear [brackets] for the inputs that change each run.
-4. Suggest a short, obvious filename for it.
+4. Suggest a short, obvious filename.
 5. Tell me exactly how to run it next time.
 
 Keep the recipe plain-English and foolproof — I'm not an engineer.`)}
@@ -1238,178 +1035,114 @@ Keep the recipe plain-English and foolproof — I'm not an engineer.`)}
 }
 
 function renderFlow(el){
-  el.innerHTML = FLOW.map(b=>`
-    <div class="beat ${b.under?'under':''}">
-      <span class="bn serif">${b.n}</span>
-      <div>
-        <h3 class="serif">${b.title}</h3>
-        <p>${esc(b.body)}</p>
-        ${b.tagline?`<span class="tagline">${esc(b.tagline)}</span>`:''}
-      </div>
-    </div>`).join('');
+  el.innerHTML = FLOW.map(b=>`<div class="beat ${b.under?'under':''}"><span class="bn">${b.n}</span><div><h3 class="serif">${b.title}</h3><p>${esc(b.body)}</p>${b.tagline?`<span class="tagline">${esc(b.tagline)}</span>`:''}</div></div>`).join('');
 }
-
 function renderTQ(el){
-  el.innerHTML = TQ.map(q=>`
-    <div class="tq">
-      <span class="qn serif">${q.n}</span>
-      <div style="flex:1">
-        <h3 class="serif">${esc(q.q)}</h3>
-        <p>${esc(q.note)}</p>
-        ${q.slider?`<div class="slider-demo"><input type="range" min="1" max="100" value="42" id="fluencySlider" aria-label="Rate your AI fluency from 1 to 100"><div class="slider-val serif" id="fluencyVal">42</div></div>`:''}
-        <span class="answer-chip">✦ Drop your answer in the chat</span>
-      </div>
-    </div>`).join('');
-  const s = el.querySelector('#fluencySlider');
-  if(s){ const v = el.querySelector('#fluencyVal'); s.addEventListener('input', ()=> v.textContent = s.value); }
+  el.innerHTML = TQ.map(q=>`<div class="tq"><span class="qn">${q.n}</span><div style="flex:1"><h3 class="serif">${esc(q.q)}</h3><p>${esc(q.note)}</p>${q.slider?`<div class="slider-demo"><input type="range" min="1" max="100" value="42" id="fluencySlider" aria-label="Rate your AI fluency from 1 to 100"><div class="slider-val" id="fluencyVal">42</div></div>`:''}<span class="answer-chip">✦ Drop your answer in the chat</span></div></div>`).join('');
+  const s=el.querySelector('#fluencySlider'); if(s){ const v=el.querySelector('#fluencyVal'); s.addEventListener('input',()=>v.textContent=s.value); }
 }
 
-function renderDrawer(){
-  renderAccordion(document.getElementById('pane-hacks'), HACKS, 'Copy · paste · fill the blanks');
-  renderAccordion(document.getElementById('pane-bp'), BEST_PRACTICES, 'Copy · paste · fill the blanks');
+/* sparkle confetti */
+function sparkle(el, specs){
+  el.innerHTML = specs.map(s=>`<span class="spk" style="left:${s.x}%;top:${s.y}%;font-size:${s.s}px;color:${s.c};transform:rotate(${s.r||0}deg);">${s.g||'✦'}</span>`).join('');
 }
+const C = { green:'#75c596', sky:'#93c4e0', orange:'#e07a45', yellow:'#f4c842', lav:'#b6a6d6', cream:'rgba(255,254,247,0.5)' };
+sparkle(document.getElementById('heroSparkles'), [
+  {x:90,y:18,s:26,c:C.orange,r:12},{x:82,y:54,s:14,c:C.yellow},{x:95,y:72,s:20,c:C.green,r:-10},
+  {x:73,y:30,s:11,c:C.sky},{x:88,y:88,s:16,c:C.lav,r:20},{x:97,y:40,s:10,c:C.orange}
+]);
+sparkle(document.getElementById('tqSparkles'), [
+  {x:6,y:14,s:22,c:C.green,r:-8},{x:92,y:22,s:18,c:C.sky},{x:88,y:70,s:26,c:C.orange,r:14},
+  {x:12,y:80,s:14,c:C.yellow},{x:78,y:88,s:12,c:C.cream},{x:30,y:10,s:10,c:C.sky},{x:96,y:50,s:14,c:C.lav,r:18}
+]);
+sparkle(document.getElementById('footSparkles'), [
+  {x:84,y:20,s:24,c:C.green,r:10},{x:92,y:60,s:16,c:C.orange},{x:74,y:80,s:12,c:C.yellow},{x:96,y:38,s:14,c:C.sky,r:-12}
+]);
+sparkle(document.getElementById('flowSparkles'), [
+  {x:90,y:10,s:18,c:C.green,r:12},{x:6,y:88,s:14,c:C.orange},{x:95,y:55,s:11,c:C.yellow}
+]);
+document.querySelectorAll('[data-card-spk]').forEach((el,i)=>{
+  sparkle(el, i===0
+    ? [{x:86,y:24,s:18,c:C.green,r:10},{x:78,y:62,s:11,c:C.sky},{x:92,y:80,s:14,c:C.orange,r:-12}]
+    : [{x:86,y:24,s:18,c:C.orange,r:10},{x:78,y:62,s:11,c:C.caramel||'#9e652e'},{x:92,y:80,s:14,c:C.yellow,r:-12}]);
+});
 
-/* ──────────────────────────────────────────────────────────
-   WIRING
-   ────────────────────────────────────────────────────────── */
-// tickers
-['ticker1','ticker2','ticker3'].forEach(id=>renderTicker(document.getElementById(id)));
-
-// principles + use cases
+/* ───────── MOUNT ───────── */
+renderTicker(document.getElementById('ticker1'));
 renderPrinciples(document.getElementById('c1-principles'), C1_PRINCIPLES);
 renderPrinciples(document.getElementById('c2-principles'), C2_PRINCIPLES);
 renderAccordion(document.getElementById('c1-usecases'), C1_USECASES, 'Copy · paste · customize');
 renderAccordion(document.getElementById('c2-usecases'), C2_USECASES, 'Copy · paste · customize');
-renderGen(document.getElementById('gen-make'), 'make');
-renderGen(document.getElementById('gen-automate'), 'automate');
+renderGen(document.getElementById('gen-make'),'make');
+renderGen(document.getElementById('gen-automate'),'automate');
 renderPOC(document.getElementById('poc-module'));
 renderMD(document.getElementById('md-module'));
 renderFlow(document.getElementById('flowBeats'));
 renderTQ(document.getElementById('tqBody'));
-renderDrawer();
+renderAccordion(document.getElementById('pane-hacks'), HACKS, 'Copy · paste · fill the blanks');
+renderAccordion(document.getElementById('pane-bp'), BEST_PRACTICES, 'Copy · paste · fill the blanks');
 
-// accordion delegation (global)
-document.addEventListener('click', e=>{
-  const head = e.target.closest('.acc-head');
-  if(head){
-    const item = head.parentElement;
-    const open = item.classList.toggle('open');
-    head.setAttribute('aria-expanded', open);
-  }
-});
+/* ───────── INTERACTIONS ───────── */
+document.addEventListener('click', e=>{ const h=e.target.closest('.acc-head'); if(h){ const it=h.parentElement; const o=it.classList.toggle('open'); h.setAttribute('aria-expanded',o); } });
 
-// copy buttons (global delegation)
 document.addEventListener('click', async e=>{
-  const btn = e.target.closest('.copy-btn');
-  if(!btn) return;
-  const text = btn.getAttribute('data-copy')
-    .replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
-  try { await navigator.clipboard.writeText(text); }
-  catch(_) { const t=document.createElement('textarea'); t.value=text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
-  btn.textContent='Copied ✓'; btn.classList.add('copied');
-  setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('copied'); }, 1600);
+  const btn=e.target.closest('.copy-btn'); if(!btn||btn.disabled) return;
+  const text=decodeAttr(btn.getAttribute('data-copy')||'');
+  try{ await navigator.clipboard.writeText(text); }catch(_){ const t=document.createElement('textarea'); t.value=text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+  btn.textContent='Copied ✓'; btn.classList.add('copied'); setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('copied'); },1600);
 });
 
-// crowd remove
-document.addEventListener('click', e=>{
-  const rm = e.target.closest('[data-crowd-rm]');
-  if(!rm) return;
-  CROWD.splice(+rm.getAttribute('data-crowd-rm'),1);
-  renderCrowd(document.getElementById('crowdTags')); mountPOCPrompt();
-});
+document.addEventListener('click', e=>{ const rm=e.target.closest('[data-crowd-rm]'); if(!rm)return; CROWD.splice(+rm.getAttribute('data-crowd-rm'),1); renderCrowd(document.getElementById('crowdTags')); mountPOCPrompt(); });
 
-// big card open/close
-function setCard(n, open){
-  const card = document.querySelector(`.bigcard[data-card="${n}"]`);
-  const chap = document.getElementById('chapter'+n);
-  chap.classList.toggle('open', open);
-  card.setAttribute('aria-expanded', open);
-  if(open) setTimeout(()=> chap.scrollIntoView({behavior:'smooth', block:'start'}), 120);
-}
-document.querySelectorAll('.bigcard').forEach(card=>{
-  const n = card.getAttribute('data-card');
-  const toggle = ()=>{ const chap=document.getElementById('chapter'+n); setCard(n, !chap.classList.contains('open')); };
-  card.addEventListener('click', toggle);
-  card.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }});
-});
-document.querySelectorAll('.ch-close').forEach(b=>{
-  b.addEventListener('click', ()=>{
-    const n=b.getAttribute('data-close'); setCard(n,false);
-    document.getElementById('builds').scrollIntoView({behavior:'smooth', block:'start'});
-  });
-});
+function setCard(n,open){ const card=document.getElementById('card'+n), chap=document.getElementById('chapter'+n); chap.classList.toggle('open',open); card.setAttribute('aria-expanded',open); if(open) setTimeout(()=>chap.scrollIntoView({behavior:'smooth',block:'start'}),120); }
+document.querySelectorAll('.bigcard').forEach(card=>{ const n=card.getAttribute('data-card'); const toggle=()=>setCard(n,!document.getElementById('chapter'+n).classList.contains('open')); card.addEventListener('click',toggle); card.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }}); });
+document.querySelectorAll('.ch-close').forEach(b=>b.addEventListener('click',()=>{ const n=b.getAttribute('data-close'); setCard(n,false); document.getElementById('builds').scrollIntoView({behavior:'smooth',block:'start'}); }));
 
-// overlays
 function openOverlay(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
 function closeOverlay(el){ el.classList.remove('open'); document.body.style.overflow=''; }
-document.getElementById('flowBtn').addEventListener('click', ()=>openOverlay('flowOverlay'));
-document.getElementById('tqBtn').addEventListener('click', ()=>openOverlay('tqOverlay'));
-document.querySelectorAll('.overlay').forEach(ov=>{
-  ov.addEventListener('click', e=>{ if(e.target===ov || e.target.closest('[data-ov-close]')) closeOverlay(ov); });
-});
+document.getElementById('flowBtn').addEventListener('click',()=>openOverlay('flowOverlay'));
+document.getElementById('navFlow').addEventListener('click',()=>openOverlay('flowOverlay'));
+document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{ if(e.target===ov||e.target.closest('[data-ov-close]')) closeOverlay(ov); }));
 
-// drawer
-const drawer = document.getElementById('drawer');
-function openDrawer(){ drawer.classList.add('open'); }
-function closeDrawer(){ drawer.classList.remove('open'); }
-document.getElementById('floatBtn').addEventListener('click', ()=> drawer.classList.contains('open')?closeDrawer():openDrawer());
-document.getElementById('openDrawerInline').addEventListener('click', openDrawer);
-document.getElementById('drawerClose').addEventListener('click', closeDrawer);
-document.querySelectorAll('.tab').forEach(tab=>{
-  tab.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('pane-'+tab.getAttribute('data-tab')).classList.add('active');
-  });
-});
+const drawer=document.getElementById('drawer');
+document.getElementById('navHacks').addEventListener('click',()=>drawer.classList.toggle('open'));
+document.getElementById('drawerClose').addEventListener('click',()=>drawer.classList.remove('open'));
+document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('active')); tab.classList.add('active'); document.getElementById('pane-'+tab.getAttribute('data-tab')).classList.add('active'); }));
 
-// esc closes things
-document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){
-    document.querySelectorAll('.overlay.open').forEach(closeOverlay);
-    closeDrawer();
-  }
-});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySelectorAll('.overlay.open').forEach(closeOverlay); drawer.classList.remove('open'); } });
 
-// LIVE GENERATOR — call /api/generate
+/* progress spine */
+const spineLinks=[...document.querySelectorAll('.spine a')];
+const spineTargets=spineLinks.map(a=>document.getElementById(a.getAttribute('data-spine')));
+const spineObs=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{ if(en.isIntersecting){ const id=en.target.id; spineLinks.forEach(a=>{ const t=a.getAttribute('data-spine'); a.classList.toggle('active', t===id); }); } });
+},{ rootMargin:'-45% 0px -45% 0px', threshold:0 });
+spineTargets.forEach(t=>{ if(t) spineObs.observe(t); });
+
+/* LIVE STREAMING GENERATOR */
 document.addEventListener('click', async e=>{
-  const go = e.target.closest('.gen-go');
-  if(!go) return;
-  const gen = go.closest('.gen');
-  const mode = gen.getAttribute('data-mode');
-  const ta = gen.querySelector('textarea');
-  const result = gen.querySelector('.gen-result');
-  const task = ta.value.trim();
-  if(!task){ ta.focus(); return; }
-
-  go.classList.add('loading'); go.disabled=true;
-  const btText = go.querySelector('.bt'); const original = btText.textContent;
-  btText.textContent='Writing';
-  result.innerHTML = '';
+  const go=e.target.closest('.gen-go'); if(!go) return;
+  const gen=go.closest('.gen'), mode=gen.getAttribute('data-mode'), ta=gen.querySelector('textarea'), result=gen.querySelector('.gen-result');
+  const task=ta.value.trim(); if(!task){ ta.focus(); return; }
+  go.disabled=true; const bt=go.querySelector('.bt'), orig=bt.textContent; bt.textContent='Writing…';
+  result.innerHTML = `<div class="acc-sub" style="margin:4px 0 12px;"><b>✦ Your starter prompt</b> — copy it, fill the blanks, paste into Claude.</div>
+    <div class="prompt-block"><button class="copy-btn" disabled>Copy</button><span class="pb-label">✦ Your custom starter prompt</span><pre class="prompt-text"><span class="caret"></span></pre></div>`;
+  const pre=result.querySelector('.prompt-text'), copyBtn=result.querySelector('.copy-btn');
 
   try {
-    const r = await fetch('/api/generate', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ mode, task })
-    });
-    if(r.status===503){
-      result.innerHTML = fallbackPrompt(mode, task, "The live writer isn't switched on yet — but here's a solid starter you can use right now:");
-    } else if(!r.ok){
-      const err = await r.json().catch(()=>({}));
-      result.innerHTML = fallbackPrompt(mode, task, "Couldn't reach the live writer just now — here's a strong starter to use in the meantime:");
-    } else {
-      const data = await r.json();
-      result.innerHTML = `<div class="acc-sub" style="margin:4px 0 12px;"><b>✦ Here's your starter prompt</b> — copy it, fill the blanks, paste into Claude.</div>` + promptBlock('Your custom starter prompt', data.prompt);
+    const r=await fetch('/api/generate',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({mode,task}) });
+    if(r.status===503){ result.innerHTML=fallback(mode,task,"The live writer isn't switched on yet — here's a solid starter to use right now:"); }
+    else if(!r.ok || !r.body){ result.innerHTML=fallback(mode,task,"Couldn't reach the live writer — here's a strong starter in the meantime:"); }
+    else {
+      const reader=r.body.getReader(), dec=new TextDecoder(); let full='';
+      while(true){ const {done,value}=await reader.read(); if(done) break; full+=dec.decode(value,{stream:true}); pre.innerHTML=esc(full)+'<span class="caret"></span>'; }
+      pre.innerHTML=fmtPrompt(full); copyBtn.disabled=false; copyBtn.setAttribute('data-copy', esc(full).replace(/"/g,'&quot;'));
     }
-  } catch(_){
-    result.innerHTML = fallbackPrompt(mode, task, "Connection hiccup — here's a reliable starter you can run right now:");
-  } finally {
-    go.classList.remove('loading'); go.disabled=false; btText.textContent=original;
-  }
+  } catch(_){ result.innerHTML=fallback(mode,task,"Connection hiccup — here's a reliable starter to run right now:"); }
+  finally { go.disabled=false; bt.textContent=orig; }
 });
 
-function fallbackPrompt(mode, task, note){
+function fallback(mode,task,note){
   const body = mode==='automate'
     ? `You are my operations assistant. Help me turn this repeated chore into a reusable tool.
 
