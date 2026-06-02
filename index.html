@@ -1006,8 +1006,7 @@ function renderFlow(el){
   el.innerHTML = FLOW.map((b,i)=>`<div class="beat ${b.under?'under':''}"><span class="bn">${b.n}</span><div><h3 class="serif">${FLOW_E[i]?FLOW_E[i]+' ':''}${b.title}</h3><p>${esc(b.body)}</p>${b.tagline?`<span class="tagline">${esc(b.tagline)}</span>`:''}</div></div>`).join('');
 }
 function renderTQ(el){
-  el.innerHTML = TQ.map((q,i)=>`<div class="tq"><span class="qn">${q.n}</span><div style="flex:1"><h3 class="serif">${TQ_E[i]?TQ_E[i]+' ':''}${esc(q.q)}</h3><p>${esc(q.note)}</p>${q.slider?`<div class="slider-demo"><input type="range" min="1" max="100" value="42" id="fluencySlider" aria-label="Rate your AI fluency from 1 to 100"><div class="slider-val" id="fluencyVal">42</div></div>`:''}</div></div>`).join('');
-  const s=el.querySelector('#fluencySlider'); if(s){ const v=el.querySelector('#fluencyVal'); s.addEventListener('input',()=>v.textContent=s.value); }
+  el.innerHTML = TQ.map((q,i)=>`<div class="tq"><span class="qn">${q.n}</span><div style="flex:1"><h3 class="serif">${TQ_E[i]?TQ_E[i]+' ':''}${esc(q.q)}</h3><p>${esc(q.note)}</p></div></div>`).join('');
 }
 
 /* sparkle confetti */
