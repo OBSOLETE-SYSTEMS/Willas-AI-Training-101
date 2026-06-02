@@ -635,6 +635,32 @@ It should:
 - End with a simple next step: [email / sample request / rep contact].
 
 Build it as a single self-contained HTML page I can open in a browser and screenshot. Make a rough first version fast — I'll react and we'll refine.` },
+  { title:"An Amazon A+ content block", forwho:"For: the product detail page",
+    sub:"On-brand A+ modules — headline, feature callouts, a comparison angle — that make the whole-oat story sell on Amazon.",
+    prompt:`You are an Amazon listing strategist + copywriter for Willa's (the first & only WHOLE plant milk — entire oat groat, not oat syrup; 1g sugar, 4g+ protein, 2g+ prebiotic fiber, 4 ingredients; warm, clean, witty voice).
+
+Write the A+ content for our [PRODUCT — e.g. Barista / Kids / Chocolate] Amazon detail page.
+
+Give me:
+- A benefit-led headline module (hero line + 1–2 supporting sentences)
+- 3–4 feature callout modules (short title + one line) — lead with the whole-oat difference
+- A simple comparison angle vs. "most oat milks" (no named competitors)
+- Alt-text suggestions for the module images
+
+Keep it skimmable and confident — shoppers decide in seconds. Mark anything I need to confirm in [brackets].` },
+  { title:"A review → testimonial graphic", forwho:"For: social + PDP",
+    sub:"Turn a real 5-star review into a clean, on-brand quote card you can post or drop on the site.",
+    prompt:`You are a designer for Willa's. Turn this real customer review into a polished, on-brand testimonial graphic.
+
+The review: [paste the review text + first name / initial if you have it].
+
+Do this:
+- Pull the single most compelling line as the headline quote (lightly tighten for clarity — don't change the meaning).
+- Add a short attribution (first name + "Verified Customer" or similar).
+- Lay it out as a single self-contained HTML card, square-ish for social, in Willa's palette (cream, navy, oat green, confetti sparkles).
+- Keep it warm and real — not corporate.
+
+Build it so I can open it in a browser and screenshot. Quick first pass; I'll tweak.` },
   { title:"An email template that sounds like us", forwho:"For: any inbox",
     sub:"A reusable email skeleton in Willa's voice — warm, witty, human — you can reach for again and again.",
     prompt:`You are a copywriter who knows Willa's voice cold: warm, clean, a little witty, confident but never preachy. Heritage brand — "real food, passed down, reinvented forward."
@@ -751,7 +777,33 @@ Do this:
 2. Flag anything expiring within [90 days] as "RENEW SOON."
 3. Draft a short reminder email for the owner of each one that's due.
 
-Design it so I can paste an updated cert list next quarter and re-run it.` }
+Design it so I can paste an updated cert list next quarter and re-run it.` },
+  { title:"A weekly sales recap, rolled up for you", forwho:"For: Monday mornings",
+    sub:"Paste the raw numbers from a few sources; get one clean recap with the story, not just the digits.",
+    prompt:`You are my analyst at Willa's. Turn raw weekly numbers into a clean recap I can send.
+
+I'll paste the data: [sales by channel / retailer — Amazon, DTC, wholesale — plus last week's numbers if I have them].
+
+Do this:
+1. A 3–4 bullet "here's the week" summary — what's up, what's down, what to watch.
+2. A tidy table: Channel | This Week | Last Week | Δ.
+3. One sentence on the single most important thing to act on.
+4. Keep it plain and skimmable — no jargon.
+
+Make it reusable: I'll paste fresh numbers next week and run it again.` },
+  { title:"A content calendar from a pile of ideas", forwho:"For: social planning",
+    sub:"Hand it a messy list of ideas; get a structured stretch of posts mapped to formats and dates.",
+    prompt:`You are a social content planner for Willa's (warm, witty, whole-oat brand; "Nourish the spark in everyone").
+
+Here's my pile of ideas / notes: [paste them].
+
+Do this:
+1. Sort them into a [2 / 4]-week calendar — date, platform, format (Reel / carousel / static / story), and a one-line hook for each.
+2. Balance the mix (product, education, founder + heritage, fun, community) so it isn't all one note.
+3. Flag any gaps where we're missing a beat.
+4. Leave [brackets] for dates and specifics I need to fill.
+
+Make it reusable — I'll paste a new pile next month and re-run.` }
 ];
 
 const POC = {
@@ -903,8 +955,8 @@ const FLOW_E = ['🙋','🪄','♻️','💬','🍿'];
 const TQ_E   = ['📊','⏰','💡'];
 const C1_PE  = ['🎯','🍽️','🐣','💬','🚀'];   // describe / feed / start ugly / talk back / ship
 const C2_PE  = ['😤','✏️','🍽️','♻️','🏷️'];   // resent / sketch / feed / reuse / name+store
-const C1_UE  = ['📄','✉️','🎬','📋','🍴'];   // sell sheet / email / reel / leave-behind / recipe
-const C2_UE  = ['📝','🔢','📦','🤝','✅'];   // form / UPC / pallet / vendor / certs
+const C1_UE  = ['📄','🛒','⭐','✉️','🎬','📋','🍴'];   // sell sheet / Amazon A+ / review / email / reel / leave-behind / recipe
+const C2_UE  = ['📝','🔢','📦','🤝','✅','📊','📆'];   // form / UPC / pallet / vendor / certs / recap / calendar
 const HACKS_E= ['📥','📅','🎙️','🪝','⏰'];   // inbox / scheduling / multimodal / hooks / cron
 const BP_E   = ['🎯','🩺','🏋️','🎓','🔄'];   // precise / symptoms / burden / teach / reset
 const FILES_E= ['📄','✨','🚀'];
