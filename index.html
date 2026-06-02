@@ -200,7 +200,7 @@
   .chapter-inner { margin-top:22px; border-radius:24px; background: var(--cream);
     border:1.5px solid var(--navy); padding: 46px clamp(20px,4vw,56px) 54px; position:relative; }
   .ch-headline { font-family:'Fraunces',serif; font-weight:300; font-size: clamp(30px,4.4vw,52px);
-    line-height:1.02; letter-spacing:-0.03em; max-width:19ch; margin: 6px 0 0; }
+    line-height:1.02; letter-spacing:-0.03em; max-width:40ch; text-wrap:balance; margin: 6px 0 0; }
   .ch-headline em { font-style:italic; color: var(--green-deep); }
   .chapter.c2 .ch-headline em { color: var(--clay); }
   .block { margin-top: 52px; }
@@ -345,6 +345,25 @@
   .share-note { margin-top:26px; border-left:3px solid var(--green-deep); padding:14px 0 14px 22px; }
   .share-note .label { display:block; margin-bottom:8px; font-weight:700; color: var(--green-deep); }
   .share-note p { font-family:'Fraunces',serif; font-style:italic; font-size:16px; line-height:1.5; color: var(--navy); }
+
+  /* recolored share card (its own step) */
+  .share-section { background: var(--sand); border-radius:20px; padding: 30px clamp(20px,3vw,34px) 34px; }
+  .share-section .block-head { margin-bottom:22px; }
+
+  /* collapsible build prompt */
+  .poc-collapse { max-height:0; overflow:hidden; transition: max-height .45s ease; }
+  .poc-collapse.open { max-height:6000px; margin-top:14px; }
+
+  /* dismissable generator result */
+  .gen-result-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin:4px 0 12px; }
+  .gen-result-head span { font-size:15px; color: var(--ink-soft); }
+  .gen-result-head b { color: var(--navy); }
+  .gen-dismiss { background:transparent; border:1px solid var(--line-strong); border-radius:8px; width:28px; height:28px; cursor:pointer; color: var(--ink-soft); font-size:13px; line-height:1; flex-shrink:0; transition: all .2s; }
+  .gen-dismiss:hover { background: var(--navy); color: var(--cream); border-color: var(--navy); }
+  .tq-gen .gen-result-head span { color: rgba(255,254,247,0.82); }
+  .tq-gen .gen-result-head b { color: var(--cream); }
+  .tq-gen .gen-dismiss { border-color: rgba(255,254,247,0.3); color: var(--cream); }
+  .tq-gen .gen-dismiss:hover { background: var(--green); color: var(--navy); border-color: var(--green); }
 
   /* md steps */
   .md-steps { display:grid; gap:4px; }
@@ -610,7 +629,7 @@
     <div class="chapter c1" id="chapter1">
       <div class="chapter-inner">
         <span class="kicker">Build One · Make me a thing</span>
-        <h3 class="ch-headline serif">The leap from <em>talking</em> about an idea to <em>seeing</em> and <em>sending</em> it.</h3>
+        <h3 class="ch-headline serif">The leap from <em>talking</em> about an idea<br>to <em>seeing</em> and <em>sending</em> it.</h3>
 
         <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>🪜 Step by step</h4><span class="hr"></span></div>
           <div class="principles" id="c1-principles"></div></div>
@@ -621,11 +640,11 @@
         <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>✍️ …or bring your own</h4><span class="hr"></span></div>
           <div class="gen" data-mode="make" id="gen-make"></div></div>
 
+        <div class="block share-section"><div class="block-head"><span class="bspark">✦</span><h4>📤 Now share it</h4><span class="hr"></span></div>
+          <div id="share-block"></div></div>
+
         <div class="block block--hero"><div class="block-head"><span class="bspark">✦</span><h4>🚀 The main event — build it live</h4><span class="hr"></span></div>
           <div class="hero-module" id="poc-module"></div></div>
-
-        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>📤 Now share it</h4><span class="hr"></span></div>
-          <div id="share-block"></div></div>
 
         <button class="ch-close" data-close="1">✕ Close this build</button>
       </div>
@@ -924,7 +943,7 @@ Make it reusable — I'll paste a new pile next month and re-run.` }
 ];
 
 const POC = {
-  intro:"This is the one. We'll prototype a brand-new Willa's website, live, right now — gather what the room wants, then run it and watch an idea become real.",
+  intro:"We'll prototype a brand-new Willa's website, live, right now — gather what the room wants, then run it and watch an idea become real.",
   files:[
     { f:"index.html", d:"The whole prototype — one self-contained file." },
     { f:"(that's it)", d:"One file. No build step, no install. Drag it into a browser." },
@@ -1123,7 +1142,7 @@ function renderGen(el, mode){
       <p>Describe something you actually want to <b>${mode==='automate'?'automate':'make'}</b> — Claude writes you a custom starter prompt, live.</p></div>
     <div class="gen-body">
       <textarea placeholder="${mode==='automate' ? 'e.g. Every week I copy sales numbers from three emails into one recap…' : 'e.g. A little landing page for our new Barista flavor a café could see…'}"></textarea>
-      <div class="gen-actions"><button class="btn-primary gen-go"><svg viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="#fffef7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="bt">Write my starter prompt</span></button><span class="gen-hint">Watch it write in real time.</span></div>
+      <div class="gen-actions"><button class="btn-primary gen-go"><svg viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="#fffef7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="bt">Write my starter prompt</span></button></div>
       <div class="gen-result"></div>
     </div>`;
 }
@@ -1174,7 +1193,7 @@ function renderPOC(el){
       <p class="acc-sub" style="font-size:16px;">${esc(POC.intro)}</p>
 
       <h4 class="serif">1 · Gather from the room</h4>
-      <p class="acc-sub">What should this site <b>do</b>, and what should we draw from? It all folds into the prompt automatically.</p>
+      <p class="acc-sub" style="max-width:none;">What should this site <b>do</b>, and what should we draw from? It all folds into the prompt automatically.</p>
 
       <div class="crowd-label">✦ Features it should have</div>
       <div class="crowd-tags" id="crowdTags"></div>
@@ -1190,11 +1209,9 @@ function renderPOC(el){
       <div class="upload-thumbs" id="uploadThumbs"></div>
 
       <h4 class="serif">2 · Grab the prompt</h4>
-      <p class="acc-sub">Copy it, paste into Claude, attach any screenshots, and go.</p>
-      <div id="pocPromptMount"></div>
-
-      <h4 class="serif">The files it'll make</h4>
-      <div class="files">${POC.files.map((f,i)=>`<div class="file-row"><span style="font-size:16px;line-height:1">${FILES_E[i]||'📄'}</span><span class="fi">${esc(f.f)}</span><span class="fd">${esc(f.d)}</span></div>`).join('')}</div>
+      <p class="acc-sub" style="max-width:none;">Copy it, paste into Claude, attach any screenshots, and go. It updates live as the room adds ideas above.</p>
+      <button class="btn-on-navy" id="pocReveal" aria-expanded="false">✦ Show the prompt</button>
+      <div class="poc-collapse" id="pocPromptWrap"><div id="pocPromptMount"></div></div>
     </div>`;
   mountPOCPrompt();
 
@@ -1210,6 +1227,8 @@ function renderPOC(el){
     [...ev.target.files].forEach(f=>{ UPLOADS.push({name:f.name, url:URL.createObjectURL(f)}); });
     ev.target.value=''; renderUploads(upEl); mountPOCPrompt();
   });
+  const reveal=el.querySelector('#pocReveal'), wrap=el.querySelector('#pocPromptWrap');
+  reveal.addEventListener('click', ()=>{ const open=wrap.classList.toggle('open'); reveal.setAttribute('aria-expanded',open); reveal.textContent = open ? '✦ Hide the prompt' : '✦ Show the prompt'; });
 }
 
 function renderMD(el){
@@ -1329,7 +1348,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySel
 async function streamStarter(mode, task, result, btn){
   let bt, orig;
   if(btn){ btn.disabled=true; bt=btn.querySelector('.bt'); if(bt){ orig=bt.textContent; bt.textContent='Writing…'; } }
-  result.innerHTML = `<div class="acc-sub" style="margin:4px 0 12px;"><b>✦ Your starter prompt</b> — copy it, fill the blanks, paste into Claude.</div>
+  result.innerHTML = `<div class="gen-result-head"><span><b>✦ Your starter prompt</b> — copy it, fill the blanks, paste into Claude.</span><button class="gen-dismiss" aria-label="Dismiss">✕</button></div>
     <div class="prompt-block"><button class="copy-btn" disabled>Copy</button><span class="pb-label">✦ Your custom starter prompt</span><pre class="prompt-text"><span class="caret"></span></pre></div>`;
   const pre=result.querySelector('.prompt-text'), copyBtn=result.querySelector('.copy-btn');
   try {
@@ -1350,6 +1369,11 @@ document.addEventListener('click', e=>{
   const gen=go.closest('.gen'), ta=gen.querySelector('textarea'), result=gen.querySelector('.gen-result');
   const task=ta.value.trim(); if(!task){ ta.focus(); return; }
   streamStarter(gen.getAttribute('data-mode'), task, result, go);
+});
+
+document.addEventListener('click', e=>{
+  const d=e.target.closest('.gen-dismiss'); if(!d) return;
+  const res=d.closest('.gen-result'); if(res) res.innerHTML='';
 });
 
 const tqGenBtn=document.querySelector('.tq-gen-go');
@@ -1382,7 +1406,7 @@ Do this:
 4. Then ask me what to push further.
 
 Speed over polish — we'll refine together.`;
-  return `<div class="acc-sub" style="margin:4px 0 12px;">${esc(note)}</div>` + promptBlock('Starter prompt', body);
+  return `<div class="gen-result-head"><span>${esc(note)}</span><button class="gen-dismiss" aria-label="Dismiss">✕</button></div>` + promptBlock('Starter prompt', body);
 }
 </script>
 </body>
