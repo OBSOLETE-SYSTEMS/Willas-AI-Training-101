@@ -564,6 +564,9 @@
         <div class="block block--hero"><div class="block-head"><span class="bspark">✦</span><h4>⚙️ The main event — Markdown automation</h4><span class="hr"></span></div>
           <div class="hero-module" id="md-module"></div></div>
 
+        <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>📤 Now share it</h4><span class="hr"></span></div>
+          <div id="share-block-2"></div></div>
+
         <button class="ch-close" data-close="2">✕ Close this build</button>
       </div>
     </div>
@@ -902,6 +905,15 @@ const SHARE = [
 ];
 const SHARE_NOTE = "If your thing calls an AI service at runtime, never paste the API key into a public HTML file — anyone can view source. For a quick share you won't need one. Start static.";
 
+const SHARE2 = [
+  { t:"A shared folder", d:"Drop the .md in Drive or Dropbox. Anyone can grab it, paste it into their AI, and run it — no setup." },
+  { t:"A team repo", d:"Keep a /recipes folder in GitHub the whole team pulls from. You get version history and one source of truth." },
+  { t:"Slash-commands", d:"In tools like Claude Code, a recipe in a /commands folder becomes a typed /shortcut anyone can run by name." },
+  { t:"Schedule it", d:"Pair a recipe with a Cron so it runs on its own — nobody has to remember to kick it off." },
+  { t:"A one-line index", d:"Keep a short list at the top of the folder so people know what exists. Findable beats clever." }
+];
+const SHARE2_NOTE = "The best automation is one your whole team uses without thinking. A recipe nobody can find is a recipe nobody runs — name it plainly and put it where they'll look.";
+
 /* ───────── EMOJI SETS (semantic, one per item) ───────── */
 const FLOW_E = ['🙋','🪄','♻️','💬','🍿'];
 const TQ_E   = ['📊','⏰','💡'];
@@ -966,10 +978,10 @@ function buildPOCPrompt(){
 }
 function mountPOCPrompt(){ const m=document.getElementById('pocPromptMount'); if(m) m.innerHTML = promptBlock("Willa's website — live build prompt", buildPOCPrompt()); }
 
-function renderShare(el){
+function renderShare(el, list, note){
   if(!el) return;
-  el.innerHTML = `<div class="share-list">` + SHARE.map(s=>`<div class="share-row"><span class="sr-a">→</span><p><b>${esc(s.t)}.</b> ${esc(s.d)}</p></div>`).join('') + `</div>
-    <div class="share-note"><span class="label">✦ One thing to know</span><p>${esc(SHARE_NOTE)}</p></div>`;
+  el.innerHTML = `<div class="share-list">` + list.map(s=>`<div class="share-row"><span class="sr-a">→</span><p><b>${esc(s.t)}.</b> ${esc(s.d)}</p></div>`).join('') + `</div>
+    <div class="share-note"><span class="label">✦ One thing to know</span><p>${esc(note)}</p></div>`;
 }
 
 function renderPOC(el){
@@ -1031,9 +1043,6 @@ function renderMD(el){
         <div class="md-step"><span class="ms-n">4</span><div><h6>Run it by pointing at it</h6><p>"Follow <span class="inline-code">weekly-recap.md</span> using these three emails." Same way, every time.</p></div></div>
       </div>
 
-      <h4 class="serif">How to keep a library</h4>
-      <p class="acc-sub">One folder — call it <span class="inline-code">/recipes</span>. Every chore you automate becomes one <span class="inline-code">.md</span> file with a clear name and one job. Keep a one-line index at the top so the team knows what exists. In tools like Claude Code these can even become <span class="inline-code">/slash-commands</span> — but a plain folder of Markdown files is already 90% of the magic.</p>
-
       <h4 class="serif">How to keep it alive</h4>
       <div class="md-steps">
         <div class="md-step"><span class="ms-n">5</span><div><h6>Tune it when reality changes</h6><p>Retailer changes their form? Open the <span class="inline-code">.md</span>, fix one line, save. 30 seconds, sticks forever.</p></div></div>
@@ -1042,15 +1051,15 @@ function renderMD(el){
 
       <h4 class="serif">Steal this to start</h4>
       <p class="acc-sub">Paste this into Claude to build your first recipe from a chore you already hate.</p>
-      ${promptBlock('Build my first Markdown recipe', `You are helping me turn a chore I do over and over into a reusable Markdown "recipe" file.
+      ${promptBlock('Build my first Markdown recipe', `You are helping me turn a chore I do over and over for Willa's into a reusable Markdown "recipe" file — fast, in one pass.
 
-The chore: [describe the repetitive task — what triggers it, what you do step by step, what the finished result looks like].
+The chore: [describe the repetitive task — e.g. filling a retailer new-item form, building a weekly sales recap, formatting UPCs. What triggers it, what you do step by step, what the finished result looks like].
 
 Do this:
-1. Ask me 2–3 quick questions if anything's unclear.
+1. Ask me 2–3 quick questions only if you truly need to.
 2. Write a clean, reusable Markdown file (.md) that captures the steps so you can follow it next time I say "run this."
 3. Use clear [brackets] for the inputs that change each run.
-4. Suggest a short, obvious filename.
+4. Suggest a short, obvious filename (like new-item-form.md).
 5. Tell me exactly how to run it next time.
 
 Keep the recipe plain-English and foolproof — I'm not an engineer.`)}
@@ -1098,7 +1107,8 @@ renderAccordion(document.getElementById('c2-usecases'), C2_USECASES, 'Copy · pa
 renderGen(document.getElementById('gen-make'),'make');
 renderGen(document.getElementById('gen-automate'),'automate');
 renderPOC(document.getElementById('poc-module'));
-renderShare(document.getElementById('share-block'));
+renderShare(document.getElementById('share-block'), SHARE, SHARE_NOTE);
+renderShare(document.getElementById('share-block-2'), SHARE2, SHARE2_NOTE);
 renderMD(document.getElementById('md-module'));
 renderFlow(document.getElementById('flowBeats'));
 renderTQ(document.getElementById('tqBody'));
