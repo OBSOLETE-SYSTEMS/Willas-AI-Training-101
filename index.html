@@ -674,7 +674,7 @@
         <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>✍️ …or bring your own</h4><span class="hr"></span></div>
           <div class="gen" data-mode="automate" id="gen-automate"></div></div>
 
-        <div class="block block--hero"><div class="block-head"><span class="bspark">✦</span><h4>⚙️ The main event — Markdown automation</h4><span class="hr"></span></div>
+        <div class="block block--hero"><div class="block-head"><span class="bspark">✦</span><h4>⚙️ The main event — build it live</h4><span class="hr"></span></div>
           <div class="hero-module" id="md-module"></div></div>
 
         <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>📤 Now share it</h4><span class="hr"></span></div>
@@ -1156,7 +1156,16 @@ function renderGen(el, mode){
     </div>`;
 }
 
-let CROWD = [], INSPO = [], UPLOADS = [], MD_CHORE='', MD_STEPS=[], MD_INPUTS=[];
+let CROWD = [], INSPO = [], UPLOADS = [];
+let MD_CHORE = "Filling out a retailer's new-item setup form";
+let MD_STEPS = [
+  "Open the retailer's blank new-item form",
+  "Pull the product facts for the SKU (name, UPC, case pack, dimensions, weight, price)",
+  "Map each fact to the right field — in the retailer's exact format and units",
+  "Flag any field I'm missing info for instead of guessing",
+  "Sanity-check the UPC check digit and the case-pack math"
+];
+let MD_INPUTS = ["the retailer + their form", "the product / SKU facts", "the price + terms"];
 function renderTags(el, arr, attr){
   if(el) el.innerHTML = arr.map((c,i)=>`<span class="crowd-tag">${esc(c)} <button data-${attr}="${i}">✕</button></span>`).join('');
 }
@@ -1241,27 +1250,27 @@ function renderPOC(el){
 }
 
 function buildRecipePrompt(){
-  let p = `You are helping me turn a chore I do over and over for Willa's into a reusable Markdown "recipe" file — a set of instructions you can follow every time I say "run this." Keep it plain-English and foolproof; I'm not an engineer.`;
+  let p = `You are helping me build a reusable Markdown "tool" for Willa's — a single .md file that captures how I do a repeated task, so you can follow it every time I say "run this." Keep it plain-English and foolproof; I'm not an engineer.`;
   p += `\n\nTHE CHORE: ${MD_CHORE.trim() || '[name the repeatable task]'}`;
   p += MD_STEPS.length ? `\n\nHOW I DO IT NOW (the steps):\n` + MD_STEPS.map((s,i)=>`${i+1}. ${s}`).join('\n')
                        : `\n\nHOW I DO IT NOW: [list the steps you take, start to finish]`;
   if(MD_INPUTS.length) p += `\n\nWHAT CHANGES EACH RUN (make these [bracketed] inputs):\n` + MD_INPUTS.map(s=>`- ${s}`).join('\n');
-  p += `\n\nDO THIS:\n1. Ask me 1–2 quick questions only if you truly need to.\n2. Write the reusable Markdown recipe (.md) that captures the steps.\n3. Use clear [brackets] for the inputs that change each run.\n4. Suggest a short, obvious filename (like new-item-form.md).\n5. Tell me exactly how to run it next time.`;
+  p += `\n\nDO THIS:\n1. Ask me 1–2 quick questions only if you truly need to.\n2. Write the reusable Markdown file (.md) that captures the steps.\n3. Use clear [brackets] for the inputs that change each run.\n4. Suggest a short, obvious filename (like new-item-form.md).\n5. Tell me exactly how to run it next time.`;
   return p;
 }
-function mountRecipePrompt(){ const m=document.getElementById('mdPromptMount'); if(m) m.innerHTML = promptBlock('Build a Markdown recipe — live', buildRecipePrompt()); }
+function mountRecipePrompt(){ const m=document.getElementById('mdPromptMount'); if(m) m.innerHTML = promptBlock('The new-item-form tool — live build', buildRecipePrompt()); }
 
 function renderMD(el){
   el.innerHTML = `
     <div class="hm-banner"><span>✦ The hero of this build</span><span>♻ Build once · run forever</span></div>
     <div class="hm-body">
-      <p class="acc-sub" style="font-size:16px;max-width:none;">The secret: a Markdown file is just a <b>reusable command</b> — write the steps for a chore once, and the AI follows them every time you say "run this." Let's build one <b>live</b>, from a real chore in this room.</p>
+      <p class="acc-sub" style="font-size:16px;max-width:none;">A Markdown file can be a <b>reusable tool</b> — write down how you do a task once, and the AI runs it for you every time. Let's build a real one, <b>live</b>: the tool that fills a retailer's new-item setup form, so you never re-key the same product data again.</p>
 
-      <h4 class="serif">1 · Build the recipe with the room</h4>
-      <p class="acc-sub" style="max-width:none;">Name a repeated task, rough out the steps, and flag what changes each run — it all folds into the prompt automatically.</p>
+      <h4 class="serif">1 · Build it with the room</h4>
+      <p class="acc-sub" style="max-width:none;">We picked a real one — the retailer new-item form, re-filled for every new SKU and every retailer. Tweak the steps with the room; it all folds into the prompt automatically.</p>
 
-      <div class="crowd-label">✦ The chore</div>
-      <input id="mdChoreInput" class="md-chore" placeholder="e.g. filling the retailer new-item form" />
+      <div class="crowd-label">✦ The task we're automating</div>
+      <input id="mdChoreInput" class="md-chore" value="${esc(MD_CHORE)}" placeholder="e.g. filling the retailer new-item form" />
 
       <div class="crowd-label">✦ The steps you take now</div>
       <div class="crowd-tags" id="mdStepsTags"></div>
