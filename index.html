@@ -6,7 +6,7 @@
 <title>Willa's × AI 101 — A Live Working Session</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&amp;family=DM+Sans:wght@400;500;600&amp;family=DM+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
   :root {
     /* Willa's palette — pulled from the live engine */
@@ -15,7 +15,6 @@
     --cream-3:  #f6f6f0;
     --sand:     #e8e1c2;
     --navy:     #202a44;
-    --navy-soft:#3a4564;
     --ink-soft: #475569;
     --ink-quiet:#64748b;
 
@@ -25,7 +24,6 @@
     --clay:       #c2674a;
     --blue:       #73b2c9;
     --yellow:     #facc15;
-    --lavender:   #a191b2;
 
     --line: rgba(32,42,68,0.12);
     --line-strong: rgba(32,42,68,0.22);
@@ -51,6 +49,20 @@
   }
 
   ::selection { background: var(--green); color: var(--navy); }
+
+  /* keyboard focus ring — visible for tab users, invisible for mouse */
+  :focus-visible { outline: 2px solid var(--green-deep); outline-offset: 3px; }
+
+  /* respect reduced-motion: kills marquee/spin/pulse, saves battery + stops jank on projectors */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+    .ticker-track { animation: none !important; }
+    .flow-launch::before { animation: none !important; }
+  }
 
   .label {
     font-family: 'DM Mono', monospace;
@@ -1244,7 +1256,7 @@ function renderTQ(el){
       <div style="flex:1">
         <h3 class="serif">${esc(q.q)}</h3>
         <p>${esc(q.note)}</p>
-        ${q.slider?`<div class="slider-demo"><input type="range" min="1" max="100" value="42" id="fluencySlider"><div class="slider-val serif" id="fluencyVal">42</div></div>`:''}
+        ${q.slider?`<div class="slider-demo"><input type="range" min="1" max="100" value="42" id="fluencySlider" aria-label="Rate your AI fluency from 1 to 100"><div class="slider-val serif" id="fluencyVal">42</div></div>`:''}
         <span class="answer-chip">✦ Drop your answer in the chat</span>
       </div>
     </div>`).join('');
