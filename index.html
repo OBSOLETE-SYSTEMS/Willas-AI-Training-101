@@ -370,6 +370,25 @@
   .tq h3 { font-family:'Fraunces',serif; font-weight:400; font-size: clamp(21px,3vw,32px); letter-spacing:-0.02em; line-height:1.12; color: var(--cream); }
   .tq p { font-size:14.5px; color: rgba(255,254,247,0.65); margin-top:8px; max-width:54ch; }
 
+  /* Q3 live generator (on navy) */
+  .tq-gen { margin-top:42px; border:1px solid rgba(255,254,247,0.18); border-radius:18px; padding:24px; background: rgba(255,254,247,0.045); }
+  .tq-gen-head { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+  .tq-gen .badge { font-family: var(--display); font-weight:600; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color: var(--navy); background: var(--green); padding:6px 11px; border-radius:999px; display:inline-flex; align-items:center; gap:7px; white-space:nowrap; }
+  .tq-gen .badge .ld { width:7px; height:7px; border-radius:50%; background: var(--navy); }
+  .tq-gen-head p { font-size:14.5px; color: rgba(255,254,247,0.82); flex:1; min-width:220px; }
+  .tq-gen-head p b { color: var(--cream); }
+  .tq-gen textarea { width:100%; min-height:76px; resize:vertical; padding:14px; border-radius:12px; border:1.5px solid rgba(255,254,247,0.2); background: rgba(255,254,247,0.06); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.5; outline:none; }
+  .tq-gen textarea:focus { border-color: var(--green); }
+  .tq-gen textarea::placeholder { color: rgba(255,254,247,0.45); }
+  .tq-gen-actions { margin-top:13px; }
+  .tq-gen .gen-result .acc-sub { color: rgba(255,254,247,0.82); }
+  .tq-gen .gen-result .acc-sub b { color: var(--cream); }
+  .tq-gen .prompt-block { border:1px solid rgba(255,254,247,0.16); }
+  .btn-green { display:inline-flex; align-items:center; gap:10px; padding:12px 20px; border:none; cursor:pointer; background: var(--green); color: var(--navy); border-radius:12px; font-family: var(--display); font-weight:600; font-size:13px; letter-spacing:0.04em; transition: background .2s, transform .15s; }
+  .btn-green:hover { background: var(--sky); }
+  .btn-green:active { transform: scale(0.98); }
+  .btn-green:disabled { opacity:0.6; cursor:not-allowed; }
+
   /* ── OVERLAY ───────────────────────────────────── */
   .overlay { position:fixed; inset:0; z-index:150; background: rgba(32,42,68,0.6); backdrop-filter: blur(6px);
     display:flex; justify-content:center; align-items:flex-start; padding:40px 20px; overflow-y:auto;
@@ -475,6 +494,13 @@
     </div>
     <p class="lead">A quick read on the room. <b>Drop your answers in the meeting chat</b> — no wrong answers, no grades.</p>
     <div id="tqBody"></div>
+
+    <div class="tq-gen">
+      <div class="tq-gen-head"><span class="badge"><span class="ld"></span>Live · Powered by Claude</span><p>Got an answer to <b>#3</b>? Type it here and watch Claude draft your first automation — <b>right now.</b></p></div>
+      <textarea id="tqGenInput" placeholder="e.g. Every Monday I copy sales from three emails into one recap…"></textarea>
+      <div class="tq-gen-actions"><button class="btn-green tq-gen-go"><span class="bt">✦ Draft my automation</span></button></div>
+      <div class="gen-result" id="tqGenResult"></div>
+    </div>
   </section>
 </div>
 
@@ -1186,15 +1212,12 @@ document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySelectorAll('.overlay.open').forEach(closeOverlay); drawer.classList.remove('open'); } });
 
 /* LIVE STREAMING GENERATOR */
-document.addEventListener('click', async e=>{
-  const go=e.target.closest('.gen-go'); if(!go) return;
-  const gen=go.closest('.gen'), mode=gen.getAttribute('data-mode'), ta=gen.querySelector('textarea'), result=gen.querySelector('.gen-result');
-  const task=ta.value.trim(); if(!task){ ta.focus(); return; }
-  go.disabled=true; const bt=go.querySelector('.bt'), orig=bt.textContent; bt.textContent='Writing…';
+async function streamStarter(mode, task, result, btn){
+  let bt, orig;
+  if(btn){ btn.disabled=true; bt=btn.querySelector('.bt'); if(bt){ orig=bt.textContent; bt.textContent='Writing…'; } }
   result.innerHTML = `<div class="acc-sub" style="margin:4px 0 12px;"><b>✦ Your starter prompt</b> — copy it, fill the blanks, paste into Claude.</div>
     <div class="prompt-block"><button class="copy-btn" disabled>Copy</button><span class="pb-label">✦ Your custom starter prompt</span><pre class="prompt-text"><span class="caret"></span></pre></div>`;
   const pre=result.querySelector('.prompt-text'), copyBtn=result.querySelector('.copy-btn');
-
   try {
     const r=await fetch('/api/generate',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({mode,task}) });
     if(r.status===503){ result.innerHTML=fallback(mode,task,"The live writer isn't switched on yet — here's a solid starter to use right now:"); }
@@ -1205,7 +1228,20 @@ document.addEventListener('click', async e=>{
       pre.innerHTML=fmtPrompt(full); copyBtn.disabled=false; copyBtn.setAttribute('data-copy', esc(full).replace(/"/g,'&quot;'));
     }
   } catch(_){ result.innerHTML=fallback(mode,task,"Connection hiccup — here's a reliable starter to run right now:"); }
-  finally { go.disabled=false; bt.textContent=orig; }
+  finally { if(btn){ btn.disabled=false; if(bt) bt.textContent=orig; } }
+}
+
+document.addEventListener('click', e=>{
+  const go=e.target.closest('.gen-go'); if(!go) return;
+  const gen=go.closest('.gen'), ta=gen.querySelector('textarea'), result=gen.querySelector('.gen-result');
+  const task=ta.value.trim(); if(!task){ ta.focus(); return; }
+  streamStarter(gen.getAttribute('data-mode'), task, result, go);
+});
+
+const tqGenBtn=document.querySelector('.tq-gen-go');
+if(tqGenBtn) tqGenBtn.addEventListener('click', ()=>{
+  const ta=document.getElementById('tqGenInput'); const task=ta.value.trim(); if(!task){ ta.focus(); return; }
+  streamStarter('automate', task, document.getElementById('tqGenResult'), tqGenBtn);
 });
 
 function fallback(mode,task,note){
