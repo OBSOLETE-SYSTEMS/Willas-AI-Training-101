@@ -353,6 +353,11 @@
   .share-intro { font-size:16px; line-height:1.55; color: var(--ink-soft); max-width:74ch; margin-bottom:6px; }
   .share-intro b { color: var(--navy); font-weight:600; }
 
+  /* recipe chore input (navy) */
+  .md-chore { width:100%; padding:12px 15px; border-radius:12px; border:1.5px solid rgba(255,254,247,0.2); background: rgba(255,254,247,0.06); color: var(--cream); font-family:'DM Sans',sans-serif; font-size:15px; outline:none; transition:border-color .2s; }
+  .md-chore:focus { border-color: var(--green); }
+  .md-chore::placeholder { color: rgba(255,254,247,0.45); }
+
   /* collapsible build prompt */
   .poc-collapse { max-height:0; overflow:hidden; transition: max-height .45s ease; }
   .poc-collapse.open { max-height:6000px; margin-top:14px; }
@@ -1151,7 +1156,7 @@ function renderGen(el, mode){
     </div>`;
 }
 
-let CROWD = [], INSPO = [], UPLOADS = [];
+let CROWD = [], INSPO = [], UPLOADS = [], MD_CHORE='', MD_STEPS=[], MD_INPUTS=[];
 function renderTags(el, arr, attr){
   if(el) el.innerHTML = arr.map((c,i)=>`<span class="crowd-tag">${esc(c)} <button data-${attr}="${i}">✕</button></span>`).join('');
 }
@@ -1235,30 +1240,54 @@ function renderPOC(el){
   reveal.addEventListener('click', ()=>{ const open=wrap.classList.toggle('open'); reveal.setAttribute('aria-expanded',open); reveal.textContent = open ? '✦ Hide the prompt' : '✦ Show the prompt'; });
 }
 
+function buildRecipePrompt(){
+  let p = `You are helping me turn a chore I do over and over for Willa's into a reusable Markdown "recipe" file — a set of instructions you can follow every time I say "run this." Keep it plain-English and foolproof; I'm not an engineer.`;
+  p += `\n\nTHE CHORE: ${MD_CHORE.trim() || '[name the repeatable task]'}`;
+  p += MD_STEPS.length ? `\n\nHOW I DO IT NOW (the steps):\n` + MD_STEPS.map((s,i)=>`${i+1}. ${s}`).join('\n')
+                       : `\n\nHOW I DO IT NOW: [list the steps you take, start to finish]`;
+  if(MD_INPUTS.length) p += `\n\nWHAT CHANGES EACH RUN (make these [bracketed] inputs):\n` + MD_INPUTS.map(s=>`- ${s}`).join('\n');
+  p += `\n\nDO THIS:\n1. Ask me 1–2 quick questions only if you truly need to.\n2. Write the reusable Markdown recipe (.md) that captures the steps.\n3. Use clear [brackets] for the inputs that change each run.\n4. Suggest a short, obvious filename (like new-item-form.md).\n5. Tell me exactly how to run it next time.`;
+  return p;
+}
+function mountRecipePrompt(){ const m=document.getElementById('mdPromptMount'); if(m) m.innerHTML = promptBlock('Build a Markdown recipe — live', buildRecipePrompt()); }
+
 function renderMD(el){
   el.innerHTML = `
     <div class="hm-banner"><span>✦ The hero of this build</span><span>♻ Build once · run forever</span></div>
     <div class="hm-body">
-      <p class="acc-sub" style="font-size:16px;">The secret almost nobody tells you: <b>a Markdown file is a reusable command.</b> Write the steps for a chore once, in plain English, save it as a <span class="inline-code">.md</span> — then just say "do <span class="inline-code">new-item-form.md</span> with this data." The AI follows your recipe every time. Automation without code.</p>
+      <p class="acc-sub" style="font-size:16px;max-width:none;">The secret: a Markdown file is just a <b>reusable command</b> — write the steps for a chore once, and the AI follows them every time you say "run this." Let's build one <b>live</b>, from a real chore in this room.</p>
 
-      <h4 class="serif">How to do it</h4>
-      <div class="md-steps">
-        <div class="md-step"><span class="ms-n">1</span><div><h6>Catch yourself repeating</h6><p>3rd time doing a chore? Stop. Talk through exactly how you do it, start to finish.</p></div></div>
-        <div class="md-step"><span class="ms-n">2</span><div><h6>Ask the AI to write the recipe</h6><p>"Turn what I just described into a reusable Markdown instruction file." It drafts; you sanity-check.</p></div></div>
-        <div class="md-step"><span class="ms-n">3</span><div><h6>Save it as a named <span class="inline-code">.md</span></h6><p>Something obvious: <span class="inline-code">retailer-new-item-form.md</span>. The name is the command.</p></div></div>
-        <div class="md-step"><span class="ms-n">4</span><div><h6>Run it by pointing at it</h6><p>"Follow <span class="inline-code">weekly-recap.md</span> using these three emails." Same way, every time.</p></div></div>
-      </div>
+      <h4 class="serif">1 · Build the recipe with the room</h4>
+      <p class="acc-sub" style="max-width:none;">Name a repeated task, rough out the steps, and flag what changes each run — it all folds into the prompt automatically.</p>
 
-      <h4 class="serif">How to keep it alive</h4>
-      <div class="md-steps">
-        <div class="md-step"><span class="ms-n">5</span><div><h6>Tune it when reality changes</h6><p>Retailer changes their form? Open the <span class="inline-code">.md</span>, fix one line, save. 30 seconds, sticks forever.</p></div></div>
-        <div class="md-step"><span class="ms-n">6</span><div><h6>Let the AI improve its own recipe</h6><p>"That worked — update the recipe so it handles that edge case next time." Tools get sharper as you use them.</p></div></div>
-      </div>
+      <div class="crowd-label">✦ The chore</div>
+      <input id="mdChoreInput" class="md-chore" placeholder="e.g. filling the retailer new-item form" />
 
-      <h4 class="serif">Steal this to start</h4>
-      <p class="acc-sub">Paste this into Claude to build your first recipe from a chore you already hate.</p>
-      ${promptBlock('Build my first Markdown recipe', RECIPE_PROMPT)}
+      <div class="crowd-label">✦ The steps you take now</div>
+      <div class="crowd-tags" id="mdStepsTags"></div>
+      <div class="crowd-row"><input id="mdStepsInput" placeholder="e.g. pull the product facts from the deck…" /><button class="btn-on-navy" id="mdStepsAdd">+ Add step</button></div>
+
+      <div class="crowd-label">✦ What changes each run <span style="opacity:.55;text-transform:none;letter-spacing:0;font-weight:400">(optional)</span></div>
+      <div class="crowd-tags" id="mdInputsTags"></div>
+      <div class="crowd-row"><input id="mdInputsInput" placeholder="e.g. the retailer, the SKU, the price…" /><button class="btn-on-navy" id="mdInputsAdd">+ Add</button></div>
+
+      <h4 class="serif">2 · Grab the prompt</h4>
+      <p class="acc-sub" style="max-width:none;">Copy it, paste into Claude, and it writes your recipe. It updates live as the room adds steps above.</p>
+      <button class="btn-on-navy" id="mdReveal" aria-expanded="false">✦ Show the prompt</button>
+      <div class="poc-collapse" id="mdPromptWrap"><div id="mdPromptMount"></div></div>
     </div>`;
+  mountRecipePrompt();
+  const chore=el.querySelector('#mdChoreInput');
+  chore.addEventListener('input', ()=>{ MD_CHORE=chore.value; mountRecipePrompt(); });
+  const addList=(input, arr, tagsEl, attr)=>{ const v=input.value.trim(); if(!v)return; arr.push(v); input.value=''; renderTags(tagsEl,arr,attr); mountRecipePrompt(); };
+  const sIn=el.querySelector('#mdStepsInput'), sTags=el.querySelector('#mdStepsTags');
+  el.querySelector('#mdStepsAdd').addEventListener('click', ()=>addList(sIn,MD_STEPS,sTags,'mdstep-rm'));
+  sIn.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); addList(sIn,MD_STEPS,sTags,'mdstep-rm'); }});
+  const iIn=el.querySelector('#mdInputsInput'), iTags=el.querySelector('#mdInputsTags');
+  el.querySelector('#mdInputsAdd').addEventListener('click', ()=>addList(iIn,MD_INPUTS,iTags,'mdinput-rm'));
+  iIn.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); addList(iIn,MD_INPUTS,iTags,'mdinput-rm'); }});
+  const reveal=el.querySelector('#mdReveal'), wrap=el.querySelector('#mdPromptWrap');
+  reveal.addEventListener('click', ()=>{ const open=wrap.classList.toggle('open'); reveal.setAttribute('aria-expanded',open); reveal.textContent = open?'✦ Hide the prompt':'✦ Show the prompt'; });
 }
 
 function renderFlow(el){
@@ -1322,11 +1351,12 @@ document.addEventListener('click', async e=>{
 });
 
 document.addEventListener('click', e=>{
-  const rm=e.target.closest('[data-crowd-rm],[data-inspo-rm],[data-up-rm]'); if(!rm) return;
-  if(rm.hasAttribute('data-crowd-rm')){ CROWD.splice(+rm.getAttribute('data-crowd-rm'),1); renderTags(document.getElementById('crowdTags'),CROWD,'crowd-rm'); }
-  else if(rm.hasAttribute('data-inspo-rm')){ INSPO.splice(+rm.getAttribute('data-inspo-rm'),1); renderTags(document.getElementById('inspoTags'),INSPO,'inspo-rm'); }
-  else if(rm.hasAttribute('data-up-rm')){ UPLOADS.splice(+rm.getAttribute('data-up-rm'),1); renderUploads(document.getElementById('uploadThumbs')); }
-  mountPOCPrompt();
+  const rm=e.target.closest('[data-crowd-rm],[data-inspo-rm],[data-up-rm],[data-mdstep-rm],[data-mdinput-rm]'); if(!rm) return;
+  if(rm.hasAttribute('data-crowd-rm')){ CROWD.splice(+rm.getAttribute('data-crowd-rm'),1); renderTags(document.getElementById('crowdTags'),CROWD,'crowd-rm'); mountPOCPrompt(); }
+  else if(rm.hasAttribute('data-inspo-rm')){ INSPO.splice(+rm.getAttribute('data-inspo-rm'),1); renderTags(document.getElementById('inspoTags'),INSPO,'inspo-rm'); mountPOCPrompt(); }
+  else if(rm.hasAttribute('data-up-rm')){ UPLOADS.splice(+rm.getAttribute('data-up-rm'),1); renderUploads(document.getElementById('uploadThumbs')); mountPOCPrompt(); }
+  else if(rm.hasAttribute('data-mdstep-rm')){ MD_STEPS.splice(+rm.getAttribute('data-mdstep-rm'),1); renderTags(document.getElementById('mdStepsTags'),MD_STEPS,'mdstep-rm'); mountRecipePrompt(); }
+  else if(rm.hasAttribute('data-mdinput-rm')){ MD_INPUTS.splice(+rm.getAttribute('data-mdinput-rm'),1); renderTags(document.getElementById('mdInputsTags'),MD_INPUTS,'mdinput-rm'); mountRecipePrompt(); }
 });
 
 function setCard(n,open){ const card=document.getElementById('card'+n), chap=document.getElementById('chapter'+n); chap.classList.toggle('open',open); card.setAttribute('aria-expanded',open); if(open) setTimeout(()=>chap.scrollIntoView({behavior:'smooth',block:'start'}),120); }
