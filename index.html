@@ -204,6 +204,8 @@
     line-height:1.02; letter-spacing:-0.03em; max-width:40ch; text-wrap:balance; margin: 6px 0 0; }
   .ch-headline em { font-style:italic; color: var(--green-deep); }
   .chapter.c2 .ch-headline em { color: var(--clay); }
+  .ch-lead { font-size: clamp(16px,1.8vw,19px); line-height:1.5; color: var(--ink-soft); max-width:64ch; margin-top:18px; }
+  .ch-lead b { color: var(--navy); font-weight:600; }
   .block { margin-top: 52px; }
   .block-head { display:flex; align-items:center; gap:12px; margin-bottom: 24px; }
   .block-head .bspark { font-size:16px; color: var(--green-deep); }
@@ -628,7 +630,7 @@
       <div class="bc-top"><span class="bc-index">02</span></div>
       <div class="bc-body">
         <h3 class="serif">"Do this for me, every time"</h3>
-        <p class="bc-usecase">Today: <b>Markdown automation</b> — a chore you repeat, turned into a tool you keep.</p>
+        <p class="bc-usecase">Today: <b>turn a task you repeat</b> into a tool you keep — a spreadsheet, a form, a report.</p>
         <span class="bc-cta">Open this build <span class="arrow">→</span></span>
       </div>
     </article>
@@ -638,6 +640,7 @@
       <div class="chapter-inner">
         <span class="kicker">Build One · Make me a thing</span>
         <h3 class="ch-headline serif">The leap from <em>talking</em> about an idea<br>to <em>seeing</em> and <em>sending</em> it.</h3>
+        <p class="ch-lead">A sell sheet, an email, a report from a spreadsheet, a quick one-pager — if you can picture it, you can make it. You don't have to be in marketing.</p>
 
         <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>🪜 Step by step</h4><span class="hr"></span></div>
           <div class="principles" id="c1-principles"></div></div>
@@ -664,6 +667,7 @@
       <div class="chapter-inner">
         <span class="kicker">Build Two · Do this for me, every time</span>
         <h3 class="ch-headline serif">Turning a repeated manual <em>chore</em> into a reusable <em>tool.</em></h3>
+        <p class="ch-lead">Spreadsheets, forms, reports, data clean-up — anything you do by hand more than three times. The tool you build here is the first step toward an <b>agent</b> that runs it for you, on a schedule or a trigger.</p>
 
         <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>🪜 Step by step</h4><span class="hr"></span></div>
           <div class="principles" id="c2-principles"></div></div>
@@ -858,7 +862,20 @@ It should:
 - Put Willa's at the center without sounding like an ad
 - Feel warm, homemade, grandmother-Willa-approved
 
-Build it as a single self-contained HTML card I can open and screenshot, square-ish for social. Quick first pass — I'll tweak the recipe.` }
+Build it as a single self-contained HTML card I can open and screenshot, square-ish for social. Quick first pass — I'll tweak the recipe.` },
+  { title:"A report or one-pager from a spreadsheet", forwho:"For: any team",
+    sub:"Paste in your numbers and get back a clean, readable report or simple dashboard you can actually send.",
+    prompt:`You are a data designer + analyst for Willa's. Turn my raw numbers into a clean, readable report I can send.
+
+Here's the data: [paste the spreadsheet rows / numbers — sales, inventory, costs, whatever].
+
+Do this:
+- Lead with the 3 things that matter most (the takeaways), in plain English.
+- Lay out the supporting numbers in tidy tables or simple charts.
+- Keep it skimmable for someone who won't read every cell.
+- On-brand for Willa's (cream, navy, oat green) if it's visual.
+
+Build it as a single self-contained HTML page I can open and screenshot, or clean formatted text — your call. Rough first pass; I'll refine.` }
 ];
 
 const C2_USECASES = [
@@ -948,7 +965,43 @@ Do this:
 3. Flag any gaps where we're missing a beat.
 4. Leave [brackets] for dates and specifics I need to fill.
 
-Make it reusable — I'll paste a new pile next month and re-run.` }
+Make it reusable — I'll paste a new pile next month and re-run.` },
+  { title:"Clean up a messy spreadsheet", forwho:"For: anyone in sheets",
+    sub:"Hand it inconsistent, half-formatted data and get back something tidy, standardized, and usable.",
+    prompt:`You are a data assistant for Willa's. Clean up this messy spreadsheet data for me.
+
+Here it is: [paste the rows — inconsistent formatting, typos, mixed units, blanks, duplicates].
+
+Do this:
+1. Standardize the formatting (dates, units, capitalization, number formats).
+2. Flag duplicates and obvious errors instead of silently changing them.
+3. Note anything that looks missing or wrong under "CHECK THESE."
+4. Return it as a clean table I can paste straight back into the sheet.
+
+Make it reusable — I'll paste a fresh messy batch next time and run it again.` },
+  { title:"Explain what a spreadsheet is telling me", forwho:"For: anyone in sheets",
+    sub:"Paste a confusing sheet; get a plain-English read on what it says and what to do about it.",
+    prompt:`You are an analyst for Willa's. Read this spreadsheet and tell me, in plain English, what it's saying.
+
+Here's the data: [paste the rows].
+
+Do this:
+- Summarize what this sheet is tracking and the headline story in 3–4 bullets.
+- Call out anything surprising, off, or worth acting on.
+- Answer this specific question if I have one: [your question].
+- No jargon — explain it like I'm smart but not a data person.` },
+  { title:"Build the formula or pivot I need", forwho:"For: anyone in sheets",
+    sub:"Describe what you're trying to calculate; get the exact formula (or pivot setup) and how to use it.",
+    prompt:`You are a spreadsheet expert helping me at Willa's. I'll describe what I'm trying to do; you give me the exact formula or pivot.
+
+What I'm trying to calculate / build: [describe it — e.g. "sum sales by retailer," "flag SKUs below reorder point," "a pivot of units by month"].
+
+My setup: [which tool — Google Sheets / Excel — and what's in which columns].
+
+Do this:
+1. Give me the exact formula (or step-by-step pivot setup) to paste in.
+2. Explain in one line what it does and how to adjust it.
+3. Flag any gotcha (absolute refs, date formats, etc.).` }
 ];
 
 const POC = {
@@ -1113,8 +1166,8 @@ const FLOW_E = ['🙋','🪄','♻️','💬','🍿'];
 const TQ_E   = ['📊','⏰','💡'];
 const C1_PE  = ['🎯','🍽️','🐣','💬','🚀'];   // describe / feed / start ugly / talk back / ship
 const C2_PE  = ['😤','✏️','🍽️','♻️','🏷️'];   // resent / sketch / feed / reuse / name+store
-const C1_UE  = ['📄','🛒','⭐','✉️','🎬','📋','🍴'];   // sell sheet / Amazon A+ / review / email / reel / leave-behind / recipe
-const C2_UE  = ['📝','🔢','📦','🤝','✅','📊','📆'];   // form / UPC / pallet / vendor / certs / recap / calendar
+const C1_UE  = ['📄','🛒','⭐','✉️','🎬','📋','🍴','📊'];   // sell sheet / Amazon A+ / review / email / reel / leave-behind / recipe / report-from-sheet
+const C2_UE  = ['📝','🔢','📦','🤝','✅','📊','📆','🧹','🔎','🧮'];   // form / UPC / pallet / vendor / certs / recap / calendar / clean-sheet / explain-sheet / formula
 const HACKS_E= ['📥','📅','🎙️','🪝','⏰'];   // inbox / scheduling / multimodal / hooks / cron
 const BP_E   = ['🎯','🩺','🏋️','🎓','🔄'];   // precise / symptoms / burden / teach / reset
 const FILES_E= ['📄','✨','🚀'];
