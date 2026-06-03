@@ -1054,7 +1054,7 @@ BUILD a beautiful, modern, scroll-friendly single-page site: a hero, the "whole 
   closer:"Treat this as a ~5-minute first pass: get a complete, rough version on screen fast — don't gold-plate or over-engineer, just the essentials in one self-contained file. We'll react in real time and push it together. Speed over polish."
 };
 
-const RECIPE_PROMPT = `You are helping me turn a chore I do over and over for Willa's into a reusable Markdown "recipe" file — fast, in one pass.
+const RECIPE_PROMPT = `You are helping me turn a chore I do over and over for Willa's into a reusable Markdown "tool" — a single .md file I can run again and again, fast, in one pass.
 
 The chore: [describe the repetitive task — e.g. filling a retailer new-item form, building a weekly sales recap, formatting UPCs. What triggers it, what you do step by step, what the finished result looks like].
 
@@ -1065,7 +1065,7 @@ Do this:
 4. Suggest a short, obvious filename (like new-item-form.md).
 5. Tell me exactly how to run it next time.
 
-Keep the recipe plain-English and foolproof — I'm not an engineer.`;
+Keep it plain-English and foolproof — I'm not an engineer.`;
 
 const HACKS = [
   { title:"Use your favorite brands as examples", forwho:"Show it", sub:"Don't describe the vibe — show it. Paste a brand or site you love and tell it to match their energy. It matches what it can see far better than what you describe.",
@@ -1161,11 +1161,11 @@ const SHARE_NOTE = "If your thing calls an AI service at runtime, never paste th
 const SHARE2 = [
   { t:"A shared folder", d:"Drop the .md in Drive or Dropbox. Anyone can grab it, paste it into their AI, and run it — no setup." },
   { t:"A team repo", d:"Keep a /recipes folder in GitHub the whole team pulls from. You get version history and one source of truth." },
-  { t:"Slash-commands", d:"In tools like Claude Code, a recipe in a /commands folder becomes a typed /shortcut anyone can run by name." },
-  { t:"Schedule it", d:"Pair a recipe with a Cron so it runs on its own — nobody has to remember to kick it off." },
+  { t:"Slash-commands", d:"In tools like Claude Code, a tool in a /commands folder becomes a typed /shortcut anyone can run by name." },
+  { t:"Schedule it", d:"Pair a tool with a Cron so it runs on its own — nobody has to remember to kick it off." },
   { t:"A one-line index", d:"Keep a short list at the top of the folder so people know what exists. Findable beats clever." }
 ];
-const SHARE2_NOTE = "The best automation is one your whole team uses without thinking. A recipe nobody can find is a recipe nobody runs — name it plainly and put it where they'll look.";
+const SHARE2_NOTE = "The best automation is one your whole team uses without thinking. A tool nobody can find is a tool nobody runs — name it plainly and put it where they'll look.";
 
 /* ───────── EMOJI SETS (semantic, one per item) ───────── */
 const FLOW_E = ['🙋','🪄','♻️','💬','🍿'];
@@ -1256,7 +1256,7 @@ function renderCheatsheet(el){
   const groups = [
     { name:'Make me a thing — starters', items: C1_USECASES.map((u,i)=>({label:lbl(C1_UE[i],u.title), prompt:u.prompt})) },
     { name:'Do this every time — starters', items: C2_USECASES.map((u,i)=>({label:lbl(C2_UE[i],u.title), prompt:u.prompt})) },
-    { name:'The big builds', items:[ {label:"🚀 Willa's website — live build", prompt: POC.basePrompt+'\n\n'+POC.closer}, {label:'⚙️ Build a Markdown recipe', prompt: RECIPE_PROMPT} ] },
+    { name:'The big builds', items:[ {label:"🚀 Willa's website — live build", prompt: POC.basePrompt+'\n\n'+POC.closer}, {label:'⚙️ Build a Markdown tool', prompt: RECIPE_PROMPT} ] },
     { name:'Hacks', items: HACKS.map((h,i)=>({label:lbl(HACKS_E[i],h.title), prompt:h.prompt})).filter(it=>it.prompt) },
     { name:'Best Practices', items: BEST_PRACTICES.map((b,i)=>({label:lbl(BP_E[i],b.title), prompt:b.prompt})).filter(it=>it.prompt) }
   ];
@@ -1342,7 +1342,7 @@ function renderMD(el){
       <div class="crowd-row"><input id="mdInputsInput" placeholder="e.g. the retailer, the SKU, the price…" /><button class="btn-on-navy" id="mdInputsAdd">+ Add</button></div>
 
       <h4 class="serif">2 · Grab the prompt</h4>
-      <p class="acc-sub" style="max-width:none;">Copy it, paste into Claude, and it writes your recipe. It updates live as the room adds steps above.</p>
+      <p class="acc-sub" style="max-width:none;">Copy it, paste into Claude, and it writes your tool. It updates live as the room adds steps above.</p>
       <button class="btn-on-navy" id="mdReveal" aria-expanded="false">✦ Show the prompt</button>
       <div class="poc-collapse" id="mdPromptWrap"><div id="mdPromptMount"></div></div>
     </div>`;
@@ -1510,7 +1510,7 @@ The chore: ${task}
 
 Do this:
 1. Ask me 2–3 quick questions if you need to.
-2. Build me a clear, reusable set of instructions (a Markdown recipe) that does this same task every time.
+2. Build me a clear, reusable set of instructions (a Markdown tool) that does this same task every time.
 3. Mark the inputs that change each run with [brackets].
 4. Tell me exactly how to run it next time.
 
