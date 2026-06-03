@@ -245,6 +245,7 @@
   .acc-sub { font-size:15px; line-height:1.6; color: var(--ink-soft); max-width:64ch; margin-bottom:18px; }
   .acc-body-inner > .acc-sub { max-width:none; }
   .acc-sub b { color: var(--navy); font-weight:600; }
+  .tip-flag { display:inline-block; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color: var(--green-deep); }
 
   /* prompt block */
   .prompt-block { position:relative; background: var(--navy); border-radius:16px; padding:24px 24px 22px; }
@@ -1066,51 +1067,31 @@ Do this:
 Keep the recipe plain-English and foolproof — I'm not an engineer.`;
 
 const HACKS = [
-  { title:"AI Inbox", forwho:"Triage", sub:"Stop reading every email cold. Let an agent sort, summarize, and draft replies so you only touch what needs you.",
-    prompt:`You are my inbox assistant. I'll paste a batch of emails.
+  { title:"Use your favorite brands as examples", forwho:"Show it", sub:"Don't describe the vibe — show it. Paste a brand or site you love and tell it to match their energy. It matches what it can see far better than what you describe.",
+    prompt:`I want this to feel like [BRAND / SITE I LOVE]. Here's what I love about them: [their voice / look / energy].
 
-For each one, give me:
-- A one-line summary
-- A priority: 🔴 today / 🟡 this week / ⚪ FYI
-- If it needs a reply, a 2–3 sentence draft in my voice: [warm + concise]
+Here's what I'm making: [your thing].
 
-Then a single "here's your morning" rundown at the top — what to handle first. Don't make me read all of it; make me decide.
+Match their posture and polish — not a copy, but the same level of taste and confidence. Then make it unmistakably Willa's: warm, clean, witty, whole-oat. Show me a first pass and tell me what you borrowed.` },
+  { title:"Reverse the Markdown & reapply", forwho:"Make it reusable", sub:"Loved an output? Don't recreate it next time — have it reverse-engineer the thing into a reusable Markdown template you run again with new inputs.",
+    prompt:`That last thing you made was great. Now reverse it into a reusable Markdown template.
 
-[Paste emails here]` },
-  { title:"Scheduling this call", forwho:"Calendars", sub:"Hand the back-and-forth to the AI. Describe who needs to meet and the constraints; let it draft the times and the message.",
-    prompt:`Help me schedule [this call] without the email ping-pong.
+Look at what you just produced and:
+1. Pull the structure + the rules you followed into a clean .md file.
+2. Mark the parts that change each time with [brackets].
+3. Name it something obvious so I can just say "run this" next time.
 
-Details:
-- Who needs to be there: [names / roles]
-- Length: [30 / 45 / 60 min]
-- My availability: [days + windows, time zone]
-- Constraints: [no Fridays / mornings only / before a date]
+Then show me how I'd reapply it to a new [input].` },
+  { title:"Keep a Markdown library", forwho:"Build a kit", sub:"Every tool you build becomes one .md file in a /recipes folder — clear names, one job each. A folder of these is a personal toolkit you (and the team) reuse forever.",
+    prompt:`Help me start a Markdown "tool library."
 
-Give me:
-1. Three specific time options to propose.
-2. A short, friendly message offering them.
-3. A calendar-invite blurb (title + one-line agenda) once we land on one.` },
-  { title:"Exploit multi-modal", forwho:"Show it", sub:"Don't type what you can show. Dump a voice memo, drag in screenshots, paste a photo — it reads all of it.",
-    prompt:`I'm going to give you raw material instead of typing it all out — [a voice-memo transcript / screenshots / a photo of my notebook].
+Here are the repeated tasks I already reach for: [list a few].
 
-[Paste transcript or describe what you're attaching]
-
-Read all of it and:
-1. Pull out what matters — decisions, to-dos, ideas.
-2. Organize it into [a clean brief / a checklist / next steps].
-3. Ask me about anything unclear instead of guessing.
-
-Treat the messy input as the source of truth — your job is to make it usable.` },
-  { title:"Hooks — “every time I finish, push to main”", forwho:"Auto the boring", sub:"A hook is a rule that fires automatically. Set it once and the tedious step just happens.",
-    prompt:`Explain how to set up a hook so that [every time I finish a coding turn, my work is automatically pushed to GitHub].
-
-I'm a non-engineer using [Claude Code / my tool]. For my situation:
-1. In plain language, what the hook will do.
-2. The exact thing to add, and where it goes.
-3. How to test that it's working.
-4. How to turn it off if it gets annoying.
-
-Keep it simple — assume I've never set one up.` },
+Do this:
+1. Suggest a clear filename for each (like new-item-form.md, weekly-recap.md).
+2. Write a one-line index for the top of the folder so the team knows what's there.
+3. Tell me where to keep it so it's easy to find and share.` },
+  { title:"Sonnet does 80% of Opus", forwho:"Pick the model", sub:"You don't always need the biggest, slowest model. Sonnet handles ~80% of everyday work faster — reach for Opus on the hard, high-stakes reasoning. Match the model to the job." },
   { title:"Set a Cron — it runs while you sleep", forwho:"Scheduling", sub:"A Cron is a timer for a task: “do this every Monday at 9am.” Set it once; the recurring job runs itself.",
     prompt:`I want to set up a Cron — a scheduled job on a repeating timer — to [pull a weekly summary / send me a digest] every [Monday at 9am].
 
@@ -1124,52 +1105,47 @@ Assume it's my first one.` }
 ];
 
 const BEST_PRACTICES = [
-  { title:"Be precise", forwho:"Inputs", sub:"Vague in, vague out. The more specific your ask — audience, format, length, tone — the less it guesses.",
-    prompt:`I'm going to make a request, and I want you to push me to be precise before you start.
-
-My rough ask: [paste your vague request, e.g. "write something for our newsletter"]
-
-Before doing anything, ask me up to 4 sharp questions that would make your output 10x better — audience, goal, length, tone, must-includes. Then wait for my answers, THEN do the work. Don't fill gaps with assumptions.` },
-  { title:"Describe the symptoms", forwho:"Debugging", sub:"When something's wrong, don't diagnose — describe. What you did, what you expected, what actually happened.",
-    prompt:`Something isn't working and I want your help. I'll describe the symptoms, not guess the cause.
-
-- What I was trying to do: [goal]
-- What I did, step by step: [actions]
-- What I expected: [expectation]
-- What actually happened: [the error / weird result — paste it exactly]
-
-Give me your top 2–3 likely causes, the most likely first, and the exact next step to test it. Ask for anything you need to narrow it down.` },
-  { title:"Put the burden on the AI", forwho:"Mindset", sub:"You're the director, not the laborer. Make it do the heavy lifting while you decide.",
+  { title:"Put the burden on Claude", forwho:"Mindset", sub:"You're the director, not the laborer. Make it do the heavy lifting — ask “what would you do?” and tell it to ask YOU questions until it really gets what you want.",
     prompt:`For this task, carry the load — I'll direct, you do the heavy lifting.
 
 The task: [describe it]
 
-Instead of asking me to decide everything, you should:
-- Make reasonable choices and tell me what you chose and why.
+Do this:
+- First, ask me any questions you need to truly understand what I want — don't assume.
+- Then make reasonable choices and tell me what you chose and why.
 - Give me 2–3 options where it genuinely matters, with a recommendation.
-- Do the tedious parts (drafting, formatting, listing, checking) unasked.
-- Flag only the decisions that actually need me.
+- Do the tedious parts (drafting, formatting, checking) unasked.
 
-I'm the editor. You're the writer. Go.` },
-  { title:"Ask it to teach you how", forwho:"Leveling up", sub:"Don't just take the answer — ask it to explain the move, so next time you can do it yourself.",
-    prompt:`Help me with [the task] — but I also want to learn how, not just get the output.
+I'm the editor, you're the writer. What would you do?` },
+  { title:"Be specific — what to do, and what not to touch", forwho:"Inputs", sub:"Vague in, vague out — and the underrated half is the guardrail: say what to change AND what to leave alone. “Change the color of X, but don't touch Y.”",
+    prompt:`Before you start, here's exactly what I want — and what to leave alone.
 
-As you work:
-1. Do the thing.
-2. Then explain, in plain language, the key move you made and WHY — the part I'd need to do this myself next time.
-3. Give me one tip for asking better in future.
+Change / do this: [the specific change or task].
+Do NOT touch: [what should stay exactly as it is].
+Audience / goal / format: [who it's for, what "done" looks like].
 
-Teach me like I'm smart but brand-new. Skip the jargon, or define it when you use it.` },
-  { title:"Know when to start fresh", forwho:"Resetting", sub:"When a chat goes in circles, don't keep pushing — a clean restart with a tight summary beats fighting a confused thread.",
-    prompt:`This conversation's gotten tangled — let's start clean. Before I open a fresh chat, help me carry over only what matters.
+If anything's ambiguous, ask me before you start instead of guessing.` },
+  { title:"Describe the symptom — never “it's not working”", forwho:"Debugging", sub:"When something breaks, don't say “it's not working.” Say what's wrong, where, and what it looks like — and paste a screenshot. The clearer the symptom, the faster the fix.",
+    prompt:`Something isn't working and I want your help. I'll describe the symptom, not guess the cause.
 
-Give me a tight "handoff" I can paste into a new conversation:
-- The goal (one line)
-- What we've decided / what's working
-- What's still broken or open
-- The exact next step
+- What I was trying to do: [goal]
+- What I did, step by step: [actions]
+- What I expected: [expectation]
+- What actually happened: [the error / weird result — paste it exactly, + a screenshot]
 
-Keep it short — just enough to pick up cleanly without dragging the confusion along.` }
+Give me your top 2–3 likely causes, the most likely first, and the exact next step to test it.` },
+  { title:"CSV, never XLS", forwho:"Data", sub:"Feeding it spreadsheet data? Give it a CSV, not an .xls / .xlsx. CSV is clean plain text it reads perfectly; Excel files carry formatting, tabs, and formulas that trip it up. In Sheets or Excel: File → Download / Save As → CSV." },
+  { title:"Harden + secure after a big change", forwho:"Ship safely", sub:"Once something works, do a safety pass before you rely on it — check for anything risky (exposed keys, broken edge cases) and lock it down.",
+    prompt:`This works now — before I rely on it, do a safety + sanity pass.
+
+Here's what we built / changed: [describe or paste it].
+
+Check for:
+- Anything risky or exposed (API keys, private info, anything that shouldn't be public).
+- Edge cases or inputs that would break it.
+- Anything fragile that should be made more robust.
+
+List what you find, worst-first, with the fix for each. Don't change anything until I say go.` }
 ];
 
 const SHARE = [
@@ -1197,8 +1173,8 @@ const C1_PE  = ['🎯','🍽️','🐣','💬','🚀'];   // describe / feed / s
 const C2_PE  = ['😤','✏️','🍽️','♻️','🏷️'];   // resent / sketch / feed / reuse / name+store
 const C1_UE  = ['📄','🛒','⭐','✉️','🎬','📋','🍴','📊'];   // sell sheet / Amazon A+ / review / email / reel / leave-behind / recipe / report-from-sheet
 const C2_UE  = ['📝','🔢','📦','🤝','✅','📊','📆','🧹','🔎','🧮'];   // form / UPC / pallet / vendor / certs / recap / calendar / clean-sheet / explain-sheet / formula
-const HACKS_E= ['📥','📅','🎙️','🪝','⏰'];   // inbox / scheduling / multimodal / hooks / cron
-const BP_E   = ['🎯','🩺','🏋️','🎓','🔄'];   // precise / symptoms / burden / teach / reset
+const HACKS_E= ['🎨','🔁','📚','⚡','⏰'];   // brands / reverse-md / library / sonnet-vs-opus / cron
+const BP_E   = ['🏋️','🎯','🩺','📄','🔒'];   // burden / specific / symptom / csv / harden
 const FILES_E= ['📄','✨','🚀'];
 
 /* ───────── HELPERS ───────── */
@@ -1220,7 +1196,7 @@ function renderAccordion(el, list, label, em){
   el.innerHTML = list.map((u,i)=>`
     <div class="acc-item">
       <button class="acc-head" aria-expanded="false"><span class="ac-spark">✦</span><span class="acc-title serif">${em&&em[i]?em[i]+' ':''}${esc(u.title)}</span><span class="acc-for">${esc(u.forwho||'')}</span></button>
-      <div class="acc-body"><div class="acc-body-inner"><p class="acc-sub">${esc(u.sub)}</p>${promptBlock(label, u.prompt)}</div></div>
+      <div class="acc-body"><div class="acc-body-inner"><p class="acc-sub">${esc(u.sub)}</p>${u.prompt ? promptBlock(label, u.prompt) : '<span class="tip-flag">✦ Just a tip — no prompt needed</span>'}</div></div>
     </div>`).join('');
 }
 function renderTicker(el){
@@ -1276,8 +1252,8 @@ function renderCheatsheet(el){
     { name:'Make me a thing — starters', items: C1_USECASES.map((u,i)=>({label:lbl(C1_UE[i],u.title), prompt:u.prompt})) },
     { name:'Do this every time — starters', items: C2_USECASES.map((u,i)=>({label:lbl(C2_UE[i],u.title), prompt:u.prompt})) },
     { name:'The big builds', items:[ {label:"🚀 Willa's website — live build", prompt: POC.basePrompt+'\n\n'+POC.closer}, {label:'⚙️ Build a Markdown recipe', prompt: RECIPE_PROMPT} ] },
-    { name:'Hacks', items: HACKS.map((h,i)=>({label:lbl(HACKS_E[i],h.title), prompt:h.prompt})) },
-    { name:'Best Practices', items: BEST_PRACTICES.map((b,i)=>({label:lbl(BP_E[i],b.title), prompt:b.prompt})) }
+    { name:'Hacks', items: HACKS.map((h,i)=>({label:lbl(HACKS_E[i],h.title), prompt:h.prompt})).filter(it=>it.prompt) },
+    { name:'Best Practices', items: BEST_PRACTICES.map((b,i)=>({label:lbl(BP_E[i],b.title), prompt:b.prompt})).filter(it=>it.prompt) }
   ];
   el.innerHTML = groups.map(g=>`<div class="cheat-group"><h3 class="serif">${esc(g.name)}</h3>${g.items.map(it=>`
     <div class="acc-item">
