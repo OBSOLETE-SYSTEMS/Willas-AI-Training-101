@@ -445,6 +445,23 @@
   .beat p { font-size:14.5px; color: var(--ink-soft); line-height:1.55; }
   .beat .tagline { font-family: var(--display); font-weight:600; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color: var(--orange); margin-top:8px; display:inline-block; }
 
+  /* what's an agent */
+  .agent-lead { font-family:'Fraunces',serif; font-weight:300; font-size: clamp(19px,2.2vw,24px); line-height:1.42; color: var(--navy); margin-bottom:30px; }
+  .agent-lead b { font-weight:500; font-style:italic; color: var(--green-deep); }
+  .agent-ladder { border-top:1px solid var(--line); }
+  .agent-rung { display:flex; gap:18px; padding:20px 0; border-bottom:1px solid var(--line); align-items:flex-start; }
+  .agent-rung .ar-n { font-family: var(--display); font-weight:700; font-size:32px; line-height:0.9; width:42px; flex-shrink:0; color: var(--ink-quiet); }
+  .agent-rung:nth-child(2) .ar-n { color: var(--green-deep); }
+  .agent-rung:nth-child(3) .ar-n { color: var(--orange); }
+  .agent-rung h3 { font-family:'Fraunces',serif; font-weight:500; font-size:19px; margin-bottom:5px; display:flex; align-items:center; gap:11px; flex-wrap:wrap; }
+  .agent-rung p { font-size:14.5px; color: var(--ink-soft); line-height:1.55; }
+  .ar-tag { font-family: var(--display); font-weight:600; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:3px 10px; border-radius:999px; border:1.5px solid var(--line-strong); color: var(--ink-quiet); }
+  .agent-rung:nth-child(2) .ar-tag { background: var(--green); color: var(--navy); border-color: var(--navy); }
+  .agent-rung:nth-child(3) .ar-tag { background: var(--navy); color: var(--cream); border-color: var(--navy); }
+  .agent-punch { margin-top:28px; border-left:3px solid var(--green-deep); padding:14px 0 14px 20px; }
+  .agent-punch .label { display:block; margin-bottom:8px; color: var(--green-deep); font-weight:700; }
+  .agent-punch p { font-family:'Fraunces',serif; font-style:italic; font-size:17px; line-height:1.5; color: var(--navy); }
+
   /* ── DRAWER ────────────────────────────────────── */
   .drawer { position:fixed; top:0; right:0; bottom:0; width:480px; max-width:96vw; z-index:160;
     background: var(--cream); border-left:1.5px solid var(--navy); box-shadow:-16px 0 50px rgba(0,0,0,0.18);
@@ -668,6 +685,7 @@
         <span class="kicker">Build Two · Do this for me, every time</span>
         <h3 class="ch-headline serif">Turning a repeated manual <em>chore</em> into a reusable <em>tool.</em></h3>
         <p class="ch-lead">Spreadsheets, forms, reports, data clean-up — anything you do by hand more than three times. The tool you build here is the first step toward an <b>agent</b> that runs it for you, on a schedule or a trigger.</p>
+        <button class="btn-ghost" id="agentBtn" style="margin-top:18px;">✦ Wait — what's an agent?</button>
 
         <div class="block"><div class="block-head"><span class="bspark">✦</span><h4>🪜 Step by step</h4><span class="hr"></span></div>
           <div class="principles" id="c2-principles"></div></div>
@@ -714,6 +732,19 @@
     <div class="tabpane bp" id="pane-bp"></div>
   </div>
 </aside>
+
+<!-- WHAT'S AN AGENT OVERLAY -->
+<div class="overlay" id="agentOverlay">
+  <div class="overlay-card">
+    <div class="sparkles" id="agentSparkles"></div>
+    <div class="ov-head"><div><h2 class="serif">What's an <em>agent?</em></h2><p>Short version: it's just letting AI actually <i>do</i> the work — not only answer you.</p></div><button class="ov-close" data-ov-close>✕</button></div>
+    <div class="ov-body">
+      <p class="agent-lead">You don't need to "learn agents" as some separate skill. <b>Using agents just means using Claude on more of your work</b> — and letting it go do things, not just talk about them.</p>
+      <div class="agent-ladder" id="agentLadder"></div>
+      <div class="agent-punch"><span class="label">✦ The whole idea</span><p>The tool you build today + a way to run it on its own = an agent. Point Claude at the next annoying thing, and the next.</p></div>
+    </div>
+  </div>
+</div>
 
 <!-- CHEAT SHEET OVERLAY -->
 <div class="overlay" id="cheatOverlay">
@@ -1352,6 +1383,16 @@ function renderMD(el){
   reveal.addEventListener('click', ()=>{ const open=wrap.classList.toggle('open'); reveal.setAttribute('aria-expanded',open); reveal.textContent = open?'✦ Hide the prompt':'✦ Show the prompt'; });
 }
 
+const AGENT_LADDER = [
+  { n:"1", t:"It answers", tag:"Chatbot", d:"You ask, it replies. Useful — but you're still the one doing the work." },
+  { n:"2", t:"It does the work", tag:"Agent", d:"You point it at a real task and it builds the thing, fills the form, cleans the sheet. (Everything we did today.)" },
+  { n:"3", t:"It runs on its own", tag:"On autopilot", d:"Set it up once and it goes — on a schedule (a Cron) or a trigger (a hook). It works while you don't." }
+];
+function renderAgentLadder(el){
+  if(!el) return;
+  el.innerHTML = AGENT_LADDER.map(r=>`<div class="agent-rung"><span class="ar-n">${esc(r.n)}</span><div><h3 class="serif">${esc(r.t)} <span class="ar-tag">${esc(r.tag)}</span></h3><p>${esc(r.d)}</p></div></div>`).join('');
+}
+
 function renderFlow(el){
   el.innerHTML = FLOW.map((b,i)=>`<div class="beat ${b.under?'under':''}"><span class="bn">${b.n}</span><div><h3 class="serif">${FLOW_E[i]?FLOW_E[i]+' ':''}${b.title}</h3><p>${esc(b.body)}</p>${b.tagline?`<span class="tagline">${esc(b.tagline)}</span>`:''}</div></div>`).join('');
 }
@@ -1398,6 +1439,10 @@ renderShare(document.getElementById('share-block-2'), SHARE2, SHARE2_NOTE);
 renderCheatsheet(document.getElementById('cheatBody'));
 renderMD(document.getElementById('md-module'));
 renderFlow(document.getElementById('flowBeats'));
+renderAgentLadder(document.getElementById('agentLadder'));
+sparkle(document.getElementById('agentSparkles'), [
+  {x:90,y:12,s:18,c:C.green,r:12},{x:6,y:84,s:14,c:C.orange},{x:95,y:58,s:11,c:C.yellow},{x:84,y:90,s:13,c:C.sky,r:-10}
+]);
 renderTQ(document.getElementById('tqBody'));
 renderAccordion(document.getElementById('pane-hacks'), HACKS, 'Copy · paste · fill the blanks', HACKS_E);
 renderAccordion(document.getElementById('pane-bp'), BEST_PRACTICES, 'Copy · paste · fill the blanks', BP_E);
@@ -1429,6 +1474,7 @@ function openOverlay(id){ document.getElementById(id).classList.add('open'); doc
 function closeOverlay(el){ el.classList.remove('open'); document.body.style.overflow=''; }
 document.getElementById('flowBtn').addEventListener('click',()=>openOverlay('flowOverlay'));
 document.getElementById('navCheat').addEventListener('click',()=>openOverlay('cheatOverlay'));
+const agentBtn=document.getElementById('agentBtn'); if(agentBtn) agentBtn.addEventListener('click',()=>openOverlay('agentOverlay'));
 const footCheat=document.getElementById('footCheat'); if(footCheat) footCheat.addEventListener('click',()=>openOverlay('cheatOverlay'));
 const cheatPrint=document.getElementById('cheatPrint'); if(cheatPrint) cheatPrint.addEventListener('click',()=>window.print());
 document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{ if(e.target===ov||e.target.closest('[data-ov-close]')) closeOverlay(ov); }));
