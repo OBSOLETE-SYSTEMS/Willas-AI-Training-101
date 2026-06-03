@@ -58,7 +58,11 @@
 
   /* sparkle confetti — Willa's signature flourish */
   .sparkles { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
-  .spk { position:absolute; line-height:1; }
+  .spk { position:absolute; line-height:1; transform: rotate(var(--r,0deg)); animation: twinkle 4.5s ease-in-out infinite; }
+  @keyframes twinkle {
+    0%,100% { transform: rotate(var(--r,0deg)) translateY(0) scale(1); opacity:0.78; }
+    50%     { transform: rotate(var(--r,0deg)) translateY(-5px) scale(1.18); opacity:1; }
+  }
 
   .kicker {
     font-family: var(--display); font-weight:600; font-size:13px;
@@ -152,13 +156,13 @@
   .flow-launch .play { width:44px; height:44px; border-radius:50%; background: var(--green);
     display:grid; place-items:center; flex-shrink:0; }
   .flow-launch .play svg { width:16px; height:16px; margin-left:2px; }
-  .flow-hint { font-family: var(--display); font-weight:500; font-size:13px; color: var(--ink-quiet); max-width:20ch; line-height:1.5; }
+  .flow-hint { font-family: var(--display); font-weight:500; font-size:13px; color: var(--ink-quiet); white-space:nowrap; line-height:1.5; }
 
   .fineprint { display:flex; flex-wrap:wrap; gap:10px; margin-top:48px; }
-  .fp { display:inline-flex; align-items:center; gap:9px; padding:9px 15px;
-    border:1.5px dashed var(--line-strong); border-radius:999px; font-size:13.5px; color: var(--ink-soft);
+  .fp { display:inline-flex; align-items:center; gap:11px; padding:11px 18px;
+    border:1.5px dashed var(--line-strong); border-radius:999px; font-size:16px; color: var(--ink-soft);
     background: rgba(255,255,255,0.55); }
-  .fp .dot { width:8px; height:8px; border-radius:50%; }
+  .fp .dot { width:9px; height:9px; border-radius:50%; }
 
   /* ── SECTION SHELL ─────────────────────────────── */
   .section { max-width: 1180px; margin:0 auto; padding: 100px 24px; position:relative; }
@@ -336,9 +340,12 @@
   .upload-thumb button { background:none; border:none; cursor:pointer; color: var(--cream); opacity:0.55; font-size:14px; line-height:1; }
   .upload-thumb button:hover { opacity:1; }
 
-  /* main-event header — the hero of each build */
-  .block--hero .block-head h4 { font-family:'Fraunces',serif; font-weight:500; font-size: clamp(23px,3vw,32px); letter-spacing:-0.015em; text-transform:none; }
-  .block--hero .block-head .bspark { font-size:20px; }
+  /* main-event header — the hero of each build (a step change in the preso) */
+  .block--hero { margin-top:80px; padding-top:8px; border-top:2px solid var(--navy); }
+  .block--hero .block-head { margin-bottom:30px; }
+  .block--hero .block-head h4 { font-family:'Fraunces',serif; font-weight:400; font-size: clamp(30px,4.6vw,52px); letter-spacing:-0.025em; text-transform:none; line-height:1.0; }
+  .block--hero .block-head .bspark { font-size:26px; }
+  .block--hero .block-head .hr { display:none; }
 
   /* share / host block */
   .share-list { border-top:1px solid var(--line); }
@@ -353,8 +360,14 @@
   /* recolored share card (its own step) */
   .share-section { background: var(--sand); border-radius:20px; padding: 30px clamp(20px,3vw,34px) 34px; }
   .share-section .block-head { margin-bottom:18px; }
-  .share-intro { font-size:16px; line-height:1.55; color: var(--ink-soft); max-width:74ch; margin-bottom:6px; }
+  .share-intro { font-size:16px; line-height:1.55; color: var(--ink-soft); max-width:74ch; margin-bottom:16px; }
   .share-intro b { color: var(--navy); font-weight:600; }
+  .share-toggle { display:inline-flex; align-items:center; gap:10px; padding:11px 18px; cursor:pointer; background:transparent; border:1.5px solid var(--navy); border-radius:12px; color:var(--navy); font-family:var(--display); font-weight:600; font-size:13px; letter-spacing:0.02em; transition: background .2s, color .2s; }
+  .share-toggle:hover { background: var(--navy); color: var(--cream); }
+  .share-toggle .st-chev { width:15px; height:15px; transition: transform .3s; }
+  .share-toggle[aria-expanded="true"] .st-chev { transform: rotate(180deg); }
+  .share-collapse { max-height:0; overflow:hidden; transition: max-height .5s ease; }
+  .share-collapse.open { max-height:3000px; margin-top:14px; }
 
   /* recipe chore input (navy) */
   .md-chore { width:100%; padding:12px 15px; border-radius:12px; border:1.5px solid rgba(255,254,247,0.2); background: rgba(255,254,247,0.06); color: var(--cream); font-family:'DM Sans',sans-serif; font-size:15px; outline:none; transition:border-color .2s; }
@@ -390,7 +403,7 @@
   .threeq .section { padding-top:96px; padding-bottom:96px; }
   .threeq .sec-head h2 { color: var(--cream); }
   .threeq .sec-head h2 em { color: var(--green); }
-  .threeq .lead { font-size: clamp(17px,1.9vw,22px); color: rgba(255,254,247,0.8); max-width:56ch; line-height:1.5; margin-bottom:36px; }
+  .threeq .lead { font-size: clamp(16px,1.7vw,20px); color: rgba(255,254,247,0.8); max-width:none; line-height:1.5; margin-bottom:36px; }
   .threeq .lead b { color: var(--cream); }
   .tq { display:flex; gap:22px; padding:28px 0; border-top:1px solid rgba(255,254,247,0.15); align-items:flex-start; }
   .tq:last-child { border-bottom:1px solid rgba(255,254,247,0.15); }
@@ -488,25 +501,9 @@
 
   /* cheat sheet */
   #cheatsheet { max-width:880px; }
-  .cheat-head-actions { display:flex; gap:10px; align-items:center; }
   .cheat-group { margin-bottom:38px; }
   .cheat-group h3 { font-family:'Fraunces',serif; font-weight:500; font-size:22px; letter-spacing:-0.01em; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--line); }
   .cheat-group .prompt-block { margin-bottom:14px; }
-
-  @media print {
-    body > *:not(#cheatOverlay) { display:none !important; }
-    #cheatOverlay { position:static !important; display:block !important; opacity:1 !important; background:none !important; backdrop-filter:none !important; padding:0 !important; overflow:visible !important; }
-    #cheatOverlay .overlay-card { box-shadow:none !important; border:none !important; max-width:none !important; transform:none !important; border-radius:0 !important; }
-    .cheat-head-actions, .copy-btn { display:none !important; }
-    #cheatOverlay .acc-body { max-height:none !important; overflow:visible !important; }
-    #cheatOverlay .acc-item { break-inside:avoid; }
-    .cheat-group .prompt-block { background:#fff !important; border:1px solid #bbb !important; break-inside:avoid; }
-    .cheat-group .prompt-text { color:#111 !important; }
-    .cheat-group .prompt-text .ph { color:#111 !important; background:#eee !important; }
-    .cheat-group .pb-label { color:#444 !important; border-color:#ccc !important; }
-    .ov-head h2, .ov-head p, .cheat-group h3 { color:#111 !important; }
-    .ov-head h2 em { color:#333 !important; }
-  }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
@@ -589,7 +586,7 @@
         <span class="play" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><path d="M4 3l9 5-9 5V3z" fill="#202a44"/></svg></span>
         <span>Flow for Today</span>
       </button>
-      <span class="flow-hint">Five beats. Two builds. Zero PowerPoints.</span>
+      <span class="flow-hint">Two builds. Zero PowerPoints.</span>
     </div>
 
     <div class="fineprint">
@@ -747,10 +744,7 @@
   <div class="overlay-card" id="cheatsheet">
     <div class="ov-head">
       <div><h2 class="serif">Your <em>cheat sheet</em></h2><p>Every starter prompt from today, in one place.</p></div>
-      <div class="cheat-head-actions">
-        <button class="btn-ghost" id="cheatPrint">🖨 Print / Save PDF</button>
-        <button class="ov-close" data-ov-close>✕</button>
-      </div>
+      <button class="ov-close" data-ov-close>✕</button>
     </div>
     <div class="ov-body" id="cheatBody"></div>
   </div>
@@ -1248,12 +1242,12 @@ function mountPOCPrompt(){ const m=document.getElementById('pocPromptMount'); if
 
 function renderShare(el, list, note){
   if(!el) return;
-  el.innerHTML = list.map(s=>`
-    <div class="acc-item">
-      <button class="acc-head" aria-expanded="false"><span class="ac-spark">✦</span><span class="acc-title serif">${esc(s.t)}</span><span class="acc-for"></span></button>
-      <div class="acc-body"><div class="acc-body-inner"><p class="acc-sub" style="max-width:none;">${esc(s.d)}</p></div></div>
-    </div>`).join('')
-    + (note ? `<div class="share-note"><span class="label">✦ One thing to know</span><p>${esc(note)}</p></div>` : '');
+  el.innerHTML = `
+    <button class="share-toggle" aria-expanded="false"><span>See the ways to share it</span><svg viewBox="0 0 16 16" class="st-chev" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="share-collapse">
+      <div class="share-list">${list.map(s=>`<div class="share-row"><span class="sr-a">→</span><p><b>${esc(s.t)}.</b> ${esc(s.d)}</p></div>`).join('')}</div>
+      ${note ? `<div class="share-note"><span class="label">✦ One thing to know</span><p>${esc(note)}</p></div>` : ''}
+    </div>`;
 }
 
 function renderCheatsheet(el){
@@ -1275,7 +1269,6 @@ function renderCheatsheet(el){
 
 function renderPOC(el){
   el.innerHTML = `
-    <div class="hm-banner"><span>✦ The hero of this build</span></div>
     <div class="hm-body">
       <p class="acc-sub" style="font-size:16px;">${esc(POC.intro)}</p>
 
@@ -1331,7 +1324,6 @@ function mountRecipePrompt(){ const m=document.getElementById('mdPromptMount'); 
 
 function renderMD(el){
   el.innerHTML = `
-    <div class="hm-banner"><span>✦ The hero of this build</span><span>♻ Build once · run forever</span></div>
     <div class="hm-body">
       <p class="acc-sub" style="font-size:16px;max-width:none;">A Markdown file can be a <b>reusable tool</b> — write down how you do a task once, and the AI runs it for you every time. Let's build a real one, <b>live</b>: the tool that fills a retailer's new-item setup form, so you never re-key the same product data again.</p>
 
@@ -1387,7 +1379,7 @@ function renderTQ(el){
 
 /* sparkle confetti */
 function sparkle(el, specs){
-  el.innerHTML = specs.map(s=>`<span class="spk" style="left:${s.x}%;top:${s.y}%;font-size:${s.s}px;color:${s.c};transform:rotate(${s.r||0}deg);">${s.g||'✦'}</span>`).join('');
+  el.innerHTML = specs.map((s,i)=>`<span class="spk" style="left:${s.x}%;top:${s.y}%;font-size:${s.s}px;color:${s.c};--r:${s.r||0}deg;animation-delay:${(i*0.55).toFixed(2)}s;">${s.g||'✦'}</span>`).join('');
 }
 const C = { green:'#75c596', sky:'#93c4e0', orange:'#e07a45', yellow:'#f4c842', lav:'#b6a6d6', cream:'rgba(255,254,247,0.5)' };
 sparkle(document.getElementById('heroSparkles'), [
@@ -1435,6 +1427,8 @@ renderAccordion(document.getElementById('pane-bp'), BEST_PRACTICES, 'Copy · pas
 /* ───────── INTERACTIONS ───────── */
 document.addEventListener('click', e=>{ const h=e.target.closest('.acc-head'); if(h){ const it=h.parentElement; const o=it.classList.toggle('open'); h.setAttribute('aria-expanded',o); } });
 
+document.addEventListener('click', e=>{ const t=e.target.closest('.share-toggle'); if(!t) return; const c=t.nextElementSibling; const o=c.classList.toggle('open'); t.setAttribute('aria-expanded', o); });
+
 document.addEventListener('click', async e=>{
   const btn=e.target.closest('.copy-btn'); if(!btn||btn.disabled) return;
   const text=decodeAttr(btn.getAttribute('data-copy')||'');
@@ -1461,7 +1455,6 @@ document.getElementById('flowBtn').addEventListener('click',()=>openOverlay('flo
 document.getElementById('navCheat').addEventListener('click',()=>openOverlay('cheatOverlay'));
 const agentBtn=document.getElementById('agentBtn'); if(agentBtn) agentBtn.addEventListener('click',()=>openOverlay('agentOverlay'));
 const footCheat=document.getElementById('footCheat'); if(footCheat) footCheat.addEventListener('click',()=>openOverlay('cheatOverlay'));
-const cheatPrint=document.getElementById('cheatPrint'); if(cheatPrint) cheatPrint.addEventListener('click',()=>window.print());
 document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{ if(e.target===ov||e.target.closest('[data-ov-close]')) closeOverlay(ov); }));
 
 const drawer=document.getElementById('drawer');
