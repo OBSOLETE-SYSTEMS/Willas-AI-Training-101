@@ -737,11 +737,10 @@
 <div class="overlay" id="agentOverlay">
   <div class="overlay-card">
     <div class="sparkles" id="agentSparkles"></div>
-    <div class="ov-head"><div><h2 class="serif">What's an <em>agent?</em></h2><p>Short version: it's just letting AI actually <i>do</i> the work — not only answer you.</p></div><button class="ov-close" data-ov-close>✕</button></div>
+    <div class="ov-head"><div><h2 class="serif">What's an <em>agent?</em></h2><p style="max-width:none;">Short version: it's just letting AI actually <i>do</i> the work — not only answer you.</p></div><button class="ov-close" data-ov-close>✕</button></div>
     <div class="ov-body">
       <p class="agent-lead">You don't need to "learn agents" as some separate skill. <b>Using agents just means using Claude on more of your work</b> — and letting it go do things, not just talk about them.</p>
       <div class="agent-ladder" id="agentLadder"></div>
-      <div class="agent-punch"><span class="label">✦ The whole idea</span><p>The tool you build today + a way to run it on its own = an agent. Point Claude at the next annoying thing, and the next.</p></div>
     </div>
   </div>
 </div>
@@ -1424,7 +1423,7 @@ renderGen(document.getElementById('gen-make'),'make');
 renderGen(document.getElementById('gen-automate'),'automate');
 renderPOC(document.getElementById('poc-module'));
 renderShare(document.getElementById('share-block'), SHARE, '');
-renderShare(document.getElementById('share-block-2'), SHARE2, SHARE2_NOTE);
+renderShare(document.getElementById('share-block-2'), SHARE2, '');
 renderCheatsheet(document.getElementById('cheatBody'));
 renderMD(document.getElementById('md-module'));
 renderFlow(document.getElementById('flowBeats'));
