@@ -246,7 +246,6 @@
   .acc-body-inner > .acc-sub { max-width:none; }
   .acc-sub b { color: var(--navy); font-weight:600; }
   .tip-flag { display:inline-block; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color: var(--green-deep); }
-  .demo-badge { display:inline-block; font-family: var(--display); font-weight:600; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color: var(--navy); background: var(--yellow); padding:2px 9px; border-radius:999px; vertical-align:middle; margin-left:8px; white-space:nowrap; }
 
   /* prompt block */
   .prompt-block { position:relative; background: var(--navy); border-radius:16px; padding:24px 24px 22px; }
@@ -816,6 +815,19 @@ It should:
 - End with a simple next step: [email / sample request / rep contact].
 
 Build it as a single self-contained HTML page I can open in a browser and screenshot. Make a rough first version fast — I'll react and we'll refine.` },
+  { title:"A report or one-pager from a spreadsheet", forwho:"For: any team",
+    sub:"Paste in your numbers and get back a clean, readable report or simple dashboard you can actually send.",
+    prompt:`You are a data designer + analyst for Willa's. Turn my raw numbers into a clean, readable report I can send.
+
+Here's the data: [paste the spreadsheet rows / numbers — sales, inventory, costs, whatever].
+
+Do this:
+- Lead with the 3 things that matter most (the takeaways), in plain English.
+- Lay out the supporting numbers in tidy tables or simple charts.
+- Keep it skimmable for someone who won't read every cell.
+- On-brand for Willa's (cream, navy, oat green) if it's visual.
+
+Build it as a single self-contained HTML page I can open and screenshot, or clean formatted text — your call. Rough first pass; I'll refine.` },
   { title:"An Amazon A+ content block", forwho:"For: the product detail page",
     sub:"On-brand A+ modules — headline, feature callouts, a comparison angle — that make the whole-oat story sell on Amazon.",
     prompt:`You are an Amazon listing strategist + copywriter for Willa's (the first & only WHOLE plant milk — entire oat groat, not oat syrup; 1g sugar, 4g+ protein, 2g+ prebiotic fiber, 4 ingredients; warm, clean, witty voice).
@@ -895,19 +907,6 @@ It should:
 - Feel warm, homemade, grandmother-Willa-approved
 
 Build it as a single self-contained HTML card I can open and screenshot, square-ish for social. Quick first pass — I'll tweak the recipe.` },
-  { title:"A report or one-pager from a spreadsheet", forwho:"For: any team", demo:true,
-    sub:"Paste in your numbers and get back a clean, readable report or simple dashboard you can actually send.",
-    prompt:`You are a data designer + analyst for Willa's. Turn my raw numbers into a clean, readable report I can send.
-
-Here's the data: [paste the spreadsheet rows / numbers — sales, inventory, costs, whatever].
-
-Do this:
-- Lead with the 3 things that matter most (the takeaways), in plain English.
-- Lay out the supporting numbers in tidy tables or simple charts.
-- Keep it skimmable for someone who won't read every cell.
-- On-brand for Willa's (cream, navy, oat green) if it's visual.
-
-Build it as a single self-contained HTML page I can open and screenshot, or clean formatted text — your call. Rough first pass; I'll refine.` },
   { title:"A quick calculator or internal tool", forwho:"For: ops + finance",
     sub:"Describe a number-crunch you do by hand and get a tiny working tool — a calculator you just type into.",
     prompt:`You are a front-end engineer for Willa's. Build me a tiny, single-page web tool for a calculation I do by hand.
@@ -1008,7 +1007,7 @@ Do this:
 4. Leave [brackets] for dates and specifics I need to fill.
 
 Make it reusable — I'll paste a new pile next month and re-run.` },
-  { title:"Clean up a messy spreadsheet", forwho:"For: anyone in sheets", demo:true,
+  { title:"Clean up a messy spreadsheet", forwho:"For: anyone in sheets",
     sub:"Hand it inconsistent, half-formatted data and get back something tidy, standardized, and usable.",
     prompt:`You are a data assistant for Willa's. Clean up this messy spreadsheet data for me.
 
@@ -1183,7 +1182,7 @@ const FLOW_E = ['🙋','🪄','♻️','💬','🍿'];
 const TQ_E   = ['📊','⏰','💡'];
 const C1_PE  = ['🎯','🍽️','🐣','💬','🚀'];   // describe / feed / start ugly / talk back / ship
 const C2_PE  = ['😤','✏️','🍽️','♻️','🏷️'];   // resent / sketch / feed / reuse / name+store
-const C1_UE  = ['📄','🛒','⭐','✉️','🎬','📋','🍴','📊','🧰'];   // sell sheet / Amazon A+ / review / email / reel / leave-behind / recipe / report-from-sheet / calculator
+const C1_UE  = ['📄','📊','🛒','⭐','✉️','🎬','📋','🍴','🧰'];   // sell sheet / report-from-sheet / Amazon A+ / review / email / reel / leave-behind / recipe / calculator
 const C2_UE  = ['📝','🔢','📦','🤝','✅','📊','📆','🧹','🔎','🧮'];   // form / UPC / pallet / vendor / certs / recap / calendar / clean-sheet / explain-sheet / formula
 const HACKS_E= ['🎨','🔁','📚','⚡','⏰'];   // brands / reverse-md / library / sonnet-vs-opus / cron
 const BP_E   = ['🏋️','🎯','🩺','📄','🔒'];   // burden / specific / symptom / csv / harden
@@ -1207,7 +1206,7 @@ function renderPrinciples(el, list, em){
 function renderAccordion(el, list, label, em){
   el.innerHTML = list.map((u,i)=>`
     <div class="acc-item">
-      <button class="acc-head" aria-expanded="false"><span class="ac-spark">✦</span><span class="acc-title serif">${em&&em[i]?em[i]+' ':''}${esc(u.title)}${u.demo?' <span class="demo-badge">⭐ demo this</span>':''}</span><span class="acc-for">${esc(u.forwho||'')}</span></button>
+      <button class="acc-head" aria-expanded="false"><span class="ac-spark">✦</span><span class="acc-title serif">${em&&em[i]?em[i]+' ':''}${esc(u.title)}</span><span class="acc-for">${esc(u.forwho||'')}</span></button>
       <div class="acc-body"><div class="acc-body-inner"><p class="acc-sub">${esc(u.sub)}</p>${u.prompt ? promptBlock(label, u.prompt) : '<span class="tip-flag">✦ Just a tip — no prompt needed</span>'}</div></div>
     </div>`).join('');
 }
@@ -1253,8 +1252,12 @@ function mountPOCPrompt(){ const m=document.getElementById('pocPromptMount'); if
 
 function renderShare(el, list, note){
   if(!el) return;
-  el.innerHTML = `<div class="share-list">` + list.map(s=>`<div class="share-row"><span class="sr-a">→</span><p><b>${esc(s.t)}.</b> ${esc(s.d)}</p></div>`).join('') + `</div>
-    <div class="share-note"><span class="label">✦ One thing to know</span><p>${esc(note)}</p></div>`;
+  el.innerHTML = list.map(s=>`
+    <div class="acc-item">
+      <button class="acc-head" aria-expanded="false"><span class="ac-spark">✦</span><span class="acc-title serif">${esc(s.t)}</span><span class="acc-for"></span></button>
+      <div class="acc-body"><div class="acc-body-inner"><p class="acc-sub" style="max-width:none;">${esc(s.d)}</p></div></div>
+    </div>`).join('')
+    + (note ? `<div class="share-note"><span class="label">✦ One thing to know</span><p>${esc(note)}</p></div>` : '');
 }
 
 function renderCheatsheet(el){
@@ -1420,7 +1423,7 @@ renderAccordion(document.getElementById('c2-usecases'), C2_USECASES, 'Copy · pa
 renderGen(document.getElementById('gen-make'),'make');
 renderGen(document.getElementById('gen-automate'),'automate');
 renderPOC(document.getElementById('poc-module'));
-renderShare(document.getElementById('share-block'), SHARE, SHARE_NOTE);
+renderShare(document.getElementById('share-block'), SHARE, '');
 renderShare(document.getElementById('share-block-2'), SHARE2, SHARE2_NOTE);
 renderCheatsheet(document.getElementById('cheatBody'));
 renderMD(document.getElementById('md-module'));
