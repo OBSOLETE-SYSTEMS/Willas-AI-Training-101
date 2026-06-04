@@ -1226,11 +1226,13 @@ let MD_STEPS = [
   "Sanity-check the UPC check digit and the case-pack math"
 ];
 let MD_INPUTS = ["the retailer + their form", "the product / SKU facts", "the price + terms"];
+let MD_EXAMPLE = '';
+let MD_UPLOADS = [];
 function renderTags(el, arr, attr){
   if(el) el.innerHTML = arr.map((c,i)=>`<span class="crowd-tag">${esc(c)} <button data-${attr}="${i}">✕</button></span>`).join('');
 }
-function renderUploads(el){
-  if(el) el.innerHTML = UPLOADS.map((u,i)=>`<span class="upload-thumb"><img src="${u.url}" alt=""><span class="un">${esc(u.name)}</span> <button data-up-rm="${i}">✕</button></span>`).join('');
+function renderUploads(el, arr, attr){
+  if(el) el.innerHTML = arr.map((u,i)=>`<span class="upload-thumb">${u.isImg?`<img src="${u.url}" alt="">`:'<span style="font-size:18px">📄</span>'}<span class="un">${esc(u.name)}</span> <button data-${attr}="${i}">✕</button></span>`).join('');
 }
 function buildPOCPrompt(){
   let p = POC.basePrompt;
@@ -1305,8 +1307,8 @@ function renderPOC(el){
   iIn.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); add(iIn,INSPO,iTags,'inspo-rm'); }});
   const upEl=el.querySelector('#uploadThumbs');
   el.querySelector('#inspoFiles').addEventListener('change', ev=>{
-    [...ev.target.files].forEach(f=>{ UPLOADS.push({name:f.name, url:URL.createObjectURL(f)}); });
-    ev.target.value=''; renderUploads(upEl); mountPOCPrompt();
+    [...ev.target.files].forEach(f=>{ UPLOADS.push({name:f.name, url:URL.createObjectURL(f), isImg:f.type.startsWith('image/')}); });
+    ev.target.value=''; renderUploads(upEl, UPLOADS, 'up-rm'); mountPOCPrompt();
   });
   const reveal=el.querySelector('#pocReveal'), wrap=el.querySelector('#pocPromptWrap');
   reveal.addEventListener('click', ()=>{ const open=wrap.classList.toggle('open'); reveal.setAttribute('aria-expanded',open); reveal.textContent = open ? '✦ Hide the prompt' : '✦ Show the prompt'; });
@@ -1318,7 +1320,12 @@ function buildRecipePrompt(){
   p += MD_STEPS.length ? `\n\nHOW I DO IT NOW (the steps):\n` + MD_STEPS.map((s,i)=>`${i+1}. ${s}`).join('\n')
                        : `\n\nHOW I DO IT NOW: [list the steps you take, start to finish]`;
   if(MD_INPUTS.length) p += `\n\nWHAT CHANGES EACH RUN (make these [bracketed] inputs):\n` + MD_INPUTS.map(s=>`- ${s}`).join('\n');
-  p += `\n\nDO THIS:\n1. Ask me 1–2 quick questions only if you truly need to.\n2. Write the reusable Markdown file (.md) that captures the steps.\n3. Use clear [brackets] for the inputs that change each run.\n4. Suggest a short, obvious filename (like new-item-form.md).\n5. Tell me exactly how to run it next time.\n6. Then DEMONSTRATE it — run the tool once on a realistic example and show me the finished, filled-out result, so I can see the actual output (not just the instructions).`;
+  if(MD_EXAMPLE.trim() || MD_UPLOADS.length){
+    p += `\n\nA REAL EXAMPLE TO RUN IT ON (use this for the demonstration in step 6):`;
+    if(MD_EXAMPLE.trim()) p += `\n${MD_EXAMPLE.trim()}`;
+    if(MD_UPLOADS.length) p += `\n(I'm also attaching ${MD_UPLOADS.length} file${MD_UPLOADS.length>1?'s':''} in the chat — the blank form and/or product facts: ${MD_UPLOADS.map(u=>u.name).join(', ')}.)`;
+  }
+  p += `\n\nDO THIS:\n1. Ask me 1–2 quick questions only if you truly need to.\n2. Write the reusable Markdown file (.md) that captures the steps.\n3. Use clear [brackets] for the inputs that change each run.\n4. Suggest a short, obvious filename (like new-item-form.md).\n5. Tell me exactly how to run it next time.\n6. Then DEMONSTRATE it — run the tool once on the example I gave you (or a realistic one if I didn't) and show me the finished, filled-out result, so I can see the actual output (not just the instructions).`;
   return p;
 }
 function mountRecipePrompt(){ const m=document.getElementById('mdPromptMount'); if(m) m.innerHTML = promptBlock('The new-item-form tool — live build', buildRecipePrompt()); }
@@ -1342,6 +1349,11 @@ function renderMD(el){
       <div class="crowd-tags" id="mdInputsTags"></div>
       <div class="crowd-row"><input id="mdInputsInput" placeholder="e.g. the retailer, the SKU, the price…" /><button class="btn-on-navy" id="mdInputsAdd">+ Add</button></div>
 
+      <div class="crowd-label">✦ A real example to run it on <span style="opacity:.55;text-transform:none;letter-spacing:0;font-weight:400">(ask the room — fill it live)</span></div>
+      <textarea id="mdExampleInput" class="md-chore" style="min-height:84px;resize:vertical;font-family:'DM Mono',monospace;font-size:13px;line-height:1.5" placeholder="Paste a blank form's fields + one product's facts (name, UPC, case pack, dimensions, price)…"></textarea>
+      <div style="margin-top:10px"><label class="btn-on-navy" for="mdExFiles" style="display:inline-flex">📎 Upload the form / a screenshot</label><input type="file" id="mdExFiles" accept="image/*,.pdf,.csv,.xlsx,.xls,.doc,.docx,.txt" multiple style="display:none" /></div>
+      <div class="upload-thumbs" id="mdUploadThumbs"></div>
+
       <h4 class="serif">2 · Grab the prompt</h4>
       <p class="acc-sub" style="max-width:none;">Copy it, paste into Claude, and it writes your tool. It updates live as the room adds steps above.</p>
       <button class="btn-on-navy" id="mdReveal" aria-expanded="false">✦ Show the prompt</button>
@@ -1357,6 +1369,13 @@ function renderMD(el){
   const iIn=el.querySelector('#mdInputsInput'), iTags=el.querySelector('#mdInputsTags');
   el.querySelector('#mdInputsAdd').addEventListener('click', ()=>addList(iIn,MD_INPUTS,iTags,'mdinput-rm'));
   iIn.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); addList(iIn,MD_INPUTS,iTags,'mdinput-rm'); }});
+  const ex=el.querySelector('#mdExampleInput');
+  ex.addEventListener('input', ()=>{ MD_EXAMPLE=ex.value; mountRecipePrompt(); });
+  const mdUpEl=el.querySelector('#mdUploadThumbs');
+  el.querySelector('#mdExFiles').addEventListener('change', ev=>{
+    [...ev.target.files].forEach(f=>{ MD_UPLOADS.push({name:f.name, url:URL.createObjectURL(f), isImg:f.type.startsWith('image/')}); });
+    ev.target.value=''; renderUploads(mdUpEl, MD_UPLOADS, 'mdup-rm'); mountRecipePrompt();
+  });
   const reveal=el.querySelector('#mdReveal'), wrap=el.querySelector('#mdPromptWrap');
   reveal.addEventListener('click', ()=>{ const open=wrap.classList.toggle('open'); reveal.setAttribute('aria-expanded',open); reveal.textContent = open?'✦ Hide the prompt':'✦ Show the prompt'; });
 }
@@ -1438,12 +1457,13 @@ document.addEventListener('click', async e=>{
 });
 
 document.addEventListener('click', e=>{
-  const rm=e.target.closest('[data-crowd-rm],[data-inspo-rm],[data-up-rm],[data-mdstep-rm],[data-mdinput-rm]'); if(!rm) return;
+  const rm=e.target.closest('[data-crowd-rm],[data-inspo-rm],[data-up-rm],[data-mdstep-rm],[data-mdinput-rm],[data-mdup-rm]'); if(!rm) return;
   if(rm.hasAttribute('data-crowd-rm')){ CROWD.splice(+rm.getAttribute('data-crowd-rm'),1); renderTags(document.getElementById('crowdTags'),CROWD,'crowd-rm'); mountPOCPrompt(); }
   else if(rm.hasAttribute('data-inspo-rm')){ INSPO.splice(+rm.getAttribute('data-inspo-rm'),1); renderTags(document.getElementById('inspoTags'),INSPO,'inspo-rm'); mountPOCPrompt(); }
-  else if(rm.hasAttribute('data-up-rm')){ UPLOADS.splice(+rm.getAttribute('data-up-rm'),1); renderUploads(document.getElementById('uploadThumbs')); mountPOCPrompt(); }
+  else if(rm.hasAttribute('data-up-rm')){ UPLOADS.splice(+rm.getAttribute('data-up-rm'),1); renderUploads(document.getElementById('uploadThumbs'),UPLOADS,'up-rm'); mountPOCPrompt(); }
   else if(rm.hasAttribute('data-mdstep-rm')){ MD_STEPS.splice(+rm.getAttribute('data-mdstep-rm'),1); renderTags(document.getElementById('mdStepsTags'),MD_STEPS,'mdstep-rm'); mountRecipePrompt(); }
   else if(rm.hasAttribute('data-mdinput-rm')){ MD_INPUTS.splice(+rm.getAttribute('data-mdinput-rm'),1); renderTags(document.getElementById('mdInputsTags'),MD_INPUTS,'mdinput-rm'); mountRecipePrompt(); }
+  else if(rm.hasAttribute('data-mdup-rm')){ MD_UPLOADS.splice(+rm.getAttribute('data-mdup-rm'),1); renderUploads(document.getElementById('mdUploadThumbs'),MD_UPLOADS,'mdup-rm'); mountRecipePrompt(); }
 });
 
 function setCard(n,open){ const card=document.getElementById('card'+n), chap=document.getElementById('chapter'+n); chap.classList.toggle('open',open); card.setAttribute('aria-expanded',open); if(open) setTimeout(()=>chap.scrollIntoView({behavior:'smooth',block:'start'}),120); }
