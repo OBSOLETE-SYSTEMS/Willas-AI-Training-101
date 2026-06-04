@@ -522,6 +522,8 @@
   #gatePw:focus { border-color: var(--green-deep); }
   #gateForm button { padding:14px; border:none; border-radius:12px; background: var(--navy); color: var(--cream); font-family: var(--display); font-weight:600; font-size:14px; letter-spacing:0.04em; cursor:pointer; transition: background .2s; }
   #gateForm button:hover { background: var(--green-deep); }
+  .gate-remember { display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px; color: var(--ink-soft); cursor:pointer; font-family:'DM Sans',sans-serif; user-select:none; }
+  .gate-remember input { accent-color: var(--green-deep); width:15px; height:15px; cursor:pointer; }
   .gate-err { min-height:18px; margin-top:12px; font-size:13px; color: var(--clay); font-family:'DM Mono',monospace; }
   .gate-card.shake { animation: gateshake .4s; }
   @keyframes gateshake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-7px)} 40%,80%{transform:translateX(7px)} }
@@ -534,6 +536,7 @@
     <div class="gate-brand"><span class="star">✦</span> Willa's × OBSOLETE</div>
     <form id="gateForm" autocomplete="off">
       <input id="gatePw" type="password" placeholder="Password" aria-label="Password" autofocus />
+      <label class="gate-remember"><input type="checkbox" id="gateRemember" /> Remember me for 7 days</label>
       <button type="submit">Enter ✦</button>
     </form>
     <p class="gate-err" id="gateErr"></p>
@@ -542,13 +545,19 @@
 <script>
 (function(){
   var KEY='willas101_auth', gate=document.getElementById('gate');
-  try{ if(sessionStorage.getItem(KEY)==='1'){ gate.remove(); return; } }catch(e){}
+  function authed(){
+    try{ if(sessionStorage.getItem(KEY)==='1') return true; }catch(e){}
+    try{ var t=localStorage.getItem(KEY+'_exp'); if(t && Date.now() < +t) return true; if(t){ localStorage.removeItem(KEY+'_exp'); } }catch(e){}
+    return false;
+  }
+  if(authed()){ gate.remove(); return; }
   document.documentElement.style.overflow='hidden';
-  var form=document.getElementById('gateForm'), pw=document.getElementById('gatePw'), err=document.getElementById('gateErr');
+  var form=document.getElementById('gateForm'), pw=document.getElementById('gatePw'), err=document.getElementById('gateErr'), remember=document.getElementById('gateRemember');
   form.addEventListener('submit', function(e){
     e.preventDefault();
     if(pw.value.trim().toLowerCase()==='certifiedorganic'){
       try{ sessionStorage.setItem(KEY,'1'); }catch(_){}
+      if(remember && remember.checked){ try{ localStorage.setItem(KEY+'_exp', String(Date.now()+7*24*60*60*1000)); }catch(_){} }
       document.documentElement.style.overflow='';
       gate.style.opacity='0';
       setTimeout(function(){ gate.remove(); }, 350);
