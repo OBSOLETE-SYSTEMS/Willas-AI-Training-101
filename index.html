@@ -1064,6 +1064,7 @@ Do this:
 3. Use clear [brackets] for the inputs that change each run.
 4. Suggest a short, obvious filename (like new-item-form.md).
 5. Tell me exactly how to run it next time.
+6. Then demonstrate it — run the tool once on a realistic Willa's example and show me the finished, filled-out result.
 
 Keep it plain-English and foolproof — I'm not an engineer.`;
 
@@ -1317,7 +1318,7 @@ function buildRecipePrompt(){
   p += MD_STEPS.length ? `\n\nHOW I DO IT NOW (the steps):\n` + MD_STEPS.map((s,i)=>`${i+1}. ${s}`).join('\n')
                        : `\n\nHOW I DO IT NOW: [list the steps you take, start to finish]`;
   if(MD_INPUTS.length) p += `\n\nWHAT CHANGES EACH RUN (make these [bracketed] inputs):\n` + MD_INPUTS.map(s=>`- ${s}`).join('\n');
-  p += `\n\nDO THIS:\n1. Ask me 1–2 quick questions only if you truly need to.\n2. Write the reusable Markdown file (.md) that captures the steps.\n3. Use clear [brackets] for the inputs that change each run.\n4. Suggest a short, obvious filename (like new-item-form.md).\n5. Tell me exactly how to run it next time.`;
+  p += `\n\nDO THIS:\n1. Ask me 1–2 quick questions only if you truly need to.\n2. Write the reusable Markdown file (.md) that captures the steps.\n3. Use clear [brackets] for the inputs that change each run.\n4. Suggest a short, obvious filename (like new-item-form.md).\n5. Tell me exactly how to run it next time.\n6. Then DEMONSTRATE it — run the tool once on a realistic example and show me the finished, filled-out result, so I can see the actual output (not just the instructions).`;
   return p;
 }
 function mountRecipePrompt(){ const m=document.getElementById('mdPromptMount'); if(m) m.innerHTML = promptBlock('The new-item-form tool — live build', buildRecipePrompt()); }
@@ -1513,6 +1514,7 @@ Do this:
 2. Build me a clear, reusable set of instructions (a Markdown tool) that does this same task every time.
 3. Mark the inputs that change each run with [brackets].
 4. Tell me exactly how to run it next time.
+5. Then demonstrate it — run it once on a realistic example and show me the actual output.
 
 Keep it plain-English and foolproof — I'm not an engineer.`
     : `You are a world-class maker — designer, writer, builder. Help me make this thing.
