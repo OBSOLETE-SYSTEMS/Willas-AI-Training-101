@@ -915,7 +915,33 @@ What it should calculate: [describe it — e.g. case-pack → units per pallet, 
 Inputs I'll type in: [list them].
 What it should show: [the result(s), clearly labeled].
 
-Build it as a single self-contained index.html (inline CSS + JS) I can open in a browser — clean, on-brand for Willa's (cream, navy, oat green), and idiot-proof. Show the math so I can trust it. Rough first pass; I'll refine.` }
+Build it as a single self-contained index.html (inline CSS + JS) I can open in a browser — clean, on-brand for Willa's (cream, navy, oat green), and idiot-proof. Show the math so I can trust it. Rough first pass; I'll refine.` },
+  { title:"A sales + cashflow dashboard", forwho:"For: finance + leadership",
+    sub:"Paste your daily spend + revenue and get a clean dashboard that tracks the money in one glance.",
+    prompt:`You are a data designer + financial analyst for Willa's. Build me a simple sales + cashflow dashboard I can open in a browser.
+
+I'll give you the numbers: [daily or weekly spend + revenue — by channel/retailer if I have it; cash on hand if relevant].
+
+Build a single self-contained index.html (inline CSS + JS) that shows:
+- Top-line cards: revenue, spend, net, cash position — for the period I give you.
+- A simple chart of revenue vs. spend over time.
+- A tidy table underneath with the daily/weekly rows.
+- On-brand for Willa's (cream, navy, oat green); skimmable in 10 seconds.
+
+Make it reusable — I'll paste fresh numbers and re-open it. Rough first pass; I'll refine the inputs.` },
+  { title:"An account map for a key customer", forwho:"For: sales",
+    sub:"Turn what you know about an account into a clean one-page map — contacts, structure, where we stand.",
+    prompt:`You are a CPG sales strategist for Willa's. Build me a one-page account map for [CUSTOMER / RETAILER / DISTRIBUTOR].
+
+I'll tell you what I know: [key contacts + roles, buying structure, current SKUs/placement, last order, open opportunities, risks].
+
+Build it as a single self-contained HTML page that lays out:
+- The org at a glance — who's who (decision-maker, buyer, ops contact) and how to reach them.
+- Where we stand today — what they carry, recent order activity, the relationship temperature.
+- The white space — what we'd love to win next, and the play to get there.
+- On-brand for Willa's, screenshot-ready.
+
+Leave [brackets] for anything I need to confirm. Reusable for any account — I'll swap the details.` }
 ];
 
 const C2_USECASES = [
@@ -1041,7 +1067,89 @@ My setup: [which tool — Google Sheets / Excel — and what's in which columns]
 Do this:
 1. Give me the exact formula (or step-by-step pivot setup) to paste in.
 2. Explain in one line what it does and how to adjust it.
-3. Flag any gotcha (absolute refs, date formats, etc.).` }
+3. Flag any gotcha (absolute refs, date formats, etc.).` },
+  { title:"A lapsed-retailer follow-up", forwho:"For: sales",
+    sub:"Paste your order history; it flags who's gone quiet and drafts the warm nudge to win them back.",
+    prompt:`You are my sales-operations assistant for Willa's. Help me follow up with retailers who haven't ordered in a while.
+
+I'll paste my order history: [retailer | last order date | typical order size / cadence — however my data looks].
+
+Do this:
+1. Flag every account whose last order is older than [60 / 90 days] vs. their normal cadence — sort by how overdue they are.
+2. Make a tidy table: Retailer | Last Order | Days Quiet | Usual Cadence | Priority.
+3. For the top [5], draft a short, warm "we miss you" follow-up email in Willa's voice — friendly, no guilt, easy yes.
+4. Leave [brackets] for anything I should personalize.
+
+Make it reusable — I'll paste fresh order data next time and re-run.` },
+  { title:"A distributor scorecard from order history", forwho:"For: sales + ops",
+    sub:"Hand it order history; get a clean performance scorecard that ranks accounts and shows who's growing vs. slipping.",
+    prompt:`You are a sales analyst for Willa's. Build me a reusable distributor / customer scorecard from order history.
+
+I'll paste the data: [distributor/account | orders over time — dates, units, $ — however it's structured].
+
+Do this:
+1. Score each account on what matters: total volume, order frequency, trend (growing / flat / declining), and recency.
+2. Build a clean scorecard table — one row per account — ranked best to worst, with a simple A–D or 🟢🟡🔴 grade.
+3. Call out the 3 to watch: who's slipping, who's growing, who's gone quiet.
+4. Show how you scored it so I can trust the grades.
+
+Build it as a clean table or a single self-contained HTML page, on-brand for Willa's. Reusable — I'll paste fresh order data and re-run.` },
+  { title:"A customer invoice, generated", forwho:"For: billing",
+    sub:"Give it the order; it produces a clean, branded invoice with the line items and totals done for you.",
+    prompt:`You are my billing assistant for Willa's. Generate a clean, professional invoice from an order.
+
+I'll give you:
+- Customer + billing details: [name, address, terms]
+- The order: [product | qty | unit price] for each line
+- Invoice basics: [invoice #, date, PO #, payment terms / due date]
+
+Do this:
+1. Build a clean invoice: Willa's header, bill-to, invoice # + dates, line-item table (Item | Qty | Unit Price | Total), subtotal, tax/shipping if any, and total due.
+2. Do all the math and double-check it.
+3. Flag anything missing under "NEEDS FROM ALEX" instead of guessing.
+
+Build it as a single self-contained HTML page I can open, screenshot, or print to PDF — on-brand for Willa's. Reusable — I'll swap in the next order.` },
+  { title:"A sales forecast from order history", forwho:"For: planning",
+    sub:"Paste past orders; get a simple, defensible forecast for the months ahead — with the assumptions shown.",
+    prompt:`You are a demand-planning analyst for Willa's. Build me a simple sales forecast from past order history.
+
+I'll paste the history: [units / $ by month — by SKU or channel if I have it].
+
+Do this:
+1. Forecast the next [3 / 6] months — by SKU or channel, whatever the data supports.
+2. Account for the trend and any obvious seasonality, and state your assumptions plainly.
+3. Lay it out: a table (Month | Forecast | basis) plus a short "here's the logic" so I can sanity-check it.
+4. Flag where the data is too thin to forecast confidently.
+
+Keep it honest — a clear, defensible estimate beats false precision. Reusable: I'll paste updated numbers and re-run.` },
+  { title:"A customer pricing model", forwho:"For: sales + finance",
+    sub:"Plug in cost and terms; get a clean per-account price sheet with margins worked out.",
+    prompt:`You are a pricing analyst for Willa's. Build me a reusable pricing model for a specific customer.
+
+I'll give you:
+- The customer + their terms: [discount tier, freight terms, any allowances]
+- Per-SKU inputs: [product | unit cost | list price]
+
+Do this:
+1. Calculate the customer's net price per SKU after their terms, and the resulting margin %.
+2. Lay it out in a clean table: SKU | Cost | List | Their Net | Margin %.
+3. Flag any SKU where margin drops below [my floor].
+4. Show the math so I can trust and adjust it.
+
+Build it as a clean table or a tiny self-contained HTML tool I can type new numbers into. Reusable for any account — I'll swap the inputs.` },
+  { title:"A Shopify order-entry helper", forwho:"For: order entry",
+    sub:"Paste a messy order; get it back as clean, Shopify-ready fields or a CSV so entry takes seconds.",
+    prompt:`You are an order-entry assistant for Willa's. Turn a messy incoming order into clean, Shopify-ready data.
+
+I'll paste the order however it arrived: [email / PO / text — customer, products, quantities, address].
+
+Do this:
+1. Map it to the fields Shopify needs: customer name + email, shipping address, and line items (product | variant | qty).
+2. Match products to our catalog names/SKUs and flag anything you can't match under "CHECK THESE."
+3. Return it two ways: a clean readable summary, and a CSV row (or rows) I can import.
+4. Don't guess on addresses or quantities — flag what's unclear.
+
+Make it reusable — I'll paste the next order and re-run.` }
 ];
 
 const POC = {
